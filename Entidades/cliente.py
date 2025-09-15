@@ -1,14 +1,14 @@
 import hashlib
 from perfil_consumidor import PerfilConsumidor
 class Cliente:
-    def __init__(self, id, nome, email, senha, saldo, perfil_do_consumidor: PerfilConsumidor):
+    def __init__(self, id, nome, email, senha, saldo, perfil: str):
         self.__id = id
         self.__nome = nome
         self.__email = email
         self.__senha = hashlib.sha256(senha.encode('utf-8')).hexdigest()
         self.__saldo = saldo
-        self.__perfil_do_consumidor = perfil_do_consumidor
-        self.__lista_cafes_recomendados = perfil_do_consumidor.recomendar_cafes()
+        self.__perfil_do_consumidor = PerfilConsumidor(perfil)
+        self.__lista_cafes_recomendados = self.__perfil_do_consumidor.recomendar_cafes()
 
     @property
     def id(self):

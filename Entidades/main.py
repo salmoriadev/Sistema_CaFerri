@@ -103,8 +103,8 @@ def demonstrar_clientes(perfil_doce_suave, perfil_acido_e_frutado):
     print("\nTESTE: CLIENTES")
     linha_separadora()
     
-    cliente1 = Cliente(1, "João Silva", "joao@email.com", "senha123", 500.0, perfil_doce_suave)
-    cliente2 = Cliente(2, "Maria Santos", "maria@email.com", "senha456", 800.0, perfil_acido_e_frutado)
+    cliente1 = Cliente(1, "João Silva", "joao@email.com", "senha123", 500.0, "Doce e Suave")
+    cliente2 = Cliente(2, "Maria Santos", "maria@email.com", "senha456", 800.0, "Ácido e Frutado")
     
     print("CLIENTES CADASTRADOS:")
     print(f"1. {cliente1.exibir_informacoes()}")
@@ -209,7 +209,7 @@ def main():
         elif opcao == "5":
             demonstrar_clientes(perfil_doce_suave, perfil_acido_e_frutado)
         elif opcao == "6":
-            novo_cliente = Cliente(3, "Pedro Costa", "pedro@email.com", "123", 300.0, perfil_doce_suave)
+            novo_cliente = Cliente(3, "Pedro Costa", "pedro@email.com", "123", 300.0, "Doce e Suave")
             nova_venda = Venda(2, novo_cliente, cafe1)
             resultado = nova_venda.finalizar_venda(estoque)
             print(f"Nova venda: {resultado}")
