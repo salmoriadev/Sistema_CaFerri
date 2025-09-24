@@ -1,5 +1,5 @@
-from produto import Produto
-from perfil_consumidor import PerfilConsumidor
+from entidade.produto import Produto
+from entidade.perfil_consumidor import PerfilConsumidor
 class Cafe(Produto):
     def __init__(self, nome: str, preco_compra: float, preco_venda: float,
                   estoque: int, id: int, data_fabricacao: str, origem: str, variedade: str, altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str):
