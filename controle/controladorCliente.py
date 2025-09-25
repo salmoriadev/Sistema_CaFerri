@@ -34,10 +34,60 @@ class ControladorCliente:
             novos_dados = self.__tela_cliente.pega_dados_cliente()
             cliente.nome = novos_dados["nome"]
             cliente.email = novos_dados["email"]
-            cliente.senha = novos_dados["senha"]
+            cliente.senha = novos_dados["senha"] #Temos que mudar a senha de um metodo mais seguro eu acho...
             cliente.saldo = novos_dados["saldo"]
-            cliente.perfil = novos_dados["perfil"]
+            cliente.perfil_do_consumidor = novos_dados["perfil"]
             self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
             self.lista_clientes()
         else:
             self.__tela_cliente.mostra_mensagem("Cliente não encontrado!")
+
+    def lista_clientes(self):
+        if not self.__clientes:
+            self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
+        else:
+            for cliente in self.__clientes:
+                dados_cliente = {
+                    "id": cliente.id,
+                    "nome": cliente.nome,
+                    "email": cliente.email,
+                    "saldo": cliente.saldo,
+                    "perfil": cliente.perfil_do_consumidor.perfil
+                }
+                self.__tela_cliente.mostra_cliente(dados_cliente)
+
+    def excluir_cliente(self):
+        if not self.__clientes:
+            self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
+            return
+        
+        self.lista_clientes()
+        id = self.__tela_cliente.seleciona_cliente()
+        cliente = self.pega_cliente_por_id(id)
+        if cliente is not None:
+            self.__clientes.remove(cliente)
+            self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
+            self.lista_clientes()
+        else:
+            self.__tela_cliente.mostra_mensagem("Cliente não encontrado!")
+    
+    def retornar(self):
+        self.__controlador_sistema.abre_tela()
+
+    def abre_tela(self):
+        lista_opcoes = {
+            1: self.incluir_cliente,
+            2: self.alterar_cliente,
+            3: self.lista_clientes,
+            4: self.excluir_cliente,
+            0: self.retornar
+        }
+        while True:
+            opcao = self.__tela_cliente.tela_opcoes()
+            if opcao in lista_opcoes:
+                funcao_escolhida = lista_opcoes[opcao]
+                funcao_escolhida()
+                if opcao == 0:
+                    break
+            else:
+                self.__tela_cliente.mostra_mensagem("Opção inválida! Tente novamente.")
