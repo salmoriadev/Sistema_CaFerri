@@ -23,16 +23,21 @@ class ControladorCliente:
             self.__tela_cliente.mostra_mensagem("Cliente já existente!")
 
     def alterar_cliente(self):
-        id = self.__tela_cliente.seleciona_cliente()
-        if id is None:
+        if not self.__clientes:
+            self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
             return
+        
+        self.lista_clientes()  
+        id = self.__tela_cliente.seleciona_cliente()
         cliente = self.pega_cliente_por_id(id)
-        if cliente:
+        if cliente is not None:
             novos_dados = self.__tela_cliente.pega_dados_cliente()
             cliente.nome = novos_dados["nome"]
             cliente.email = novos_dados["email"]
             cliente.senha = novos_dados["senha"]
             cliente.saldo = novos_dados["saldo"]
             cliente.perfil = novos_dados["perfil"]
+            self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
+            self.lista_clientes()
         else:
             self.__tela_cliente.mostra_mensagem("Cliente não encontrado!")
