@@ -48,3 +48,7 @@ class TelaCliente:
 
     def mostra_mensagem(self, msg: str):
         print(msg)
+        
+    def pedir_senha(self):
+        senha = input("Digite sua senha: ")
+        return senha

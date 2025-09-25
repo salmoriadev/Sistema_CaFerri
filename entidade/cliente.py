@@ -1,5 +1,5 @@
 import hashlib
-from perfil_consumidor import PerfilConsumidor
+from entidade.perfil_consumidor import PerfilConsumidor
 class Cliente:
     def __init__(self, id, nome, email, senha, saldo, perfil: str):
         self.__id = id
@@ -34,21 +34,13 @@ class Cliente:
         self.__saldo = valor
 
     @perfil_do_consumidor.setter
-    def perfil_do_consumidor(self, perfil):
-        self.__perfil_do_consumidor = perfil
+    def perfil_do_consumidor(self, perfil: str):
+        self.__perfil_do_consumidor = PerfilConsumidor(perfil)
         self.__lista_cafes_recomendados = perfil.recomendar_cafes()
 
-    def alterar_senha(self,senha_atual, nova_senha):
-        if self.__senha == hashlib.sha256(senha_atual.encode('utf-8')).hexdigest():
-            self.__senha = hashlib.sha256(nova_senha.encode('utf-8')).hexdigest()
-            return True
-        return False
     
     def mostrar_recomendacoes(self):
         return self.__lista_cafes_recomendados
-    
-    def pedir_senha(self, senha):
-        return self.__senha == hashlib.sha256(senha.encode('utf-8')).hexdigest()
 
     def exibir_informacoes(self):
         return f"Nome: {self.__nome}, Email: {self.__email}, Saldo: {self.__saldo}, Perfil do Consumidor: {self.__perfil_do_consumidor.perfil}, Cafés Recomendados: {self.__lista_cafes_recomendados}"

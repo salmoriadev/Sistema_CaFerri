@@ -1,3 +1,4 @@
+import hashlib
 from limite.telaCliente import TelaCliente
 from entidade.cliente import Cliente
 
@@ -26,15 +27,18 @@ class ControladorCliente:
         if not self.__clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
             return
-        
         self.lista_clientes()  
         id = self.__tela_cliente.seleciona_cliente()
         cliente = self.pega_cliente_por_id(id)
+        senha = hashlib.sha256(self.__tela_cliente.pedir_senha().encode('utf-8')).hexdigest()
+        if senha != cliente.senha:
+            self.__tela_cliente.mostra_mensagem("Senha incorreta!")
+            return
         if cliente is not None:
             novos_dados = self.__tela_cliente.pega_dados_cliente()
             cliente.nome = novos_dados["nome"]
             cliente.email = novos_dados["email"]
-            cliente.senha = novos_dados["senha"] #Temos que mudar a senha de um metodo mais seguro eu acho...
+            cliente.senha = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()
             cliente.saldo = novos_dados["saldo"]
             cliente.perfil_do_consumidor = novos_dados["perfil"]
             self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
@@ -64,6 +68,10 @@ class ControladorCliente:
         self.lista_clientes()
         id = self.__tela_cliente.seleciona_cliente()
         cliente = self.pega_cliente_por_id(id)
+        senha = hashlib.sha256(self.__tela_cliente.pedir_senha().encode('utf-8')).hexdigest()
+        if senha != cliente.senha:
+            self.__tela_cliente.mostra_mensagem("Senha incorreta!")
+            return
         if cliente is not None:
             self.__clientes.remove(cliente)
             self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")

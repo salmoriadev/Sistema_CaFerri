@@ -40,7 +40,6 @@ class ControladorCafe():
     else:
       self.__tela_cafe.mostra_mensagem("ATENCAO: Cafe não existente")
 
-  # Sugestão: se a lista estiver vazia, mostrar a mensagem de lista vazia
   def lista_cafe(self):
     if len(self.__cafes) == 0:
       self.__tela_cafe.mostra_mensagem("ATENCAO: Nenhum café cadastrado")

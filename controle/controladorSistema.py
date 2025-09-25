@@ -27,22 +27,29 @@ class ControladorSistema:
         self.abre_tela()
 
     def cadastra_cafe(self):
-        # Chama o controlador de Cafe
         self.__controlador_cafe.abre_tela()
 
     def cadastra_cliente(self):
-        # Chama o controlador de Cliente
         self.__controlador_cliente.abre_tela()
 
     def cadastra_maquina_de_cafe(self):
-        # Chama o controlador de Maquina de Cafe
         self.__controlador_maquina_de_cafe.abre_tela()
+    
+    #Tem que implementar essas funções
+    def cadastra_estoque(self):
+        pass
+    def cadastra_venda(self):
+        pass
+    def cadastra_fornecedor_cafe(self):
+        pass
+    def cadastra_fornecedor_maquina_cafe(self):
+        pass
 
     def encerra_sistema(self):
         exit(0)
 
     def abre_tela(self):
-        lista_opcoes = {1: self.cadastra_cafe, 2: self.cadastra_maquina_de_cafe, 3: self.cadastra_cliente,
+        lista_opcoes = {1: self.cadastra_cafe, 2: self.cadastra_maquina_de_cafe, 3: self.cadastra_cliente, 4: self.cadastra_estoque, 5: self.cadastra_venda, 6: self.cadastra_fornecedor_cafe, 7: self.cadastra_fornecedor_maquina_cafe,
                         0: self.encerra_sistema}
 
         while True:
