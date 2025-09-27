@@ -17,15 +17,60 @@ class TelaCliente:
 
     
     def pega_dados_cliente(self):
-        print("-------- DADOS DO CLIENTE ----------")
-        id = int(input("ID: "))
-        nome = input("Nome: ")
-        email = input("Email: ")
-        senha = input("Senha: ")
-        saldo = float(input("Saldo: "))
-        perfil = input("Perfil do Consumidor: ")
+        print("\n-------- DADOS DO CLIENTE ----------")
 
-        return {"id": id, "nome": nome, "email": email, "senha": senha, "saldo": saldo, "perfil": perfil}
+        while True:
+            try:
+                id_cliente = int(input("ID: "))
+                if id_cliente >= 0:
+                    break
+                print("Erro: O ID não pode ser um número negativo. Tente novamente.")
+            except ValueError:
+                print("Erro: Entrada inválida. Por favor, insira um número inteiro.")
+
+        while True:
+            nome = input("Nome: ")
+            if nome.strip():
+                break
+            print("Erro: Nome inválido. Tente novamente.")
+
+        while True:
+            email = input("Email: ")
+            if email.strip() and '@' in email and '.' in email:
+                break
+            print("Erro: Email inválido. Tente novamente.")
+
+        while True:
+            senha = input("Senha: ")
+            if senha:
+                break
+            print("Erro: A senha não pode ser vazia. Tente novamente.")
+
+        while True:
+            try:
+                saldo = float(input("Saldo: "))
+                if saldo >= 0:
+                    break
+                print("Erro: O saldo não pode ser negativo. Tente novamente.")
+            except ValueError:
+                print("Erro: Entrada inválida. Por favor, insira um número (ex: 150.75).")
+
+        while True:
+            perfil = input("Perfil do Consumidor: ")
+            if perfil.strip():
+                break
+            print("Erro: O perfil do consumidor não pode ser vazio. Tente novamente.")
+        
+        print("------------------------------------")
+        
+        return {
+            "id": id_cliente,
+            "nome": nome,
+            "email": email,
+            "senha": senha,
+            "saldo": saldo,
+            "perfil": perfil
+        }
 
     
     def mostra_cliente(self, dados_cliente):

@@ -2,8 +2,8 @@ from entidade.produto import Produto
 from entidade.perfil_consumidor import PerfilConsumidor
 class Cafe(Produto):
     def __init__(self, nome: str, preco_compra: float, preco_venda: float,
-                  estoque: int, id: int, data_fabricacao: str, origem: str, variedade: str, altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str):
-        super().__init__(nome, preco_compra, preco_venda, estoque, id, data_fabricacao)
+                  id: int, data_fabricacao: str, origem: str, variedade: str, altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str):
+        super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
         self.__origem = origem
         self.__variedade = variedade
         self.__altitude = altitude
@@ -35,8 +35,8 @@ class Cafe(Produto):
         return self.__perfil_recomendado
     
     @perfil_recomendado.setter
-    def perfil_recomendado(self, perfil: PerfilConsumidor):
-        self.__perfil_recomendado = perfil
+    def perfil_recomendado(self, perfil: str):
+        self.__perfil_recomendado = PerfilConsumidor(perfil)
     
     @moagem.setter
     def moagem(self, tipo_moagem: str):
@@ -45,3 +45,15 @@ class Cafe(Produto):
     @notas_sensoriais.setter
     def notas_sensoriais(self, notas: str):
         self.__notas_sensoriais = notas
+
+    @altitude.setter
+    def altitude(self, nova_altitude: int):
+        self.__altitude = nova_altitude
+    
+    @variedade.setter
+    def variedade(self, nova_variedade: str):
+        self.__variedade = nova_variedade
+
+    @origem.setter
+    def origem(self, nova_origem: str):
+        self.__origem = nova_origem

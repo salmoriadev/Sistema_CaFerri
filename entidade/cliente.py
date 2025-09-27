@@ -1,11 +1,13 @@
 import hashlib
 from entidade.perfil_consumidor import PerfilConsumidor
+
+
 class Cliente:
-    def __init__(self, id, nome, email, senha, saldo, perfil: str):
+    def __init__(self, id, nome, email, senha_cifrada, saldo, perfil: str):
         self.__id = id
         self.__nome = nome
         self.__email = email
-        self.__senha = hashlib.sha256(senha.encode('utf-8')).hexdigest()
+        self.__senha_cifrada = senha_cifrada
         self.__saldo = saldo
         self.__perfil_do_consumidor = PerfilConsumidor(perfil)
         self.__lista_cafes_recomendados = self.__perfil_do_consumidor.recomendar_cafes()
@@ -29,6 +31,26 @@ class Cliente:
     def lista_cafes_recomendados(self):
         return self.__lista_cafes_recomendados
     
+    @property
+    def senha_cifrada(self):
+        return self.__senha_cifrada
+    
+    @id.setter
+    def id(self, novo_id: int):
+        self.__id = novo_id
+    
+    @nome.setter
+    def nome(self, novo_nome: str):
+        self.__nome = novo_nome
+    
+    @email.setter
+    def email(self, novo_email: str):
+        self.__email = novo_email
+    
+    @senha_cifrada.setter
+    def senha_cifrada(self, nova_senha: str):
+        self.__senha_cifrada = nova_senha
+
     @saldo.setter
     def saldo(self, valor):
         self.__saldo = valor
@@ -38,9 +60,6 @@ class Cliente:
         self.__perfil_do_consumidor = PerfilConsumidor(perfil)
         self.__lista_cafes_recomendados = perfil.recomendar_cafes()
 
-    
-    def mostrar_recomendacoes(self):
+    @property
+    def lista_cafes_recomendados(self):
         return self.__lista_cafes_recomendados
-
-    def exibir_informacoes(self):
-        return f"Nome: {self.__nome}, Email: {self.__email}, Saldo: {self.__saldo}, Perfil do Consumidor: {self.__perfil_do_consumidor.perfil}, Cafés Recomendados: {self.__lista_cafes_recomendados}"
