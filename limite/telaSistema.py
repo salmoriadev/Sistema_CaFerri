@@ -16,4 +16,7 @@ class TelaSistema:
             return opcao
         except ValueError:
             print("\nEntrada inválida! Por favor, digite apenas um número.")
-            return None 
+            return None
+    
+    def mostra_mensagem(self, msg: str):
+        print(msg)

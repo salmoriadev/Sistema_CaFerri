@@ -1,8 +1,8 @@
 from limite.telaSistema import TelaSistema
 from controle.controladorCafe import ControladorCafe
 from controle.controladorCliente import ControladorCliente
-'''from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
-from controle.controladorVenda import ControladorVenda
+from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
+'''from controle.controladorVenda import ControladorVenda
 from controle.controladorEstoque import ControladorEstoque '''
 
 class ControladorSistema:
@@ -12,17 +12,17 @@ class ControladorSistema:
         
         self.__controlador_cliente = ControladorCliente(self)
         self.__controlador_cafe = ControladorCafe(self)
-        '''self.__controlador_maquina_de_cafe = ControladorMaquinaDeCafe(self)
-        self.__controlador_venda = ControladorVenda(self)
+        self.__controlador_maquina_de_cafe = ControladorMaquinaDeCafe(self)
+        '''self.__controlador_venda = ControladorVenda(self)
         self.__controlador_estoque = ControladorEstoque(self) '''
 
     @property
     def controlador_cliente(self):
         return self.__controlador_cliente
 
-    '''@property
+    @property
     def controlador_maquina_de_cafe(self):
-        return self.__controlador_maquina_de_cafe'''
+        return self.__controlador_maquina_de_cafe
 
     @property
     def controlador_cafe(self):
@@ -45,14 +45,12 @@ class ControladorSistema:
     def cadastra_cafes(self):
         self.__controlador_cafe.abre_tela()
         
-    '''def cadastra_maquinas_de_cafe(self):
+    def cadastra_maquinas_de_cafe(self):
         self.__controlador_maquina_de_cafe.abre_tela()
 
-    def gerencia_vendas(self):
+    '''def gerencia_vendas(self):
         self.__controlador_venda.abre_tela()  ''' 
 
-    
-# precisamos implementar essas a baixo ainda
     '''def gerencia_estoque(self):
         self.__controlador_estoque.abre_tela()
         self.__tela_sistema.mostra_mensagem("Opção ainda não implementada.")
@@ -66,7 +64,7 @@ class ControladorSistema:
     def abre_tela(self):
         lista_opcoes = {
             1: self.cadastra_cafes,
-            #2: self.cadastra_maquinas_de_cafe,
+            2: self.cadastra_maquinas_de_cafe,
             3: self.cadastra_clientes,
             #4: self.gerencia_estoque,
             #5: self.gerencia_vendas,

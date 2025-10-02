@@ -1,8 +1,10 @@
 from entidade.produto import Produto
 from entidade.perfil_consumidor import PerfilConsumidor
+
 class Cafe(Produto):
     def __init__(self, nome: str, preco_compra: float, preco_venda: float,
-                  id: int, data_fabricacao: str, origem: str, variedade: str, altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str):
+                 id: int, data_fabricacao: str, origem: str, variedade: str, 
+                 altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str):
         super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
         self.__origem = origem
         self.__variedade = variedade
@@ -18,8 +20,9 @@ class Cafe(Produto):
     @property
     def variedade(self):
         return self.__variedade
+
     @property
-    def altitude(self):   
+    def altitude(self):
         return self.__altitude
 
     @property
