@@ -25,14 +25,31 @@ class ControladorEstoque:
         self.__tela_estoque.mostra_estoque(self.__estoque.listar_produtos())
 
     def adicionar_novo_produto(self):
-        pass
+        dados = self.__tela_estoque.pega_dados_produto_estoque()
+        if dados:
+            produto = self.__pega_produto_por_id(dados["id_produto"])
+            self.__estoque.adicionar_produto(produto, dados["quantidade"])
+            self.__tela_estoque.mostra_mensagem(f"'{produto.nome}' adicionado ao estoque.")
 
     def repor_estoque(self):
-        pass
-    
+        self.listar_estoque()
+        dados = self.__tela_estoque.pega_dados_produto_estoque()
+        if dados:
+            produto = self.__pega_produto_por_id(dados["id_produto"])
+            self.__estoque.adicionar_estoque(produto, dados["quantidade"])
+            self.__tela_estoque.mostra_mensagem(f"Estoque de '{produto.nome}' atualizado.")
+
     def baixar_estoque(self):
-        pass
-    
+        self.listar_estoque()
+        dados = self.__tela_estoque.pega_dados_produto_estoque()
+        if dados:
+            produto = self.__pega_produto_por_id(dados["id_produto"])
+            resultado = self.__estoque.retirar_estoque(produto, dados["quantidade"])
+            if resultado:
+                self.__tela_estoque.mostra_mensagem(resultado)
+            else:
+                self.__tela_estoque.mostra_mensagem("Baixa de estoque realizada.")
+
     def retornar(self):
         self.__controlador_sistema.abre_tela()
 
