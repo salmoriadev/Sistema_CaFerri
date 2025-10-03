@@ -4,12 +4,12 @@ from controle.controladorCliente import ControladorCliente
 from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
 from controle.controladorVenda import ControladorVenda
 from controle.controladorEstoque import ControladorEstoque 
+from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 
 class ControladorSistema:
 
     def __init__(self):
         self.__tela_sistema = TelaSistema()
-        
         self.__controlador_cliente = ControladorCliente(self)
         self.__controlador_cafe = ControladorCafe(self)
         self.__controlador_maquina_de_cafe = ControladorMaquinaDeCafe(self)
@@ -53,8 +53,24 @@ class ControladorSistema:
 
     def gerencia_estoque(self):
         self.__controlador_estoque.abre_tela()
+    
+    def pega_produto_por_id(self, id_produto: int):
+        try:
+            return self.controlador_cafe.pega_cafe_por_id(id_produto)
+        except:
+            try:
+                return self.controlador_maquina_de_cafe.pega_maquina_por_id(id_produto)
+            except:
+                raise ProdutoNaoEncontradoException()
+
+    def id_produto_ja_existe(self, id_produto: int) -> bool:
+        try:
+            self.pega_produto_por_id(id_produto)
+            return True 
+        except ProdutoNaoEncontradoException:
+            return False
         
-        
+    
     def gerencia_fornecedores(self):
         self.__tela_sistema.mostra_mensagem("Opção ainda não implementada.")
 
@@ -68,8 +84,8 @@ class ControladorSistema:
             3: self.cadastra_clientes,
             4: self.gerencia_estoque,
             5: self.gerencia_vendas,
-            6: self.gerencia_fornecedores_cafe,
-            7: self.gerencia_fornecedores_maquina,
+            #6: self.gerencia_fornecedores_cafe,
+            #7: self.gerencia_fornecedores_maquina,
             0: self.encerra_sistema
         }
 

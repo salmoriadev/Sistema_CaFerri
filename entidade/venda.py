@@ -1,7 +1,7 @@
 import datetime
-from cliente import Cliente
-from produto import Produto
-from estoque import Estoque
+from entidade.cliente import Cliente
+from entidade.produto import Produto
+from entidade.estoque import Estoque
 class Venda:
     def __init__ (self, id_venda: int, cliente: Cliente, produto: Produto,):
         self.__id_venda = id_venda

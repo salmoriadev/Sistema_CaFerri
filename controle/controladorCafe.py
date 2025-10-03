@@ -2,6 +2,7 @@ from limite.telaCafe import TelaCafe
 from entidade.cafe import Cafe
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
+from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 
 class ControladorCafe:
     def __init__(self, controlador_sistema):
@@ -20,10 +21,9 @@ class ControladorCafe:
     def incluir_cafe(self):
         dados_cafe = self.__tela_cafe.pega_dados_cafe()
 
-        for cafe in self.__cafes:
-            if cafe.id == dados_cafe["id"]:
-                self.__tela_cafe.mostra_mensagem("ERRO: Já existe um café com este ID!")
-                return
+        if self.__controlador_sistema.id_produto_ja_existe(dados_cafe["id"]):
+            self.__tela_cafe.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
+            return
 
         novo_cafe = Cafe(
             dados_cafe["nome"], dados_cafe["preco_compra"], dados_cafe["preco_venda"],

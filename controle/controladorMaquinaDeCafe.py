@@ -19,10 +19,9 @@ class ControladorMaquinaDeCafe:
     def incluir_maquina(self):
         dados_maquina = self.__tela_maquina.pega_dados_maquina()
 
-        for maquina in self.__maquinas:
-            if maquina.id == dados_maquina["id"]:
-                self.__tela_maquina.mostra_mensagem("ERRO: Já existe uma máquina com este ID!")
-                return
+        if self.__controlador_sistema.id_produto_ja_existe(dados_maquina["id"]):
+            self.__tela_maquina.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
+            return
 
         nova_maquina = MaquinaDeCafe(
             dados_maquina["nome"], dados_maquina["preco_compra"], dados_maquina["preco_venda"],

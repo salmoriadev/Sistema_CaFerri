@@ -18,13 +18,7 @@ class ControladorVenda:
         raise VendaNaoEncontradaException()
 
     def __pega_produto_por_id(self, id_produto: int):
-        try:
-            return self.__controlador_sistema.controlador_cafe.pega_cafe_por_id(id_produto)
-        except:
-            try:
-                return self.__controlador_sistema.controlador_maquina_de_cafe.pega_maquina_por_id(id_produto)
-            except:
-                raise ProdutoNaoEncontradoException()
+        self.__controlador_sistema.pega_produto_por_id()
 
     def iniciar_venda(self):
         dados_iniciais = self.__tela_venda.pega_dados_iniciar_venda()

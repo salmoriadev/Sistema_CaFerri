@@ -1,5 +1,5 @@
-from produto import Produto
-from cafe import Cafe
+from entidade.produto import Produto
+from entidade.cafe import Cafe
 class Estoque:
     def __init__(self):
         self.__produtos = dict()

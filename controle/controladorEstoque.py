@@ -13,13 +13,7 @@ class ControladorEstoque:
         return self.__estoque
 
     def __pega_produto_por_id(self, id_produto: int):
-        try:
-            return self.__controlador_sistema.controlador_cafe.pega_cafe_por_id(id_produto)
-        except: 
-            try:
-                return self.__controlador_sistema.controlador_maquina_de_cafe.pega_maquina_por_id(id_produto)
-            except: 
-                raise ProdutoNaoEncontradoException
+        self.__controlador_sistema.pega_produto_por_id()
 
     def listar_estoque(self):
         self.__tela_estoque.mostra_estoque(self.__estoque.listar_produtos())
