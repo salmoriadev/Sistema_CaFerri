@@ -1,5 +1,5 @@
 class TelaSistema:
-    def tela_opcoes(self):
+    def tela_opcoes(self) -> None:
         print("-------- Caferri ---------")
         print("Escolha sua opcao")
         print("1 - Cafés")
@@ -18,5 +18,5 @@ class TelaSistema:
             print("\nEntrada inválida! Por favor, digite apenas um número.")
             return None
     
-    def mostra_mensagem(self, msg: str):
+    def mostra_mensagem(self, msg: str) -> None:
         print(msg)

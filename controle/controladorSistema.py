@@ -1,91 +1,88 @@
+from controle.controladorEmpresaCafe import ControladorEmpresaCafe
+from controle.controladorEmpresaMaquina import ControladorEmpresaMaquina
 from limite.telaSistema import TelaSistema
 from controle.controladorCafe import ControladorCafe
 from controle.controladorCliente import ControladorCliente
 from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
 from controle.controladorVenda import ControladorVenda
 from controle.controladorEstoque import ControladorEstoque 
-from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 
 class ControladorSistema:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__tela_sistema = TelaSistema()
         self.__controlador_cliente = ControladorCliente(self)
         self.__controlador_cafe = ControladorCafe(self)
         self.__controlador_maquina_de_cafe = ControladorMaquinaDeCafe(self)
         self.__controlador_venda = ControladorVenda(self)
         self.__controlador_estoque = ControladorEstoque(self)
+        self.__controlador_empresa_cafe = ControladorEmpresaCafe(self)
+        self.__controlador_empresa_maquina = ControladorEmpresaMaquina(self)
 
     @property
-    def controlador_cliente(self):
+    def controlador_cliente(self) -> ControladorCliente:
         return self.__controlador_cliente
 
     @property
-    def controlador_maquina_de_cafe(self):
+    def controlador_maquina_de_cafe(self) -> ControladorMaquinaDeCafe:
         return self.__controlador_maquina_de_cafe
 
     @property
-    def controlador_cafe(self):
+    def controlador_cafe(self) -> ControladorCafe:
         return self.__controlador_cafe
         
     @property
-    def controlador_venda(self):
+    def controlador_venda(self) -> ControladorVenda:
         return self.__controlador_venda
     
     @property
-    def controlador_estoque(self):
+    def controlador_estoque(self) -> ControladorEstoque:
         return self.__controlador_estoque
+    
+    @property
+    def controlador_empresa_cafe(self) -> ControladorEmpresaCafe:
+        return self.__controlador_empresa_cafe
 
-    def inicializa_sistema(self):
+    @property
+    def controlador_empresa_maquina(self) -> ControladorEmpresaMaquina:
+        return self.__controlador_empresa_maquina
+
+    def inicializa_sistema(self) -> None:
         self.abre_tela()
 
-    def cadastra_clientes(self):
+    def cadastra_clientes(self) -> None:
         self.__controlador_cliente.abre_tela()
 
-    def cadastra_cafes(self):
+    def cadastra_cafes(self) -> None:
         self.__controlador_cafe.abre_tela()
-        
-    def cadastra_maquinas_de_cafe(self):
+
+    def cadastra_maquinas_de_cafe(self) -> None:
         self.__controlador_maquina_de_cafe.abre_tela()
 
-    def gerencia_vendas(self):
-        self.__controlador_venda.abre_tela() 
+    def gerencia_vendas(self) -> None:
+        self.__controlador_venda.abre_tela()
 
-    def gerencia_estoque(self):
+    def gerencia_estoque(self) -> None:
         self.__controlador_estoque.abre_tela()
-    
-    def pega_produto_por_id(self, id_produto: int):
-        try:
-            return self.controlador_cafe.pega_cafe_por_id(id_produto)
-        except:
-            try:
-                return self.controlador_maquina_de_cafe.pega_maquina_por_id(id_produto)
-            except:
-                raise ProdutoNaoEncontradoException()
 
-    def id_produto_ja_existe(self, id_produto: int) -> bool:
-        try:
-            self.pega_produto_por_id(id_produto)
-            return True 
-        except ProdutoNaoEncontradoException:
-            return False
-        
-    
-    def gerencia_fornecedores(self):
-        self.__tela_sistema.mostra_mensagem("Opção ainda não implementada.")
+    def gerencia_fornecedores_cafe(self) -> None:
+        self.__controlador_empresa_cafe.abre_tela()
 
-    def encerra_sistema(self):
+    def gerencia_fornecedores_maquina(self) -> None:
+        self.__controlador_empresa_maquina.abre_tela()
+
+    def encerra_sistema(self) -> None:
         exit(0)
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         lista_opcoes = {
             1: self.cadastra_cafes,
             2: self.cadastra_maquinas_de_cafe,
             3: self.cadastra_clientes,
             4: self.gerencia_estoque,
             5: self.gerencia_vendas,
-            #6: self.gerencia_fornecedores_cafe,
-            #7: self.gerencia_fornecedores_maquina,
+            6: self.gerencia_fornecedores_cafe,
+            7: self.gerencia_fornecedores_maquina,
             0: self.encerra_sistema
         }
 

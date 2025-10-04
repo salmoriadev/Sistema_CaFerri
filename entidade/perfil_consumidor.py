@@ -1,21 +1,21 @@
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
 
 class PerfilConsumidor:
-    def __init__(self, perfil: str):
+    def __init__(self, perfil: str) -> None:
         self.__possiveis_perfis = ["Doce e Suave", "Ácido e Frutado", "Intenso e Encorpado", "Equilibrado e Completo"]
         if perfil not in self.__possiveis_perfis:
             raise PerfilRecomendadoNaoExisteException(perfil)
         self.__perfil = perfil
 
     @property
-    def perfil(self):
+    def perfil(self) -> str:
         return self.__perfil
 
     @property
-    def possiveis_perfis(self):
+    def possiveis_perfis(self) -> list[str]:
         return self.__possiveis_perfis
 
-    def recomendar_cafes(self):
+    def recomendar_cafes(self) -> list[str]:
         recomendacoes = {
             "Doce e Suave": ["Café com Notas de Caramelo", "Café de Processo Natural"],
             "Ácido e Frutado": ["Café com Acidez Cítrica", "Café de Processo Lavado", "Cafés Florais"],

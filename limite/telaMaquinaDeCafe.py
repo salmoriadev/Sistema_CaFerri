@@ -18,23 +18,14 @@ class TelaMaquinaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Por favor, digite um número inteiro válido.")
 
-    def pega_dados_maquina(self) -> dict:
+    def pega_dados_maquina(self, is_alteracao: bool = False) -> dict:
         print("\n-------- DADOS DA MÁQUINA DE CAFÉ ----------")
 
         while True:
-            nome = input("Nome do modelo: ")
+            nome = input("Nome: ")
             if nome.strip():
                 break
             self.mostra_mensagem("Erro: Nome inválido.")
-
-        while True:
-            try:
-                id_maquina = int(input("ID: "))
-                if id_maquina >= 0:
-                    break
-                self.mostra_mensagem("Erro: O ID não pode ser negativo.")
-            except ValueError:
-                self.mostra_mensagem("Erro: Entrada inválida para ID.")
 
         while True:
             try:
@@ -54,6 +45,17 @@ class TelaMaquinaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida para preço.")
 
+        id_maquina = None
+        if not is_alteracao:
+            while True:
+                try:
+                    id_maquina = int(input("ID: "))
+                    if id_maquina >= 0:
+                        break
+                    self.mostra_mensagem("Erro: O ID não pode ser negativo.")
+                except ValueError:
+                    self.mostra_mensagem("Erro: Entrada inválida para ID.")
+
         while True:
             data_fabricacao = input("Data de Fabricação (DD/MM/AAAA): ")
             try:
@@ -62,15 +64,21 @@ class TelaMaquinaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Formato de data inválido.")
 
-        
-        print("---------------------------------")
-        
-        return {
-            "nome": nome, "preco_compra": preco_compra, "preco_venda": preco_venda,
-            "id": id_maquina, "data_fabricacao": data_fabricacao
+        print("------------------------------------------")
+
+        dados = {
+            "nome": nome,
+            "preco_compra": preco_compra,
+            "preco_venda": preco_venda,
+            "data_fabricacao": data_fabricacao
         }
 
-    def mostra_maquina(self, dados_maquina: dict):
+        if id_maquina is not None:
+            dados["id"] = id_maquina
+        
+        return dados
+
+    def mostra_maquina(self, dados_maquina: dict) -> None:
         print("---------------------------------")
         print(f"ID: {dados_maquina['id']}")
         print(f"NOME: {dados_maquina['nome']}")
@@ -86,5 +94,5 @@ class TelaMaquinaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: ID inválido. Por favor, insira um número inteiro.")
 
-    def mostra_mensagem(self, msg: str):
+    def mostra_mensagem(self, msg: str) -> None:
         print(msg)

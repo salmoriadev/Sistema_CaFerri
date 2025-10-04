@@ -1,14 +1,15 @@
+from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaMaquinaDeCafe import TelaMaquinaCafe
 from entidade.maquina_de_cafe import MaquinaDeCafe
 from Excecoes.maquinaNaoEncontradaException import MaquinaNaoEncontradaException
 
-class ControladorMaquinaDeCafe:
-    def __init__(self, controlador_sistema):
+class ControladorMaquinaDeCafe(BuscaProdutoMixin):
+    def __init__(self, controlador_sistema) -> None:
         self.__maquinas = []
-        self.__controlador_sistema = controlador_sistema
+        self._controlador_sistema = controlador_sistema
         self.__tela_maquina = TelaMaquinaCafe()
 
-    def pega_maquina_por_id(self, id: int):
+    def pega_maquina_por_id(self, id: int) -> MaquinaDeCafe:
         if not isinstance(id, int):
             raise TypeError("O ID da máquina deve ser um número inteiro.")
         for maquina in self.__maquinas:
@@ -16,10 +17,10 @@ class ControladorMaquinaDeCafe:
                 return maquina
         raise MaquinaNaoEncontradaException
 
-    def incluir_maquina(self):
-        dados_maquina = self.__tela_maquina.pega_dados_maquina()
+    def incluir_maquina(self) -> None:
+        dados_maquina = self.__tela_maquina.pega_dados_maquina(is_alteracao=False)
 
-        if self.__controlador_sistema.id_produto_ja_existe(dados_maquina["id"]):
+        if self.id_produto_ja_existe(dados_maquina["id"]):
             self.__tela_maquina.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
 
@@ -30,7 +31,7 @@ class ControladorMaquinaDeCafe:
         self.__maquinas.append(nova_maquina)
         self.__tela_maquina.mostra_mensagem("Máquina cadastrada com sucesso!")
 
-    def alterar_maquina(self):
+    def alterar_maquina(self) -> None:
         if not self.__maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para alterar!")
             return
@@ -39,17 +40,17 @@ class ControladorMaquinaDeCafe:
         id_maquina = self.__tela_maquina.seleciona_maquina()
         maquina = self.pega_maquina_por_id(id_maquina)
 
-        novos_dados = self.__tela_maquina.pega_dados_maquina()
+        novos_dados = self.__tela_maquina.pega_dados_maquina(is_alteracao=True)
+
         maquina.nome = novos_dados["nome"]
         maquina.preco_compra = novos_dados["preco_compra"]
         maquina.preco_venda = novos_dados["preco_venda"]
-        maquina.id = novos_dados["id"]
         maquina.data_fabricacao = novos_dados["data_fabricacao"]
 
         self.__tela_maquina.mostra_mensagem("Máquina alterada com sucesso!")
         self.lista_maquina()
 
-    def lista_maquina(self):
+    def lista_maquina(self) -> None:
         if not self.__maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada!")
             return
@@ -63,7 +64,7 @@ class ControladorMaquinaDeCafe:
             }
             self.__tela_maquina.mostra_maquina(dados_maquina)
 
-    def excluir_maquina(self):
+    def excluir_maquina(self) -> None:
         if not self.__maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para excluir!")
             return
@@ -76,10 +77,10 @@ class ControladorMaquinaDeCafe:
         self.__tela_maquina.mostra_mensagem("Máquina excluída com sucesso!")
         self.lista_maquina()
 
-    def retornar(self):
-        self.__controlador_sistema.abre_tela()
+    def retornar(self) -> None:
+        self._controlador_sistema.abre_tela()
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         lista_opcoes = {
             1: self.incluir_maquina, 2: self.alterar_maquina,
             3: self.lista_maquina, 4: self.excluir_maquina,

@@ -1,5 +1,5 @@
 class TelaEstoque:
-    def tela_opcoes(self):
+    def tela_opcoes(self) -> int:
         print("\n-------- Estoque ----------")
         print("1 - Listar Inventário")
         print("2 - Adicionar Novo Produto ao Estoque")
@@ -14,7 +14,7 @@ class TelaEstoque:
             self.mostra_mensagem("Entrada inválida! Digite um número.")
             return None
 
-    def pega_dados_produto_estoque(self):
+    def pega_dados_produto_estoque(self) -> dict:
         print("\n---- Dados do Produto no Estoque ----")
         try:
             id_produto = int(input("ID do Produto: "))
@@ -27,7 +27,7 @@ class TelaEstoque:
             self.mostra_mensagem("Entrada inválida! IDs e quantidade devem ser números.")
             return None
 
-    def mostra_estoque(self, dados_estoque: dict):
+    def mostra_estoque(self, dados_estoque: dict) -> None:
         print("\n---------- INVENTÁRIO ATUAL ----------")
         if not dados_estoque:
             print("O estoque está vazio.")
@@ -36,5 +36,5 @@ class TelaEstoque:
                 print(f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
         print("------------------------------------")
 
-    def mostra_mensagem(self, msg: str):
+    def mostra_mensagem(self, msg: str) -> None:
         print(msg)

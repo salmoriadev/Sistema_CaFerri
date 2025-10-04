@@ -1,32 +1,29 @@
 from entidade.produto import Produto
-from entidade.cafe import Cafe
+
 class Estoque:
-    def __init__(self):
-        self.__produtos = dict()
-        self.cafes = []
+    def __init__(self) -> None:
+        self.__produtos_em_estoque = {}
 
-    def adicionar_produto(self, produto: Produto, quantidade: int):
-        self.__produtos[produto] = quantidade
-        if isinstance(produto, Cafe):
-            self.cafes.append(produto)
+    def produto_ja_existe(self, produto: Produto) -> bool:
+        return produto in self.__produtos_em_estoque
 
-    def tirar_do_estoque(self, produto: Produto):
-        if produto in self.__produtos:
-            del self.__produtos[produto]
-        if isinstance(produto, Cafe):
-            self.cafes.remove(produto)
+    def cadastrar_novo_produto(self, produto: Produto, quantidade: int) -> None:
+        if not self.produto_ja_existe(produto):
+            self.__produtos_em_estoque[produto] = quantidade
 
-    def listar_produtos(self):
-        return self.__produtos
+    def adicionar_quantidade(self, produto: Produto, quantidade_a_adicionar: int) -> None:
+        if self.produto_ja_existe(produto):
+            self.__produtos_em_estoque[produto] += quantidade_a_adicionar
 
-    def adicionar_estoque(self, produto: Produto, quantidade: int):
-        if produto in self.__produtos:
-            self.__produtos[produto] += quantidade
+    def retirar_quantidade(self, produto: Produto, quantidade_a_retirar: int) -> None:
+        if not self.produto_ja_existe(produto):
+            return "ERRO: Produto não encontrado no estoque."
+        
+        if self.__produtos_em_estoque[produto] >= quantidade_a_retirar:
+            self.__produtos_em_estoque[produto] -= quantidade_a_retirar
+            return None
         else:
-            self.__produtos[produto] = quantidade
+            return "ERRO: Estoque insuficiente."
 
-    def retirar_estoque(self, produto: Produto, quantidade: int):
-        if produto in self.__produtos and self.__produtos[produto] >= quantidade:
-            self.__produtos[produto] -= quantidade
-        else:
-            return "Estoque insuficiente ou produto não encontrado."
+    def listar_produtos(self) -> dict:
+        return self.__produtos_em_estoque

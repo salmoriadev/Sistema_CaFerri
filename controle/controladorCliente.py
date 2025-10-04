@@ -5,12 +5,12 @@ from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
 
 class ControladorCliente:
-    def __init__(self, controlador_sistema):
+    def __init__(self, controlador_sistema) -> None:
         self.__clientes = []
         self.__controlador_sistema = controlador_sistema
         self.__tela_cliente = TelaCliente()
 
-    def pega_cliente_por_id(self, id: int):
+    def pega_cliente_por_id(self, id: int) -> Cliente:
         if not isinstance(id, int):
             raise TypeError("O ID do cliente deve ser um número inteiro.")
         for cliente in self.__clientes:
@@ -18,7 +18,7 @@ class ControladorCliente:
                 return cliente
         raise ClienteNaoEncontradoException
 
-    def incluir_cliente(self):
+    def incluir_cliente(self) -> None:
         dados_cliente = self.__tela_cliente.pega_dados_cliente()
 
         for cliente in self.__clientes:
@@ -34,7 +34,7 @@ class ControladorCliente:
         self.__clientes.append(novo_cliente)
         self.__tela_cliente.mostra_mensagem("Cliente cadastrado com sucesso!")
 
-    def alterar_cliente(self):
+    def alterar_cliente(self) -> None:
         if not self.__clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para alterar!")
             return
@@ -51,14 +51,14 @@ class ControladorCliente:
         novos_dados = self.__tela_cliente.pega_dados_cliente()
         cliente.nome = novos_dados["nome"]
         cliente.email = novos_dados["email"]
-        cliente.senha = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()
+        cliente.senha_cifrada = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()
         cliente.saldo = novos_dados["saldo"]
         cliente.perfil_do_consumidor = novos_dados["perfil"]
         
         self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
         self.lista_clientes()
 
-    def lista_clientes(self):
+    def lista_clientes(self) -> None:
         if not self.__clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
             return
@@ -71,7 +71,7 @@ class ControladorCliente:
             }
             self.__tela_cliente.mostra_cliente(dados_cliente)
 
-    def excluir_cliente(self):
+    def excluir_cliente(self) -> None:
         if not self.__clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para excluir!")
             return
@@ -89,13 +89,31 @@ class ControladorCliente:
         self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
         self.lista_clientes()
 
-    def retornar(self):
+    def ver_recomendacoes_de_cafe(self) -> None:
+        if not self.__clientes:
+            self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para ver recomendações!")
+            return
+            
+        self.lista_clientes()
+        id_cliente = self.__tela_cliente.seleciona_cliente()
+        
+        try:
+            cliente = self.pega_cliente_por_id(id_cliente)
+            perfil_do_cliente = cliente.perfil_do_consumidor.perfil
+            cafes_recomendados = self.__controlador_sistema.controlador_cafe.buscar_cafes_por_perfil(perfil_do_cliente)
+            self.__tela_cliente.mostra_recomendacoes(cliente.nome, perfil_do_cliente, cafes_recomendados)
+
+        except ClienteNaoEncontradoException as e:
+            self.__tela_cliente.mostra_mensagem(f"ERRO: {e}")
+
+    def retornar(self) -> None:
         self.__controlador_sistema.abre_tela()
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         lista_opcoes = {
             1: self.incluir_cliente, 2: self.alterar_cliente,
             3: self.lista_clientes, 4: self.excluir_cliente,
+            5: self.ver_recomendacoes_de_cafe,
             0: self.retornar
         }
         while True:

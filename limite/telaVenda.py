@@ -1,6 +1,6 @@
 class TelaVenda:
 
-    def tela_opcoes(self):
+    def tela_opcoes(self) -> int:
         print("\n-------- Vendas ----------")
         print("1 - Iniciar Nova Venda")
         print("2 - Listar Vendas")
@@ -14,7 +14,7 @@ class TelaVenda:
             self.mostra_mensagem("Entrada inválida! Digite um número.")
             return None
 
-    def tela_opcoes_gerenciar_venda(self):
+    def tela_opcoes_gerenciar_venda(self) -> int:
         print("\n--- Gerenciando Venda ---")
         print("1 - Adicionar Produto")
         print("2 - Remover Produto")
@@ -29,7 +29,7 @@ class TelaVenda:
             self.mostra_mensagem("Entrada inválida! Digite um número.")
             return None
 
-    def pega_dados_iniciar_venda(self):
+    def pega_dados_iniciar_venda(self) -> dict:
         print("---- Iniciando Nova Venda ----")
         try:
             id_venda = int(input("ID da Venda: "))
@@ -40,7 +40,7 @@ class TelaVenda:
             self.mostra_mensagem("Entrada inválida! IDs devem ser números.")
             return None
 
-    def pega_dados_produto(self):
+    def pega_dados_produto(self) -> dict:
         print("---- Adicionar/Remover Produto ----")
         try:
             id_produto = int(input("ID do Produto: "))
@@ -53,7 +53,7 @@ class TelaVenda:
             self.mostra_mensagem("Entrada inválida! ID deve ser um número.")
             return None
 
-    def mostra_venda(self, dados_venda):
+    def mostra_venda(self, dados_venda: dict) -> None:
         print("------------------------------")
         print(f"ID da Venda: {dados_venda['id_venda']}")
         print(f"Cliente: {dados_venda['cliente_nome']}")
@@ -67,7 +67,7 @@ class TelaVenda:
             print("  (Carrinho vazio)")
         print("------------------------------")
 
-    def seleciona_venda(self):
+    def seleciona_venda(self) -> int:
         try:
             id_venda = int(input("Digite o ID da venda que deseja selecionar: "))
             return id_venda

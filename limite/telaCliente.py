@@ -8,8 +8,8 @@ class TelaCliente:
         print("2 - Alterar Cliente")
         print("3 - Listar Clientes")
         print("4 - Excluir Cliente")
+        print("5 - Ver Recomendações de Café")
         print("0 - Retornar")
-        
         while True:
             try:
                 opcao = int(input("Escolha a opção: "))
@@ -22,7 +22,7 @@ class TelaCliente:
         
         while True:
             try:
-                id_cliente = int(input("ID: "))
+                id_cliente = int(input("ID (caso esteja alterando o cliente escreva qualquer ID, pois ele é imutável): "))
                 if id_cliente >= 0:
                     break
                 self.mostra_mensagem("Erro: O ID não pode ser um número negativo.")
@@ -82,7 +82,7 @@ class TelaCliente:
             "perfil": perfil_selecionado
         }
 
-    def mostra_cliente(self, dados_cliente: dict):
+    def mostra_cliente(self, dados_cliente: dict) -> None:
         print("--------------------------------")
         print("ID DO CLIENTE: ", dados_cliente["id"])
         print("NOME: ", dados_cliente["nome"])
@@ -90,6 +90,17 @@ class TelaCliente:
         print(f"SALDO: R$ {dados_cliente['saldo']:.2f}")
         print("PERFIL: ", dados_cliente["perfil"])
         print("--------------------------------")
+
+    def mostra_recomendacoes(self, nome_cliente: str, perfil: str, cafes_recomendados: list) -> None:
+        print(f"\n--- Recomendações para {nome_cliente} (Perfil: {perfil}) ---")
+        
+        if not cafes_recomendados:
+            print("Nenhum café com este perfil foi encontrado no sistema.")
+        else:
+            for cafe in cafes_recomendados:
+                print(f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
+        
+        print("----------------------------------------------------")
 
     def seleciona_cliente(self) -> int:
         while True:
@@ -99,7 +110,7 @@ class TelaCliente:
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida. Por favor, digite um número inteiro.")
 
-    def mostra_mensagem(self, msg: str):
+    def mostra_mensagem(self, msg: str) -> None:
         print(msg)
         
     def pedir_senha(self) -> str:

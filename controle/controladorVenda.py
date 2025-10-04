@@ -1,3 +1,4 @@
+from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaVenda import TelaVenda
 from entidade.venda import Venda
 from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
@@ -5,22 +6,19 @@ from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from Excecoes.vendaNaoEncontradaException import VendaNaoEncontradaException
 from Excecoes.IDJaExistenteException import IDJaExistenteException
 
-class ControladorVenda:
-    def __init__(self, controlador_sistema):
-        self.__controlador_sistema = controlador_sistema
+class ControladorVenda(BuscaProdutoMixin):
+    def __init__(self, controlador_sistema) -> None:
+        self._controlador_sistema = controlador_sistema
         self.__vendas = []
         self.__tela_venda = TelaVenda()
 
-    def pega_venda_por_id(self, id_venda: int):
+    def pega_venda_por_id(self, id_venda: int) -> Venda:
         for venda in self.__vendas:
             if venda.id_venda == id_venda:
                 return venda
         raise VendaNaoEncontradaException()
 
-    def __pega_produto_por_id(self, id_produto: int):
-        self.__controlador_sistema.pega_produto_por_id()
-
-    def iniciar_venda(self):
+    def iniciar_venda(self) -> None:
         dados_iniciais = self.__tela_venda.pega_dados_iniciar_venda()
         if dados_iniciais is None: return
 
@@ -28,15 +26,13 @@ class ControladorVenda:
             if v.id_venda == dados_iniciais["id_venda"]:
                 raise IDJaExistenteException("Venda")
         
-        cliente = self.__controlador_sistema.controlador_cliente.pega_cliente_por_id(dados_iniciais["id_cliente"])
-        produto_inicial = self.__pega_produto_por_id(dados_iniciais["id_produto"])
-
-        nova_venda = Venda(dados_iniciais["id_venda"], cliente, produto_inicial)
+        cliente = self._controlador_sistema.controlador_cliente.pega_cliente_por_id(dados_iniciais["id_cliente"])
+        nova_venda = Venda(dados_iniciais["id_venda"], cliente)
         self.__vendas.append(nova_venda)
-        self.__tela_venda.mostra_mensagem("Venda iniciada com sucesso!")
+        self.__tela_venda.mostra_mensagem("Venda iniciada com sucesso! Adicione produtos ao carrinho.")
         self.gerenciar_venda(nova_venda)
 
-    def gerenciar_venda(self, venda: Venda):
+    def gerenciar_venda(self, venda: Venda) -> None:
         mapa_opcoes = {
             1: self.adicionar_produto, 2: self.remover_produto,
             3: self.listar_produtos_venda, 4: self.finalizar_venda
@@ -52,45 +48,47 @@ class ControladorVenda:
             else:
                 self.__tela_venda.mostra_mensagem("Opção inválida.")
 
-    def adicionar_produto(self, venda: Venda):
+    def adicionar_produto(self, venda: Venda) -> None:
         dados = self.__tela_venda.pega_dados_produto()
         if dados:
-            produto = self.__pega_produto_por_id(dados["id_produto"])
+            produto = self.pega_produto_por_id(dados["id_produto"])
             venda.adicionar_produto(produto, dados["quantidade"])
             self.__tela_venda.mostra_mensagem(f"'{produto.nome}' adicionado ao carrinho.")
 
-    def remover_produto(self, venda: Venda):
+    def remover_produto(self, venda: Venda) -> None:
         dados = self.__tela_venda.pega_dados_produto()
         if dados:
-            produto = self.__pega_produto_por_id(dados["id_produto"])
+            produto = self.pega_produto_por_id(dados["id_produto"])
             venda.remover_produto(produto)
             self.__tela_venda.mostra_mensagem(f"'{produto.nome}' removido do carrinho.")
 
-    def listar_produtos_venda(self, venda: Venda):
+    def listar_produtos_venda(self, venda: Venda) -> None:
         self.mostrar_detalhes_venda(venda)
 
-    def finalizar_venda(self, venda: Venda):
+    def finalizar_venda(self, venda: Venda) -> None:
         estoque = self.__controlador_sistema.controlador_estoque.estoque
         resultado = venda.finalizar_venda(estoque)
         self.__tela_venda.mostra_mensagem(resultado)
 
-    def listar_vendas(self):
+    def listar_vendas(self) -> None:
         if not self.__vendas:
             self.__tela_venda.mostra_mensagem("Nenhuma venda registrada.")
             return
         for venda in self.__vendas:
             self.mostrar_detalhes_venda(venda)
 
-    def mostrar_detalhes_venda(self, venda: Venda):
+    def mostrar_detalhes_venda(self, venda: Venda) -> None:
+        produtos_formatados = venda.listar_produtos_formatado()
+        
         self.__tela_venda.mostra_venda({
             "id_venda": venda.id_venda,
             "cliente_nome": venda.cliente.nome,
-            "valor_total": venda.valor_total,
+            "valor_total": f"R$ {venda.valor_total:.2f}",
             "status": venda.status_venda,
-            "produtos": venda.listar_produtos()
+            "produtos": produtos_formatados
         })
 
-    def excluir_venda(self):
+    def excluir_venda(self) -> None:
         self.listar_vendas()
         if not self.__vendas: return
         
@@ -103,10 +101,10 @@ class ControladorVenda:
         self.__vendas.remove(venda)
         self.__tela_venda.mostra_mensagem("Venda cancelada com sucesso.")
 
-    def retornar(self):
-        self.__controlador_sistema.abre_tela()
+    def retornar(self) -> None:
+        self._controlador_sistema.abre_tela()
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         mapa_opcoes = {
             1: self.iniciar_venda, 2: self.listar_vendas, 3: self.excluir_venda, 0: self.retornar
         }

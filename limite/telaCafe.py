@@ -17,7 +17,7 @@ class TelaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Por favor, digite um número inteiro válido.")
 
-    def pega_dados_cafe(self) -> dict:
+    def pega_dados_cafe(self, is_alteracao: bool = False) -> dict:
         print("\n-------- DADOS DO CAFÉ ----------")
 
         while True:
@@ -34,7 +34,7 @@ class TelaCafe:
                 self.mostra_mensagem("Erro: O preço não pode ser negativo.")
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida para preço.")
-
+        
         while True:
             try:
                 preco_venda = float(input("Preço de Venda: R$ "))
@@ -44,14 +44,16 @@ class TelaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida para preço.")
 
-        while True:
-            try:
-                id_cafe = int(input("ID: "))
-                if id_cafe >= 0:
-                    break
-                self.mostra_mensagem("Erro: O ID não pode ser negativo.")
-            except ValueError:
-                self.mostra_mensagem("Erro: Entrada inválida para ID.")
+        id_cafe = None
+        if not is_alteracao:
+            while True:
+                try:
+                    id_cafe = int(input("ID: "))
+                    if id_cafe >= 0:
+                        break
+                    self.mostra_mensagem("Erro: O ID não pode ser negativo.")
+                except ValueError:
+                    self.mostra_mensagem("Erro: Entrada inválida para ID.")
 
         while True:
             data_fabricacao = input("Data de Fabricação (DD/MM/AAAA): ")
@@ -60,7 +62,7 @@ class TelaCafe:
                 break
             except ValueError:
                 self.mostra_mensagem("Erro: Formato de data inválido.")
-
+        
         while True:
             origem = input("Origem: ")
             if origem.strip():
@@ -86,7 +88,7 @@ class TelaCafe:
             moagem = input("Moagem: ")
             if moagem.strip():
                 break
-            self.mostra_mensagem("Erro: A moagem não pode ser vazia.")
+            self.mostra_mensagem("Erro: A moagem не pode ser vazia.")
 
         while True:
             notas_sensoriais = input("Notas Sensoriais: ")
@@ -111,14 +113,19 @@ class TelaCafe:
         
         print("---------------------------------")
         
-        return {
+        dados = {
             "nome": nome, "preco_compra": preco_compra, "preco_venda": preco_venda,
-            "id": id_cafe, "data_fabricacao": data_fabricacao, "origem": origem,
+            "data_fabricacao": data_fabricacao, "origem": origem,
             "variedade": variedade, "altitude": altitude, "moagem": moagem,
             "notas_sensoriais": notas_sensoriais, "perfil_recomendado": perfil_recomendado
         }
 
-    def mostra_cafe(self, dados_cafe: dict):
+        if id_cafe is not None:
+            dados["id"] = id_cafe
+        
+        return dados
+
+    def mostra_cafe(self, dados_cafe: dict) -> None:
         print("---------------------------------")
         print(f"ID: {dados_cafe['id']}")
         print(f"NOME: {dados_cafe['nome']}")
@@ -135,5 +142,5 @@ class TelaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: ID inválido. Por favor, insira um número inteiro.")
 
-    def mostra_mensagem(self, msg: str):
+    def mostra_mensagem(self, msg: str) -> None:
         print(msg)
