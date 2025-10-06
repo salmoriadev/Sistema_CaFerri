@@ -1,3 +1,4 @@
+from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaCafe import TelaCafe
 from entidade.cafe import Cafe
@@ -24,12 +25,13 @@ class ControladorCafe(BuscaProdutoMixin):
         if self.id_produto_ja_existe(dados_cafe["id"]):
             self.__tela_cafe.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
-
+        empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(dados_cafe["empresa_fornecedora"])
         novo_cafe = Cafe(
             dados_cafe["nome"], dados_cafe["preco_compra"], dados_cafe["preco_venda"],
             dados_cafe["id"], dados_cafe["data_fabricacao"], dados_cafe["origem"],
             dados_cafe["variedade"], dados_cafe["altitude"], dados_cafe["moagem"],
-            dados_cafe["notas_sensoriais"], dados_cafe["perfil_recomendado"]
+            dados_cafe["notas_sensoriais"], dados_cafe["perfil_recomendado"],
+            empresa_fornecedora
         )
         self.__cafes.append(novo_cafe)
         self.__tela_cafe.mostra_mensagem("Café cadastrado com sucesso!")
@@ -55,6 +57,7 @@ class ControladorCafe(BuscaProdutoMixin):
         cafe.moagem = novos_dados["moagem"]
         cafe.notas_sensoriais = novos_dados["notas_sensoriais"]
         cafe.perfil_recomendado = novos_dados["perfil_recomendado"]
+        cafe.empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(novos_dados["empresa_fornecedora"])
         
         self.__tela_cafe.mostra_mensagem("Café alterado com sucesso!")
         self.lista_cafe()
@@ -77,7 +80,8 @@ class ControladorCafe(BuscaProdutoMixin):
                 "id": cafe.id,
                 "nome": cafe.nome,
                 "preco_venda": cafe.preco_venda,
-                "perfil_recomendado": cafe.perfil_recomendado.perfil
+                "perfil_recomendado": cafe.perfil_recomendado.perfil,
+                "empresa_fornecedora_nome": cafe.empresa_fornecedora.nome
             }
             self.__tela_cafe.mostra_cafe(dados_cafe)
 
@@ -115,6 +119,6 @@ class ControladorCafe(BuscaProdutoMixin):
                     funcao_escolhida()
                 else:
                     self.__tela_cafe.mostra_mensagem("Opção inválida! Por favor, digite um número do menu.")
-            
-            except (CafeNaoEncontradoException, PerfilRecomendadoNaoExisteException, TypeError) as e:
+
+            except (CafeNaoEncontradoException, PerfilRecomendadoNaoExisteException, TypeError, FornecedorNaoEncontradoException) as e:
                 self.__tela_cafe.mostra_mensagem(f"Ocorreu um erro: {e}")

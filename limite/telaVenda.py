@@ -34,8 +34,7 @@ class TelaVenda:
         try:
             id_venda = int(input("ID da Venda: "))
             id_cliente = int(input("ID do Cliente: "))
-            id_produto = int(input("ID do primeiro Produto: "))
-            return {"id_venda": id_venda, "id_cliente": id_cliente, "id_produto": id_produto}
+            return {"id_venda": id_venda, "id_cliente": id_cliente}
         except ValueError:
             self.mostra_mensagem("Entrada inválida! IDs devem ser números.")
             return None
@@ -61,8 +60,13 @@ class TelaVenda:
         print(f"Status: {dados_venda['status']}")
         print("Produtos:")
         if dados_venda['produtos']:
-            for produto in dados_venda['produtos']:
-                print(f"  - {produto.nome} (R$ {produto.preco_venda:.2f})")
+            for produto_dict in dados_venda['produtos']:
+                nome = produto_dict['nome']
+                quantidade = produto_dict['quantidade']
+                preco_unitario = produto_dict['preco_unitario']
+                subtotal = produto_dict['subtotal']
+                
+                print(f"  - {nome}: ({quantidade} x {preco_unitario}) = {subtotal}")
         else:
             print("  (Carrinho vazio)")
         print("------------------------------")

@@ -19,7 +19,7 @@ class ControladorCliente:
         raise ClienteNaoEncontradoException
 
     def incluir_cliente(self) -> None:
-        dados_cliente = self.__tela_cliente.pega_dados_cliente()
+        dados_cliente = self.__tela_cliente.pega_dados_cliente(is_alteracao=False)
 
         for cliente in self.__clientes:
             if cliente.id == dados_cliente["id"]:
@@ -48,7 +48,7 @@ class ControladorCliente:
             self.__tela_cliente.mostra_mensagem("Senha incorreta! Alteração cancelada.")
             return
 
-        novos_dados = self.__tela_cliente.pega_dados_cliente()
+        novos_dados = self.__tela_cliente.pega_dados_cliente(is_alteracao=True)
         cliente.nome = novos_dados["nome"]
         cliente.email = novos_dados["email"]
         cliente.senha_cifrada = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()

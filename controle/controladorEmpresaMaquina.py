@@ -12,7 +12,7 @@ class ControladorEmpresaMaquina:
         for fornecedor in self.__fornecedores_maquina:
             if fornecedor.cnpj == cnpj:
                 return fornecedor
-        raise FornecedorNaoEncontradoException
+        raise FornecedorNaoEncontradoException()
 
     def incluir_fornecedor(self):
         dados_fornecedor = self.__tela_empresa_maquina.pega_dados_empresa_maquina(is_alteracao=False)

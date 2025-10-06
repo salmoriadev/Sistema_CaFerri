@@ -17,17 +17,18 @@ class TelaCliente:
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida. Por favor, digite um número inteiro.")
 
-    def pega_dados_cliente(self) -> dict:
+    def pega_dados_cliente(self, is_alteracao: bool = False) -> dict:
         print("\n-------- DADOS DO CLIENTE ----------")
         
-        while True:
-            try:
-                id_cliente = int(input("ID (caso esteja alterando o cliente escreva qualquer ID, pois ele é imutável): "))
-                if id_cliente >= 0:
-                    break
-                self.mostra_mensagem("Erro: O ID não pode ser um número negativo.")
-            except ValueError:
-                self.mostra_mensagem("Erro: Entrada inválida para ID.")
+        if not is_alteracao:
+            while True:
+                try:
+                    id_cliente = int(input("ID: "))
+                    if id_cliente >= 0:
+                        break
+                    self.mostra_mensagem("Erro: O ID não pode ser um número negativo.")
+                except ValueError:
+                    self.mostra_mensagem("Erro: Entrada inválida para ID.")
 
         while True:
             nome = input("Nome: ")
@@ -73,14 +74,23 @@ class TelaCliente:
         
         print("------------------------------------")
         
-        return {
-            "id": id_cliente,
-            "nome": nome,
-            "email": email,
-            "senha": senha,
-            "saldo": saldo,
-            "perfil": perfil_selecionado
-        }
+        if is_alteracao:
+            return {
+                "nome": nome,
+                "email": email,
+                "senha": senha,
+                "saldo": saldo,
+                "perfil": perfil_selecionado
+            }
+        else:
+            return {
+                "id": id_cliente,
+                "nome": nome,
+                "email": email,
+                "senha": senha,
+                "saldo": saldo,
+                "perfil": perfil_selecionado
+            }
 
     def mostra_cliente(self, dados_cliente: dict) -> None:
         print("--------------------------------")

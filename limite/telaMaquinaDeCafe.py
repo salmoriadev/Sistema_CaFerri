@@ -64,13 +64,20 @@ class TelaMaquinaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Formato de data inválido.")
 
+        while True:
+            cnpj = input("Digite o CNPJ da empresa fornecedora: ")
+            if cnpj.strip():
+                cnpj_empresa_fornecedora = cnpj
+                break
+
         print("------------------------------------------")
 
         dados = {
             "nome": nome,
             "preco_compra": preco_compra,
             "preco_venda": preco_venda,
-            "data_fabricacao": data_fabricacao
+            "data_fabricacao": data_fabricacao,
+            "empresa_fornecedora": cnpj_empresa_fornecedora
         }
 
         if id_maquina is not None:
@@ -83,6 +90,7 @@ class TelaMaquinaCafe:
         print(f"ID: {dados_maquina['id']}")
         print(f"NOME: {dados_maquina['nome']}")
         print(f"PREÇO VENDA: R$ {dados_maquina['preco_venda']:.2f}")
+        print(f"FORNECEDORA: {dados_maquina['empresa_fornecedora_nome']}")
         print("---------------------------------")
 
 

@@ -1,3 +1,4 @@
+from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaMaquinaDeCafe import TelaMaquinaCafe
 from entidade.maquina_de_cafe import MaquinaDeCafe
@@ -23,10 +24,10 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         if self.id_produto_ja_existe(dados_maquina["id"]):
             self.__tela_maquina.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
-
+        empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(dados_maquina["empresa_fornecedora"])
         nova_maquina = MaquinaDeCafe(
             dados_maquina["nome"], dados_maquina["preco_compra"], dados_maquina["preco_venda"],
-            dados_maquina["id"], dados_maquina["data_fabricacao"]
+            dados_maquina["id"], dados_maquina["data_fabricacao"], empresa_fornecedora
         )
         self.__maquinas.append(nova_maquina)
         self.__tela_maquina.mostra_mensagem("Máquina cadastrada com sucesso!")
@@ -46,6 +47,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         maquina.preco_compra = novos_dados["preco_compra"]
         maquina.preco_venda = novos_dados["preco_venda"]
         maquina.data_fabricacao = novos_dados["data_fabricacao"]
+        maquina.empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(novos_dados["empresa_fornecedora"])
 
         self.__tela_maquina.mostra_mensagem("Máquina alterada com sucesso!")
         self.lista_maquina()
@@ -61,6 +63,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                 "id": maquina.id,
                 "nome": maquina.nome,
                 "preco_venda": maquina.preco_venda,
+                "empresa_fornecedora_nome": maquina.empresa_fornecedora.nome
             }
             self.__tela_maquina.mostra_maquina(dados_maquina)
 
@@ -98,6 +101,6 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                     funcao_escolhida()
                 else:
                     self.__tela_maquina.mostra_mensagem("Opção inválida! Por favor, digite um número do menu.")
-            
-            except (MaquinaNaoEncontradaException, TypeError) as e:
+
+            except (MaquinaNaoEncontradaException, TypeError, ValueError, FornecedorNaoEncontradoException) as e:
                 self.__tela_maquina.mostra_mensagem(f"Ocorreu um erro: {e}")

@@ -66,7 +66,7 @@ class ControladorVenda(BuscaProdutoMixin):
         self.mostrar_detalhes_venda(venda)
 
     def finalizar_venda(self, venda: Venda) -> None:
-        estoque = self.__controlador_sistema.controlador_estoque.estoque
+        estoque = self._controlador_sistema.controlador_estoque.estoque
         resultado = venda.finalizar_venda(estoque)
         self.__tela_venda.mostra_mensagem(resultado)
 
@@ -79,11 +79,10 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def mostrar_detalhes_venda(self, venda: Venda) -> None:
         produtos_formatados = venda.listar_produtos_formatado()
-        
         self.__tela_venda.mostra_venda({
             "id_venda": venda.id_venda,
             "cliente_nome": venda.cliente.nome,
-            "valor_total": f"R$ {venda.valor_total:.2f}",
+            "valor_total": venda.valor_total,
             "status": venda.status_venda,
             "produtos": produtos_formatados
         })

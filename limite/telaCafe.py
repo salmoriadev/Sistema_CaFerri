@@ -110,14 +110,21 @@ class TelaCafe:
                 self.mostra_mensagem("Erro: Número de perfil inválido.")
             except ValueError:
                 self.mostra_mensagem("Erro: Por favor, digite um número.")
-        
+
+        while True:
+            cnpj = input("Digite o CNPJ da empresa fornecedora: ")
+            if cnpj.strip():
+                cnpj_empresa_fornecedora = cnpj
+                break
+
         print("---------------------------------")
         
         dados = {
             "nome": nome, "preco_compra": preco_compra, "preco_venda": preco_venda,
             "data_fabricacao": data_fabricacao, "origem": origem,
             "variedade": variedade, "altitude": altitude, "moagem": moagem,
-            "notas_sensoriais": notas_sensoriais, "perfil_recomendado": perfil_recomendado
+            "notas_sensoriais": notas_sensoriais, "perfil_recomendado": perfil_recomendado,
+            "empresa_fornecedora": cnpj_empresa_fornecedora
         }
 
         if id_cafe is not None:
@@ -131,6 +138,7 @@ class TelaCafe:
         print(f"NOME: {dados_cafe['nome']}")
         print(f"PREÇO VENDA: R$ {dados_cafe['preco_venda']:.2f}")
         print(f"PERFIL: {dados_cafe['perfil_recomendado']}")
+        print(f"FORNECEDORA: {dados_cafe['empresa_fornecedora_nome']}")
         print("---------------------------------")
 
 
