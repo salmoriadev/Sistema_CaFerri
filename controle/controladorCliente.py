@@ -10,6 +10,9 @@ class ControladorCliente:
         self.__controlador_sistema = controlador_sistema
         self.__tela_cliente = TelaCliente()
 
+    def tem_clientes(self) -> bool:
+        return len(self.__clientes) > 0
+
     def pega_cliente_por_id(self, id: int) -> Cliente:
         if not isinstance(id, int):
             raise TypeError("O ID do cliente deve ser um número inteiro.")
@@ -51,7 +54,8 @@ class ControladorCliente:
         novos_dados = self.__tela_cliente.pega_dados_cliente(is_alteracao=True)
         cliente.nome = novos_dados["nome"]
         cliente.email = novos_dados["email"]
-        cliente.senha_cifrada = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()
+        if "senha" in novos_dados:
+            cliente.senha_cifrada = hashlib.sha256(novos_dados["senha"].encode('utf-8')).hexdigest()
         cliente.saldo = novos_dados["saldo"]
         cliente.perfil_do_consumidor = novos_dados["perfil"]
         
@@ -101,7 +105,12 @@ class ControladorCliente:
             cliente = self.pega_cliente_por_id(id_cliente)
             perfil_do_cliente = cliente.perfil_do_consumidor.perfil
             cafes_recomendados = self.__controlador_sistema.controlador_cafe.buscar_cafes_por_perfil(perfil_do_cliente)
-            self.__tela_cliente.mostra_recomendacoes(cliente.nome, perfil_do_cliente, cafes_recomendados)
+            self.__tela_cliente.mostra_mensagem(f"\n--- Recomendações para {cliente.nome} (Perfil: {perfil_do_cliente}) ---")
+            for cafe in cafes_recomendados:
+                self.__tela_cliente.mostra_mensagem(f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
+            if not cafes_recomendados:
+                self.__tela_cliente.mostra_mensagem("Nenhum café encontrado para o perfil do cliente.")
+            self.__tela_cliente.mostra_mensagem("----------------------------------------------------")
 
         except ClienteNaoEncontradoException as e:
             self.__tela_cliente.mostra_mensagem(f"ERRO: {e}")

@@ -61,12 +61,7 @@ class TelaVenda:
         print("Produtos:")
         if dados_venda['produtos']:
             for produto_dict in dados_venda['produtos']:
-                nome = produto_dict['nome']
-                quantidade = produto_dict['quantidade']
-                preco_unitario = produto_dict['preco_unitario']
-                subtotal = produto_dict['subtotal']
-                
-                print(f"  - {nome}: ({quantidade} x {preco_unitario}) = {subtotal}")
+                print(f"  - {produto_dict['nome']}: ({produto_dict['quantidade']} x {produto_dict['preco_unitario']}) = {produto_dict['subtotal']}")
         else:
             print("  (Carrinho vazio)")
         print("------------------------------")

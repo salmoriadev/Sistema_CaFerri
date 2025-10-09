@@ -42,12 +42,21 @@ class TelaCliente:
                 break
             self.mostra_mensagem("Erro: Email inválido.")
 
-        while True:
-            senha = input("Senha: ")
-            if senha:
-                break
-            self.mostra_mensagem("Erro: A senha não pode ser vazia.")
-
+        senha = None
+        if is_alteracao:
+            alterar_senha = input("Deseja alterar a senha? (s/n): ").lower()
+            if alterar_senha == 's':
+                while True:
+                    senha = input("Nova Senha: ")
+                    if senha:
+                        break
+                    self.mostra_mensagem("Erro: A senha não pode ser vazia.")
+        else:
+            while True:
+                senha = input("Senha: ")
+                if senha:
+                    break
+                self.mostra_mensagem("Erro: A senha não pode ser vazia.")
         while True:
             try:
                 saldo = float(input("Saldo: R$ "))
@@ -75,13 +84,12 @@ class TelaCliente:
         print("------------------------------------")
         
         if is_alteracao:
-            return {
-                "nome": nome,
-                "email": email,
-                "senha": senha,
-                "saldo": saldo,
-                "perfil": perfil_selecionado
+            dados = {
+                "nome": nome, "email": email, "saldo": saldo, "perfil": perfil_selecionado
             }
+            if senha:
+                dados["senha"] = senha
+            return dados
         else:
             return {
                 "id": id_cliente,
@@ -100,17 +108,6 @@ class TelaCliente:
         print(f"SALDO: R$ {dados_cliente['saldo']:.2f}")
         print("PERFIL: ", dados_cliente["perfil"])
         print("--------------------------------")
-
-    def mostra_recomendacoes(self, nome_cliente: str, perfil: str, cafes_recomendados: list) -> None:
-        print(f"\n--- Recomendações para {nome_cliente} (Perfil: {perfil}) ---")
-        
-        if not cafes_recomendados:
-            print("Nenhum café com este perfil foi encontrado no sistema.")
-        else:
-            for cafe in cafes_recomendados:
-                print(f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
-        
-        print("----------------------------------------------------")
 
     def seleciona_cliente(self) -> int:
         while True:

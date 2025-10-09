@@ -27,14 +27,5 @@ class TelaEstoque:
             self.mostra_mensagem("Entrada inválida! IDs e quantidade devem ser números.")
             return None
 
-    def mostra_estoque(self, dados_estoque: dict) -> None:
-        print("\n---------- INVENTÁRIO ATUAL ----------")
-        if not dados_estoque:
-            print("O estoque está vazio.")
-        else:
-            for produto, quantidade in dados_estoque.items():
-                print(f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
-        print("------------------------------------")
-
     def mostra_mensagem(self, msg: str) -> None:
         print(msg)

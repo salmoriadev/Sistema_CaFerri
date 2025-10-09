@@ -8,6 +8,9 @@ class ControladorEmpresaMaquina:
         self.__fornecedores_maquina = []
         self.__tela_empresa_maquina = TelaEmpresaMaquina()
 
+    def tem_empresas(self) -> bool:
+        return len(self.__fornecedores_maquina) > 0
+
     def pega_fornecedor_por_cnpj(self, cnpj: str) -> FornecedoraMaquina:
         for fornecedor in self.__fornecedores_maquina:
             if fornecedor.cnpj == cnpj:

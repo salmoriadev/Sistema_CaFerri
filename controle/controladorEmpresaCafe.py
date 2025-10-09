@@ -8,6 +8,9 @@ class ControladorEmpresaCafe:
         self.__fornecedores_cafe = []
         self.__tela_empresa_cafe = TelaEmpresaCafe()
 
+    def tem_empresas(self) -> bool:
+        return len(self.__fornecedores_cafe) > 0
+
     def pega_fornecedor_por_cnpj(self, cnpj: str) -> FornecedoraCafe:
         for fornecedor in self.__fornecedores_cafe:
             if fornecedor.cnpj == cnpj:

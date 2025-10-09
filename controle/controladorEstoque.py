@@ -8,13 +8,22 @@ class ControladorEstoque(BuscaProdutoMixin):
         self._controlador_sistema = controlador_sistema
         self.__estoque = Estoque()
         self.__tela_estoque = TelaEstoque()
+    
+    def tem_produtos_em_estoque(self) -> bool:
+        return len(self.__estoque.cafes) > 0 or len(self.__estoque.maquinas) > 0
 
     @property
     def estoque(self) -> Estoque:
         return self.__estoque
 
     def listar_estoque(self) -> None:
-        self.__tela_estoque.mostra_estoque(self.__estoque.listar_produtos())
+        self.__tela_estoque.mostra_mensagem("\n---------- INVENTÁRIO ATUAL ----------")
+        if not self.__estoque.listar_produtos():
+            self.__tela_estoque.mostra_mensagem("O estoque está vazio.")
+        else:
+            for produto, quantidade in self.__estoque.listar_produtos().items():
+                self.__tela_estoque.mostra_mensagem(f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
+        self.__tela_estoque.mostra_mensagem("------------------------------------")
 
     def adicionar_novo_produto(self) -> None:
         dados = self.__tela_estoque.pega_dados_produto_estoque()

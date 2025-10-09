@@ -5,7 +5,7 @@ from controle.controladorCafe import ControladorCafe
 from controle.controladorCliente import ControladorCliente
 from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
 from controle.controladorVenda import ControladorVenda
-from controle.controladorEstoque import ControladorEstoque 
+from controle.controladorEstoque import ControladorEstoque
 
 class ControladorSistema:
 
@@ -54,15 +54,30 @@ class ControladorSistema:
         self.__controlador_cliente.abre_tela()
 
     def cadastra_cafes(self) -> None:
+        if not self.__controlador_empresa_cafe.tem_empresas():
+            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar uma Empresa de Café primeiro!")
+            return
         self.__controlador_cafe.abre_tela()
 
     def cadastra_maquinas_de_cafe(self) -> None:
+        if not self.__controlador_empresa_maquina.tem_empresas():
+            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar uma Empresa de Máquina primeiro!")
+            return
         self.__controlador_maquina_de_cafe.abre_tela()
 
     def gerencia_vendas(self) -> None:
+        if not self.__controlador_estoque.tem_produtos_em_estoque():
+            self.__tela_sistema.mostra_mensagem("ERRO: Não há produtos no estoque para vender!")
+            return
+        if not self.__controlador_cliente.tem_clientes():
+            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar pelo menos um cliente para iniciar uma venda!")
+            return
         self.__controlador_venda.abre_tela()
 
     def gerencia_estoque(self) -> None:
+        if not self.__controlador_cafe.tem_cafes() and not self.__controlador_maquina_de_cafe.tem_maquinas():
+             self.__tela_sistema.mostra_mensagem("ERRO: Cadastre pelo menos um tipo de Café ou Máquina antes de gerenciar o estoque!")
+             return
         self.__controlador_estoque.abre_tela()
 
     def gerencia_fornecedores_cafe(self) -> None:
@@ -89,9 +104,9 @@ class ControladorSistema:
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()
             
-            if opcao_escolhida in lista_opcoes:
-                funcao_escolhida = lista_opcoes[opcao_escolhida]
-                funcao_escolhida() 
+            funcao_escolhida = lista_opcoes.get(opcao_escolhida)
+            if funcao_escolhida:
+                funcao_escolhida()
                 if opcao_escolhida == 0:
                     break
             else:
