@@ -105,7 +105,7 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def abre_tela(self) -> None:
         mapa_opcoes = {
-            1: self.iniciar_venda, 2: self.listar_vendas, 3: self.excluir_venda, 0: self.retornar
+            1: self.iniciar_venda, 2: self.listar_vendas, 3: self.excluir_venda, 4: self.gerenciar_venda, 0: self.retornar
         }
         while True:
             try:

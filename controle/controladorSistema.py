@@ -6,6 +6,7 @@ from controle.controladorCliente import ControladorCliente
 from controle.controladorMaquinaDeCafe import ControladorMaquinaDeCafe
 from controle.controladorVenda import ControladorVenda
 from controle.controladorEstoque import ControladorEstoque
+from controle.buscaProdutoMixin import BuscaProdutoMixin
 
 class ControladorSistema:
 
@@ -75,7 +76,7 @@ class ControladorSistema:
         self.__controlador_venda.abre_tela()
 
     def gerencia_estoque(self) -> None:
-        if not self.__controlador_cafe.tem_cafes() and not self.__controlador_maquina_de_cafe.tem_maquinas():
+        if not self.__controlador_estoque.tem_produtos_em_estoque():
              self.__tela_sistema.mostra_mensagem("ERRO: Cadastre pelo menos um tipo de Café ou Máquina antes de gerenciar o estoque!")
              return
         self.__controlador_estoque.abre_tela()

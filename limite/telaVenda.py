@@ -5,6 +5,7 @@ class TelaVenda:
         print("1 - Iniciar Nova Venda")
         print("2 - Listar Vendas")
         print("3 - Excluir Venda (Cancelar)")
+        print("4 - Gerenciar Venda")
         print("0 - Retornar")
 
         try:
