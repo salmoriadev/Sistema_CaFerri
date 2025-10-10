@@ -105,6 +105,65 @@ class ControladorSistema:
         
         self.__tela_relatorios.mostra_relatorio("Vendas Finalizadas", linhas_relatorio)
 
+    def relatorio_cafes_mais_vendidos(self):
+        vendas_finalizadas = [v for v in self.__controlador_venda.vendas if v.status_venda == "Finalizada"]
+        contagem_cafes = {}
+
+        for venda in vendas_finalizadas:
+            for produto, quantidade in venda.produtos.items():
+                if produto in self.__controlador_cafe.cafes:
+                    contagem_cafes[produto] = contagem_cafes.get(produto, 0) + quantidade
+        
+        cafes_ordenados = sorted(contagem_cafes.items(), key=lambda item: item[1], reverse=True)
+
+        linhas_relatorio = []
+        for cafe, total_vendido in cafes_ordenados:
+            linhas_relatorio.append(f"Café: {cafe.nome} (ID: {cafe.id}) | Total Vendido: {total_vendido} unidades")
+        
+        if not linhas_relatorio:
+            linhas_relatorio.append("Nenhum café vendido até o momento.")
+        self.__tela_relatorios.mostra_relatorio("Cafés Mais Vendidos", linhas_relatorio)
+
+    def relatorio_maquinas_mais_vendidas(self):
+        vendas_finalizadas = [v for v in self.__controlador_venda.vendas if v.status_venda == "Finalizada"]
+        contagem_maquinas = {}
+
+        for venda in vendas_finalizadas:
+            for produto, quantidade in venda.produtos.items():
+                if produto in self.__controlador_maquina_de_cafe.maquinas:
+                    contagem_maquinas[produto] = contagem_maquinas.get(produto, 0) + quantidade
+        
+        maquinas_ordenadas = sorted(contagem_maquinas.items(), key=lambda item: item[1], reverse=True)
+
+        linhas_relatorio = []
+        for maquina, total_vendido in maquinas_ordenadas:
+            linhas_relatorio.append(f"Máquina: {maquina.nome} (ID: {maquina.id}) | Total Vendido: {total_vendido} unidades")
+        
+        if not linhas_relatorio:
+            linhas_relatorio.append("Nenhuma máquina vendida até o momento.")
+        self.__tela_relatorios.mostra_relatorio("Máquinas Mais Vendidas", linhas_relatorio)
+
+    def relatorio_empresas_fornecedoras_mais_ativas(self):
+        vendas_finalizadas = [v for v in self.__controlador_venda.vendas if v.status_venda == "Finalizada"]
+        contagem_empresas = {}
+
+        for venda in vendas_finalizadas:
+            for produto, quantidade in venda.empresa_fornecedora.items():
+                if produto in self.__controlador_cafe.cafes:
+                    fornecedor = produto.empresa_fornecedora
+                    contagem_empresas[fornecedor] = contagem_empresas.get(fornecedor, 0) + quantidade
+
+        empresas_ordenadas = sorted(contagem_empresas.items(), key=lambda item: item[1], reverse=True)
+
+        linhas_relatorio = []
+        for empresa, total_vendido in empresas_ordenadas:
+            linhas_relatorio.append(f"Empresa: {empresa.nome} (ID: {empresa.id}) | Total Vendido: {total_vendido} unidades")
+
+        if not linhas_relatorio:
+            linhas_relatorio.append("Nenhuma empresa fornecedora ativa até o momento.")
+
+        self.__tela_relatorios.mostra_relatorio("Empresas Fornecedoras Mais Ativas", linhas_relatorio)
+
     def relatorio_clientes_por_valor(self):
         gastos_por_cliente = {}
 
@@ -148,7 +207,10 @@ class ControladorSistema:
         mapa_opcoes = {
             1: self.relatorio_vendas_finalizadas,
             2: self.relatorio_clientes_por_valor,
-            3: self.relatorio_estoque_baixo
+            3: self.relatorio_estoque_baixo,
+            4: self.relatorio_cafes_mais_vendidos,
+            5: self.relatorio_maquinas_mais_vendidas,
+            6: self.relatorio_empresas_fornecedoras_mais_ativas
         }
 
         while True:

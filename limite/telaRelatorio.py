@@ -4,6 +4,9 @@ class TelaRelatorio:
         print("[1] -> Relatório de Vendas Finalizadas")
         print("[2] -> Relatório de Clientes por Valor Gasto")
         print("[3] -> Relatório de Estoque Baixo")
+        print("[4] -> Relatório de Cafés Mais Vendidos")
+        print("[5] -> Relatório de Máquinas Mais Vendidas")
+        print("[6] -> Relatório de Empresas Fornecedoras Mais Ativas")
         print("[0] -> Retornar ao Menu Principal")
         print("---------------------------------")
 
