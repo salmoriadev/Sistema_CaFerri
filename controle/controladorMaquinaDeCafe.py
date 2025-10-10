@@ -10,6 +10,10 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         self._controlador_sistema = controlador_sistema
         self.__tela_maquina = TelaMaquinaCafe()
 
+    @property
+    def maquinas(self) -> list:
+        return self.__maquinas
+
     def pega_maquina_por_id(self, id: int) -> MaquinaDeCafe:
         if not isinstance(id, int):
             raise TypeError("O ID da máquina deve ser um número inteiro.")

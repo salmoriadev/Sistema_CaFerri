@@ -12,6 +12,10 @@ class ControladorVenda(BuscaProdutoMixin):
         self.__vendas = []
         self.__tela_venda = TelaVenda()
 
+    @property
+    def vendas(self) -> list:
+        return self.__vendas
+
     def pega_venda_por_id(self, id_venda: int) -> Venda:
         for venda in self.__vendas:
             if venda.id_venda == id_venda:
@@ -113,8 +117,16 @@ class ControladorVenda(BuscaProdutoMixin):
                 if opcao == 0:
                     mapa_opcoes[0]()
                     break
-                
-                if opcao in mapa_opcoes:
+                if opcao == 4:
+                    self.listar_vendas()
+                    if not self.__vendas: continue
+                    id_venda = self.__tela_venda.seleciona_venda()
+                    venda = self.pega_venda_por_id(id_venda)
+                    if venda.status_venda == "Finalizada":
+                        self.__tela_venda.mostra_mensagem("Não é possível gerenciar uma venda já finalizada.")
+                        continue
+                    self.gerenciar_venda(venda)
+                elif opcao in mapa_opcoes:
                     mapa_opcoes[opcao]()
                 else:
                     self.__tela_venda.mostra_mensagem("Opção inválida.")

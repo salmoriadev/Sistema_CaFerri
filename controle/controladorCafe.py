@@ -10,6 +10,10 @@ class ControladorCafe(BuscaProdutoMixin):
         self.__cafes = []
         self._controlador_sistema = controlador_sistema
         self.__tela_cafe = TelaCafe()
+    
+    @property
+    def cafes(self) -> list:
+        return self.__cafes
 
     def pega_cafe_por_id(self, id: int) -> Cafe:
         if not isinstance(id, int):

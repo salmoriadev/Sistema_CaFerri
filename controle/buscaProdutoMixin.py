@@ -9,6 +9,10 @@ from entidade.produto import Produto
     """
 class BuscaProdutoMixin:
 
+    def existe_produto(self) -> bool:
+        return bool(self._controlador_sistema.controlador_cafe.cafes or
+                    self._controlador_sistema.controlador_maquina_de_cafe.maquinas)
+
     def pega_produto_por_id(self, id_produto: int) -> Produto:
         try:
             return self._controlador_sistema.controlador_cafe.pega_cafe_por_id(id_produto)

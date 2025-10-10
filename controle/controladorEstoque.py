@@ -13,6 +13,10 @@ class ControladorEstoque(BuscaProdutoMixin):
     def estoque(self) -> Estoque:
         return self.__estoque
     
+    @property
+    def produtos_em_estoque(self) -> dict:
+        return self.__estoque.produtos_em_estoque
+       
     def tem_produtos_em_estoque(self) -> bool:
         return sum(self.__estoque.produtos_em_estoque.values()) > 0
 

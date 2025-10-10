@@ -2,13 +2,14 @@ class TelaSistema:
     def tela_opcoes(self) -> None:
         print("-------- Caferri ---------")
         print("Escolha sua opcao")
-        print("1 - Cafés")
-        print("2 - Maquinas de Cafés")
+        print("1 - Fornecedores de cafés")
+        print("2 - Fornecedores de máquinas de cafés")
         print("3 - Clientes")
-        print("4 - Estoque")
-        print("5 - Vendas")
-        print("6 - Fornecedores de cafés")
-        print("7 - Fornecedores de máquinas de cafés")
+        print("4 - Cafés")
+        print("5 - Máquinas de cafés")
+        print("6 - Estoque")
+        print("7 - Vendas")
+        print("8 - Gerar Relatório")
         print("0 - Finalizar sistema")
 
         try:
