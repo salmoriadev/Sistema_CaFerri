@@ -14,22 +14,21 @@ class TelaVenda:
         except ValueError:
             self.mostra_mensagem("Entrada inválida! Digite um número.")
             return None
-
+        
     def tela_opcoes_gerenciar_venda(self) -> int:
         print("\n--- Gerenciando Venda ---")
         print("1 - Adicionar Produto")
-        print("2 - Remover Produto")
-        print("3 - Listar Produtos no Carrinho")
-        print("4 - Finalizar Venda")
+        print("2 - Diminuir Quantidade de um Produto")  
+        print("3 - Remover Item Inteiro do Carrinho")   
+        print("4 - Listar Produtos no Carrinho")
+        print("5 - Finalizar Venda")
         print("0 - Salvar e Sair")
-
         try:
-            opcao = int(input("Escolha a opção: "))
-            return opcao
+            return int(input("Escolha a opção: "))
         except ValueError:
             self.mostra_mensagem("Entrada inválida! Digite um número.")
             return None
-
+        
     def pega_dados_iniciar_venda(self) -> dict:
         print("---- Iniciando Nova Venda ----")
         try:

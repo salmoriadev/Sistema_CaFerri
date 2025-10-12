@@ -7,7 +7,7 @@ class Venda:
     def __init__(self, id_venda: int, cliente: Cliente) -> None:
         self.__id_venda = id_venda
         self.__cliente = cliente
-        self.__data_venda = None
+        self.__data_venda = None    
         self.__valor_total = 0.0
         self.__carrinho = {}
         self.__status_venda = "Em andamento"
@@ -55,6 +55,23 @@ class Venda:
         self.__data_venda = datetime.datetime.now()
         self.__status_venda = "Finalizada"
         return "Venda finalizada com sucesso!"
+    
+    def diminuir_quantidade_produto(self, produto: Produto, quantidade: int) -> str:
+        if quantidade <= 0:
+            return "A quantidade a ser removida deve ser positiva."
+        
+        if produto in self.__carrinho:
+            quantidade_atual = self.__carrinho[produto]
+            
+            if quantidade >= quantidade_atual:
+                self.remover_produto(produto)
+                return f"Todas as unidades de '{produto.nome}' foram removidas do carrinho."
+            else:
+                self.__carrinho[produto] -= quantidade
+                self.__valor_total -= produto.preco_venda * quantidade
+                return f"{quantidade} unidade(s) de '{produto.nome}' foram removidas."
+        else:
+            return f"ERRO: O produto '{produto.nome}' não está no carrinho."
     
     @property
     def id_venda(self) -> int:

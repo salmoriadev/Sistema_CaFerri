@@ -38,8 +38,11 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def gerenciar_venda(self, venda: Venda) -> None:
         mapa_opcoes = {
-            1: self.adicionar_produto, 2: self.remover_produto,
-            3: self.listar_produtos_venda, 4: self.finalizar_venda
+            1: self.adicionar_produto,
+            2: self.diminuir_quantidade_produto, 
+            3: self.remover_produto,
+            4: self.listar_produtos_venda,
+            5: self.finalizar_venda
         }
         while venda.status_venda == "Em andamento":
             self.mostrar_detalhes_venda(venda)
@@ -58,6 +61,13 @@ class ControladorVenda(BuscaProdutoMixin):
             produto = self.pega_produto_por_id(dados["id_produto"])
             venda.adicionar_produto(produto, dados["quantidade"])
             self.__tela_venda.mostra_mensagem(f"'{produto.nome}' adicionado ao carrinho.")
+
+    def diminuir_quantidade_produto(self, venda: Venda) -> None:
+        dados = self.__tela_venda.pega_dados_produto()
+        if dados:
+            produto = self.pega_produto_por_id(dados["id_produto"])
+            resultado = venda.diminuir_quantidade_produto(produto, dados["quantidade"])
+            self.__tela_venda.mostra_mensagem(resultado)
 
     def remover_produto(self, venda: Venda) -> None:
         dados = self.__tela_venda.pega_dados_produto()
