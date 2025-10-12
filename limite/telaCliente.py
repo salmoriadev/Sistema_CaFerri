@@ -1,5 +1,4 @@
 import getpass
-from entidade.perfil_consumidor import PerfilConsumidor
 
 class TelaCliente:
     def tela_opcoes(self) -> int:
@@ -17,9 +16,9 @@ class TelaCliente:
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida. Por favor, digite um número inteiro.")
 
-    def pega_dados_cliente(self, is_alteracao: bool = False) -> dict:
+    def pega_dados_cliente(self, perfil_mapa: dict, is_alteracao: bool = False) -> dict:
         print("\n-------- DADOS DO CLIENTE ----------")
-        
+        perfis_disponiveis = perfil_mapa["perfis_disponiveis"]
         if not is_alteracao:
             while True:
                 try:
@@ -65,8 +64,7 @@ class TelaCliente:
                 self.mostra_mensagem("Erro: O saldo não pode ser negativo.")
             except ValueError:
                 self.mostra_mensagem("Erro: Entrada inválida para saldo.")
-
-        perfis_disponiveis = PerfilConsumidor("Doce e Suave").possiveis_perfis
+        
         print("--- Perfis de Consumidor Disponíveis ---")
         for i, p in enumerate(perfis_disponiveis, 1):
             print(f"{i} - {p}")

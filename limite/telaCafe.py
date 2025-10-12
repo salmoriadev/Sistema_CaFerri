@@ -1,5 +1,4 @@
 from datetime import datetime
-from entidade.perfil_consumidor import PerfilConsumidor
 
 class TelaCafe:
     def tela_opcoes(self) -> int:
@@ -17,8 +16,9 @@ class TelaCafe:
             except ValueError:
                 self.mostra_mensagem("Erro: Por favor, digite um número inteiro válido.")
 
-    def pega_dados_cafe(self, is_alteracao: bool = False) -> dict:
+    def pega_dados_cafe(self, perfil_mapa: dict, is_alteracao: bool = False) -> dict:
         print("\n-------- DADOS DO CAFÉ ----------")
+        perfis_disponiveis = perfil_mapa["perfis_disponiveis"]
 
         while True:
             nome = input("Nome: ")
@@ -96,16 +96,15 @@ class TelaCafe:
                 break
             self.mostra_mensagem("Erro: As notas sensoriais não podem ser vazias.")
 
-        perfis = PerfilConsumidor("Doce e Suave").possiveis_perfis
         print("--- Perfis de Café Disponíveis ---")
-        for i, p in enumerate(perfis, 1):
+        for i, p in enumerate(perfis_disponiveis, 1):
             print(f"{i} - {p}")
         
         while True:
             try:
                 escolha = int(input("Escolha o número do perfil recomendado: "))
-                if 1 <= escolha <= len(perfis):
-                    perfil_recomendado = perfis[escolha - 1]
+                if 1 <= escolha <= len(perfis_disponiveis):
+                    perfil_recomendado = perfis_disponiveis[escolha - 1]
                     break
                 self.mostra_mensagem("Erro: Número de perfil inválido.")
             except ValueError:

@@ -1,5 +1,6 @@
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from controle.buscaProdutoMixin import BuscaProdutoMixin
+from entidade.perfil_consumidor import PerfilConsumidor
 from limite.telaCafe import TelaCafe
 from entidade.cafe import Cafe
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
@@ -24,7 +25,9 @@ class ControladorCafe(BuscaProdutoMixin):
         raise CafeNaoEncontradoException()
 
     def incluir_cafe(self) -> None:
-        dados_cafe = self.__tela_cafe.pega_dados_cafe(is_alteracao=False)
+        perfis_mapa = {}
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
+        dados_cafe = self.__tela_cafe.pega_dados_cafe(perfis_mapa, is_alteracao=False)
 
         if self.id_produto_ja_existe(dados_cafe["id"]):
             self.__tela_cafe.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
@@ -49,8 +52,10 @@ class ControladorCafe(BuscaProdutoMixin):
         id_cafe = self.__tela_cafe.seleciona_cafe()
         cafe = self.pega_cafe_por_id(id_cafe)
 
-        novos_dados = self.__tela_cafe.pega_dados_cafe(is_alteracao=True)
-        
+        perfis_mapa = {}
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
+        novos_dados = self.__tela_cafe.pega_dados_cafe(perfis_mapa, is_alteracao=True)
+
         cafe.nome = novos_dados["nome"]
         cafe.preco_compra = novos_dados["preco_compra"]
         cafe.preco_venda = novos_dados["preco_venda"]

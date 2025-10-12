@@ -1,4 +1,5 @@
 import hashlib
+from entidade.perfil_consumidor import PerfilConsumidor
 from limite.telaCliente import TelaCliente
 from entidade.cliente import Cliente
 from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
@@ -22,7 +23,9 @@ class ControladorCliente:
         raise ClienteNaoEncontradoException
 
     def incluir_cliente(self) -> None:
-        dados_cliente = self.__tela_cliente.pega_dados_cliente(is_alteracao=False)
+        perfis_mapa = {}
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
+        dados_cliente = self.__tela_cliente.pega_dados_cliente(perfis_mapa, is_alteracao=False)
 
         for cliente in self.__clientes:
             if cliente.id == dados_cliente["id"]:
@@ -51,7 +54,10 @@ class ControladorCliente:
             self.__tela_cliente.mostra_mensagem("Senha incorreta! Alteração cancelada.")
             return
 
-        novos_dados = self.__tela_cliente.pega_dados_cliente(is_alteracao=True)
+        perfis_mapa = {}
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
+        novos_dados = self.__tela_cliente.pega_dados_cliente(perfis_mapa, is_alteracao=True)
+        
         cliente.nome = novos_dados["nome"]
         cliente.email = novos_dados["email"]
         if "senha" in novos_dados:

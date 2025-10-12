@@ -1,5 +1,4 @@
 from datetime import datetime
-from entidade.perfil_consumidor import PerfilConsumidor
 
 class TelaMaquinaCafe:
     def tela_opcoes(self) -> int:
