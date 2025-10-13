@@ -3,14 +3,20 @@
     Esta classe desempenha o papel de Controller, estabelecendo a comunicação
     entre a interface do usuário (`TelaEmpresaCafe`) e os modelos de dados
     (`FornecedoraCafe`). É o componente central para todas as operações de
-    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de café."""
+    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de café.
+    
+    Herda de `BuscaProdutoMixin` para reutilizar a funcionalidade de verificação
+    de CNPJs de empresas duplicados, garantindo que cada empresa tenha um
+    identificador único em todo o sistema.
+    """
 
 
+from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEmpresaCafe import TelaEmpresaCafe
 from entidade.fornecedora_cafe import FornecedoraCafe
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 
-class ControladorEmpresaCafe:
+class ControladorEmpresaCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema):
         self._controlador_sistema = controlador_sistema
         self.__fornecedores_cafe = []
@@ -25,13 +31,12 @@ class ControladorEmpresaCafe:
                 return fornecedor
         raise FornecedorNaoEncontradoException
 
-    def incluir_fornecedor(self):
+    def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=False)
-        
-        try:
-            self.pega_fornecedor_por_cnpj(dados_fornecedor["cnpj"])
+
+        if self.existe_fornecedor_com_cnpj(dados_fornecedor["cnpj"]):
             self.__tela_empresa_cafe.mostra_mensagem("ERRO: Já existe um fornecedor com este CNPJ!")
-        except FornecedorNaoEncontradoException:
+        else:
             novo_fornecedor = FornecedoraCafe(
                 dados_fornecedor["nome"], dados_fornecedor["cnpj"],
                 dados_fornecedor["endereco"], dados_fornecedor["telefone"],
@@ -40,7 +45,7 @@ class ControladorEmpresaCafe:
             self.__fornecedores_cafe.append(novo_fornecedor)
             self.__tela_empresa_cafe.mostra_mensagem("Fornecedor de café cadastrado com sucesso!")
 
-    def alterar_fornecedor(self):
+    def alterar_fornecedor(self) -> None:
         if not self.__fornecedores_cafe:
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor cadastrado para alterar!")
             return
@@ -57,7 +62,7 @@ class ControladorEmpresaCafe:
         self.__tela_empresa_cafe.mostra_mensagem("Fornecedor alterado com sucesso!")
         self.lista_fornecedores()
 
-    def lista_fornecedores(self):
+    def lista_fornecedores(self) -> None:
         if not self.__fornecedores_cafe:
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor de café cadastrado!")
             return
@@ -71,7 +76,7 @@ class ControladorEmpresaCafe:
             }
             self.__tela_empresa_cafe.mostra_empresa_cafe(dados_fornecedor)
 
-    def excluir_fornecedor(self):
+    def excluir_fornecedor(self) -> None:
         if not self.__fornecedores_cafe:
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor cadastrado para excluir!")
             return
@@ -84,10 +89,10 @@ class ControladorEmpresaCafe:
         self.__tela_empresa_cafe.mostra_mensagem("Fornecedor excluído com sucesso!")
         self.lista_fornecedores()
 
-    def retornar(self):
+    def retornar(self) -> None:
         self._controlador_sistema.abre_tela()
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         lista_opcoes = {
             1: self.incluir_fornecedor, 2: self.alterar_fornecedor,
             3: self.lista_fornecedores, 4: self.excluir_fornecedor,

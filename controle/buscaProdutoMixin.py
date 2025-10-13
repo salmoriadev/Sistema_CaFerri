@@ -7,14 +7,30 @@
     ControladorMaquinaDeCafe), centralizando o acesso e promovendo o reuso
     de código. Assume-se que a classe que herda este Mixin terá acesso a
     `controlador_sistema`.
+
+    Além disso, fornece métodos para verificar a existência de IDs de produtos
+    e CNPJs de fornecedores, garantindo a unicidade desses identificadores.
     """
 
+from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
 from Excecoes.maquinaNaoEncontradaException import MaquinaNaoEncontradaException
 from entidade.produto import Produto
 
 class BuscaProdutoMixin:
+
+    def existe_fornecedor_com_cnpj(self, cnpj: str) -> bool:
+        try:
+            self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(cnpj)
+            return True
+        except FornecedorNaoEncontradoException:
+            pass
+        try:
+            self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(cnpj)
+            return True 
+        except FornecedorNaoEncontradoException:
+            return False
 
     def existe_produto(self) -> bool:
         return bool(self._controlador_sistema.controlador_cafe.cafes or

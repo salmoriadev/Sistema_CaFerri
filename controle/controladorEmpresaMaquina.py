@@ -4,14 +4,20 @@
     Esta classe desempenha o papel de Controller, estabelecendo a comunicação
     entre a interface do usuário (`TelaEmpresaMaquina`) e os modelos de dados
     (`FornecedoraMaquina`). É o componente central para todas as operações de
-    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de Maquinas."""
+    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de Maquinas.
+    
+    Herda de `BuscaProdutoMixin` para reutilizar a funcionalidade de verificação
+    de CNPJs de empresas duplicados, garantindo que cada empresa tenha um
+    identificador único em todo o sistema.
+    """
 
 
+from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEmpresaMaquina import TelaEmpresaMaquina
 from entidade.fornecedora_maquina import FornecedoraMaquina
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 
-class ControladorEmpresaMaquina:
+class ControladorEmpresaMaquina(BuscaProdutoMixin):
     def __init__(self, controlador_sistema):
         self._controlador_sistema = controlador_sistema
         self.__fornecedores_maquina = []
@@ -26,13 +32,11 @@ class ControladorEmpresaMaquina:
                 return fornecedor
         raise FornecedorNaoEncontradoException()
 
-    def incluir_fornecedor(self):
+    def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_maquina.pega_dados_empresa_maquina(is_alteracao=False)
-        
-        try:
-            self.pega_fornecedor_por_cnpj(dados_fornecedor["cnpj"])
+        if self.existe_fornecedor_com_cnpj(dados_fornecedor["cnpj"]):
             self.__tela_empresa_maquina.mostra_mensagem("ERRO: Já existe um fornecedor com este CNPJ!")
-        except FornecedorNaoEncontradoException:
+        else:
             novo_fornecedor = FornecedoraMaquina(
                 dados_fornecedor["nome"], dados_fornecedor["cnpj"],
                 dados_fornecedor["endereco"], dados_fornecedor["telefone"],
@@ -41,7 +45,7 @@ class ControladorEmpresaMaquina:
             self.__fornecedores_maquina.append(novo_fornecedor)
             self.__tela_empresa_maquina.mostra_mensagem("Fornecedor de máquina cadastrado com sucesso!")
 
-    def alterar_fornecedor(self):
+    def alterar_fornecedor(self) -> None:
         if not self.__fornecedores_maquina:
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor cadastrado para alterar!")
             return
@@ -60,7 +64,7 @@ class ControladorEmpresaMaquina:
         self.__tela_empresa_maquina.mostra_mensagem("Fornecedor alterado com sucesso!")
         self.lista_fornecedores()
 
-    def lista_fornecedores(self):
+    def lista_fornecedores(self) -> None:
         if not self.__fornecedores_maquina:
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor de máquina cadastrado!")
             return
@@ -74,7 +78,7 @@ class ControladorEmpresaMaquina:
             }
             self.__tela_empresa_maquina.mostra_empresa_maquina(dados_fornecedor)
 
-    def excluir_fornecedor(self):
+    def excluir_fornecedor(self) -> None:
         if not self.__fornecedores_maquina:
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor cadastrado para excluir!")
             return
@@ -87,10 +91,10 @@ class ControladorEmpresaMaquina:
         self.__tela_empresa_maquina.mostra_mensagem("Fornecedor excluído com sucesso!")
         self.lista_fornecedores()
 
-    def retornar(self):
+    def retornar(self) -> None:
         self._controlador_sistema.abre_tela()
 
-    def abre_tela(self):
+    def abre_tela(self) -> None:
         lista_opcoes = {
             1: self.incluir_fornecedor, 2: self.alterar_fornecedor,
             3: self.lista_fornecedores, 4: self.excluir_fornecedor,

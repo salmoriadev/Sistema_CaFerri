@@ -114,3 +114,7 @@ class Venda:
     @property
     def status_venda(self) -> str:
         return self.__status_venda
+    
+    @property
+    def carrinho(self) -> dict:
+        return self.__carrinho
