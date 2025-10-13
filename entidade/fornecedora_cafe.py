@@ -13,3 +13,7 @@ class FornecedoraCafe(EmpresaFornecedora):
     @property
     def tipo_cafe(self) -> str:
         return self.__tipo_cafe
+    
+    @tipo_cafe.setter
+    def tipo_cafe(self, novo_tipo: str) -> None:
+        self.__tipo_cafe = novo_tipo

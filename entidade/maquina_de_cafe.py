@@ -19,5 +19,5 @@ class MaquinaDeCafe(Produto):
         return self.__empresa_fornecedora
 
     @empresa_fornecedora.setter
-    def empresa_fornecedora(self, nova_empresa: str) -> None:
-        self.__empresa_fornecedora = FornecedoraMaquina(nova_empresa)
+    def empresa_fornecedora(self, nova_empresa: FornecedoraMaquina) -> None:
+        self.__empresa_fornecedora = nova_empresa
