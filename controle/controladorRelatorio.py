@@ -82,7 +82,7 @@ class ControladorRelatorios:
 
         linhas_relatorio = []
         for empresa, total_vendido in empresas_ordenadas:
-            linhas_relatorio.append(f"Empresa: {empresa.nome} (ID: {empresa.id}) | Total de Produtos Vendidos: {total_vendido} unidades")
+            linhas_relatorio.append(f"Empresa: {empresa.nome} (CNPJ: {empresa.cnpj}) | Total de Produtos Vendidos: {total_vendido} unidades")
 
         if not linhas_relatorio:
             linhas_relatorio.append("Nenhuma venda de produtos de fornecedores registrada.")

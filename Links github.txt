@@ -1,4 +1,0 @@
-Abaixo estão os links do repositório e dos commits no GitHub referentes a este projeto.
-
-Link: https://github.com/salmoriadev/Sistema_CaFerri
-Link com o histórico de commits: https://github.com/salmoriadev/Sistema_CaFerri/activity?ref=main
