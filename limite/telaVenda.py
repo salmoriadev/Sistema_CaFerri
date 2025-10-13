@@ -1,3 +1,24 @@
+"""
+    Gerencia a interface com o usuário para todas as operações de Venda.
+
+    Esta classe atua como a camada de apresentação (View) para o módulo de
+    vendas, sendo a única responsável pela interação com o usuário via
+    console. Ela estrutura a experiência do usuário através de menus
+    distintos: um menu principal para operações de alto nível (iniciar,
+    listar, excluir) e um submenu para o gerenciamento detalhado de uma
+    venda em andamento (adicionar/remover produtos, finalizar).
+
+    Suas principais funções são:
+    - Apresentar os menus de navegação e capturar as escolhas do usuário.
+    - Coletar dados de entrada, como IDs de venda, cliente e produto,
+      realizando validações básicas para garantir que são do tipo correto.
+    - Formatar e exibir informações complexas de forma legível, como os
+      detalhes de uma venda, incluindo a lista de produtos no carrinho,
+      quantidades e subtotais.
+    - Fornecer um método padronizado para exibir mensagens de status,
+      confirmação e erro ao usuário.
+    """
+
 class TelaVenda:
 
     def tela_opcoes(self) -> int:

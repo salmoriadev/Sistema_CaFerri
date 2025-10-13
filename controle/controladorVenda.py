@@ -1,3 +1,26 @@
+"""
+    Orquestra toda a lógica de negócio para o processo de Vendas.
+
+    Esta classe atua como a camada de Controle (Controller) central para
+    qualquer transação de venda. Ela gerencia o ciclo de vida completo de
+    uma venda, desde sua criação até a finalização ou cancelamento, fazendo
+    a ponte entre a interface do usuário (`TelaVenda`) e a entidade `Venda`.
+
+    Como um hub de operações, este controlador colabora intensamente com
+    outras partes do sistema:
+    - Utiliza o `ControladorCliente` para associar um cliente a uma venda.
+    - Herda de `BuscaProdutoMixin` para localizar produtos (cafés ou máquinas)
+      a serem adicionados ao carrinho.
+    - Fornece a instância de `Estoque` (do `ControladorEstoque`) para a
+      entidade `Venda` no momento da finalização, permitindo que a própria
+      venda valide a disponibilidade dos itens.
+
+    Gerencia o fluxo de navegação entre o menu principal de vendas e um
+    submenu de gerenciamento de uma venda específica, além de tratar um
+    amplo leque de exceções para garantir a integridade dos dados e
+    fornecer feedback claro ao usuário.
+    """
+
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaVenda import TelaVenda
 from entidade.venda import Venda

@@ -1,3 +1,13 @@
+"""
+    Gerencia a interface com o usuário para todas as operações de Estoque.
+
+    Esta classe atua como a camada de apresentação (View) para o módulo de
+    controle de estoque. Sua responsabilidade exclusiva é a interação com o
+    usuário através do console, desacoplando a lógica de negócio do
+    `ControladorEstoque` da entrada e saída de dados.
+"""
+
+
 class TelaEstoque:
     def tela_opcoes(self) -> int:
         print("\n-------- Estoque ----------")

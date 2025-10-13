@@ -1,3 +1,21 @@
+
+"""
+    Orquestra a lógica de negócio para o gerenciamento de Cafés no sistema.
+
+    Esta classe atua como o Controller, fazendo a ponte entre a camada de
+    apresentação (`TelaCafe`) e a camada de dados (`Cafe`). É responsável
+    por executar todas as operações de CRUD (Criar, Ler, Alterar, Excluir)
+    para os cafés, garantindo que as regras de negócio sejam aplicadas.
+
+    Colabora com outros controladores, acessados através do `controlador_sistema`,
+    para validar informações essenciais, como a existência de um fornecedor
+    antes da criação de um novo café. A herança de `BuscaProdutoMixin`
+    permite a reutilização da lógica para evitar IDs duplicados entre todos
+    os produtos do sistema (cafés e máquinas).
+
+    Além das operações padrão, implementa a funcionalidade `buscar_cafes_por_perfil`,
+    essencial para a lógica de recomendação a clientes."""
+
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from entidade.perfil_consumidor import PerfilConsumidor

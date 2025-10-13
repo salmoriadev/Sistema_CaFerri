@@ -1,3 +1,12 @@
+"""
+    Orquestra a lógica de negócio para o gerenciamento de Fornecedores de Máquinas.
+
+    Esta classe desempenha o papel de Controller, estabelecendo a comunicação
+    entre a interface do usuário (`TelaEmpresaMaquina`) e os modelos de dados
+    (`FornecedoraMaquina`). É o componente central para todas as operações de
+    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de Maquinas."""
+
+
 from limite.telaEmpresaMaquina import TelaEmpresaMaquina
 from entidade.fornecedora_maquina import FornecedoraMaquina
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException

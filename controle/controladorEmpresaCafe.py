@@ -1,3 +1,11 @@
+""" Orquestra a lógica de negócio para o gerenciamento de Fornecedores de Café.
+
+    Esta classe desempenha o papel de Controller, estabelecendo a comunicação
+    entre a interface do usuário (`TelaEmpresaCafe`) e os modelos de dados
+    (`FornecedoraCafe`). É o componente central para todas as operações de
+    CRUD (Criar, Ler, Alterar, Excluir) relacionadas aos fornecedores de café."""
+
+
 from limite.telaEmpresaCafe import TelaEmpresaCafe
 from entidade.fornecedora_cafe import FornecedoraCafe
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException

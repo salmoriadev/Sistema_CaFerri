@@ -1,3 +1,16 @@
+"""
+    Orquestra a lógica de negócio para o gerenciamento de Máquinas de Café.
+
+    Esta classe conecta a interface do usuário (`TelaMaquinaCafe`) 
+    com os dados (`MaquinaDeCafe`). É responsável por todas as operações de
+    CRUD (Criar, Ler, Alterar, Excluir) relacionadas às máquinas.
+
+    Herda de `BuscaProdutoMixin` para reutilizar a funcionalidade de verificação
+    de IDs de produtos duplicados, garantindo que cada café ou máquina tenha um
+    identificador único em todo o sistema.
+    """
+
+
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaMaquinaDeCafe import TelaMaquinaCafe

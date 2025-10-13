@@ -1,12 +1,19 @@
+"""
+        Este Mixin foi projetado para ser herdado por controladores que precisam
+    localizar um `Produto` (seja um `Cafe` ou uma `MaquinaDeCafe`) sem
+    precisar conhecer os detalhes de onde esses produtos estão armazenados.
+
+    Ele abstrai a lógica de busca em múltiplos repositórios (ControladorCafe,
+    ControladorMaquinaDeCafe), centralizando o acesso e promovendo o reuso
+    de código. Assume-se que a classe que herda este Mixin terá acesso a
+    `controlador_sistema`.
+    """
+
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
 from Excecoes.maquinaNaoEncontradaException import MaquinaNaoEncontradaException
 from entidade.produto import Produto
 
-"""
-    Mixin que fornece métodos para buscar produtos (Café ou Máquina)
-    em todo o sistema.
-    """
 class BuscaProdutoMixin:
 
     def existe_produto(self) -> bool:

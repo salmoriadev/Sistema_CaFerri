@@ -1,3 +1,10 @@
+"""Como uma Classe Base Abstrata (ABC), `EmpresaFornecedora` não é projetada
+    para ser instanciada diretamente. Seu principal propósito é garantir que
+    qualquer classe de fornecedor mais específica que a herde (como
+    `FornecedoraCafe` ou `FornecedoraMaquina`) implemente um conjunto
+    consistente de atributos e comportamentos."""
+
+
 from abc import ABC, abstractmethod
 class EmpresaFornecedora(ABC):
     @abstractmethod

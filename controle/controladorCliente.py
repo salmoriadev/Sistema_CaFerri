@@ -1,3 +1,23 @@
+"""
+    Orquestra toda a lógica de negócio para o gerenciamento de Clientes.
+
+    Atuando como a camada de Controle (Controller), esta classe é responsável
+    por mediar as interações entre a interface do usuário (`TelaCliente`) e
+    os objetos de dados (`Cliente`). Ela gerencia o ciclo de vida completo
+    dos clientes, incluindo as operações de CRUD (Incluir, Alterar, Listar, Excluir).
+
+    Além disso, implementa a lógica de segurança, como a cifragem de senhas
+    usando `hashlib` no momento do cadastro e da alteração, e exige a
+    confirmação da senha para operações críticas como a modificação e a
+    exclusão de dados.
+
+    A classe também colabora ativamente com outros controladores do sistema,
+    como o `ControladorCafe`, para executar funcionalidades complexas,
+    a exemplo da busca por cafés recomendados com base no perfil do cliente.
+    Ela gerencia o fluxo de navegação do menu de clientes e trata exceções
+    para garantir uma experiência de usuário robusta e segura.
+    """
+
 import hashlib
 from entidade.perfil_consumidor import PerfilConsumidor
 from limite.telaCliente import TelaCliente

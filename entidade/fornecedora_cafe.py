@@ -1,3 +1,9 @@
+""" Esta classe é uma implementação concreta da classe base abstrata
+    `EmpresaFornecedora`. Ela herda todas as características fundamentais de
+    um fornecedor, como `nome`, `cnpj`, `endereco` e `telefone`, garantindo
+    uma estrutura de dados consistente para todos os tipos de parceiros
+    comerciais."""
+
 from entidade.empresa_fornecedora import EmpresaFornecedora
 class FornecedoraCafe(EmpresaFornecedora):
     def __init__(self, nome: str, cnpj: str, endereco: str, telefone: str, tipo_cafe: str) -> None:

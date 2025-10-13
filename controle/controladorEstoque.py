@@ -1,3 +1,17 @@
+"""
+    Orquestra a lógica de negócio para o gerenciamento de Estoque.
+
+    Esta classe atua como a camada de Controle (Controller), sendo a ponte
+    entre a interface do usuário (`TelaEstoque`) e o modelo de dados (`Estoque`).
+    Sua principal função é processar as solicitações do usuário e aplicar as
+    regras de negócio para manipular o inventário de produtos do sistema.
+
+    Utilizando a herança de `BuscaProdutoMixin`, este controlador tem a
+    capacidade de localizar qualquer produto (seja um `Cafe` ou uma
+    `MaquinaDeCafe`) em todo o sistema pelo seu ID, permitindo uma
+    integração coesa entre os diferentes módulos de produtos.
+    """
+
 from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEstoque import TelaEstoque
 from entidade.estoque import Estoque

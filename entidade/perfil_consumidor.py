@@ -1,3 +1,14 @@
+"""
+    Representa e gerencia o perfil de sabor de um consumidor de café.
+
+    Esta classe funciona como um objeto de valor que encapsula as preferências
+    de um cliente. Ao ser instanciada, ela valida se o perfil fornecido
+    existe em uma lista predefinida de perfis válidos (ex: "Doce e Suave",
+    "Ácido e Frutado"). Se o perfil for inválido, uma exceção
+    `PerfilRecomendadoNaoExisteException` é lançada para garantir a
+    integridade dos dados.
+    """
+
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
 
 class PerfilConsumidor:

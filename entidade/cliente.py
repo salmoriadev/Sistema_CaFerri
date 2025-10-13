@@ -1,3 +1,21 @@
+"""
+    Representa a entidade 'Cliente' no sistema, encapsulando todas as
+    informações e comportamentos associados a um usuário.
+
+    Esta classe armazena dados de identificação, como `id`, `nome`, `email`,
+    e credenciais de segurança (`senha_cifrada`), além de informações
+    transacionais, como o `saldo` disponível para compras.
+
+    Um de seus principais aspectos é a composição com a classe `PerfilConsumidor`.
+    Ao invés de simplesmente armazenar uma string de preferência, ela mantém
+    um objeto `PerfilConsumidor` completo. Essa abordagem de design permite
+    que a classe `Cliente` delegue a lógica de recomendação de cafés,
+    acessando-a diretamente através da propriedade `lista_cafes_recomendados`.
+    Isso torna o objeto `Cliente` o ponto central para funcionalidades de
+    personalização e interação com o usuário no sistema.
+    """
+
+
 from entidade.perfil_consumidor import PerfilConsumidor
 
 class Cliente:

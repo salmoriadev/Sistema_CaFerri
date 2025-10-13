@@ -1,3 +1,25 @@
+"""
+    Representa e gerencia uma transação de venda completa no sistema.
+
+    Esta classe funciona como uma máquina de estados para uma única compra,
+    controlando seu ciclo de vida desde a criação até a finalização. Ela
+    encapsula todos os dados pertinentes a uma venda, incluindo o `cliente`
+    associado, um `carrinho` de produtos, o `valor_total` e o `status_venda`.
+
+    Suas principais responsabilidades são:
+    - Gerenciar o carrinho de compras, permitindo adicionar, remover ou
+      ajustar a quantidade de produtos.
+    - Calcular dinamicamente o valor total da compra à medida que o carrinho
+      é modificado.
+    - Orquestrar o processo de finalização da venda (`finalizar_venda`), que
+      envolve uma série de validações críticas: verificar o saldo do cliente,
+      confirmar a disponibilidade de cada item no `Estoque` e garantir que a
+      venda ainda esteja em andamento.
+    - Executar as operações transacionais após a validação: debitar o valor
+      do saldo do cliente, abater os produtos do estoque e registrar a data
+      da transação, efetivamente concluindo a venda.
+    """
+
 import datetime
 from entidade.cliente import Cliente
 from entidade.produto import Produto

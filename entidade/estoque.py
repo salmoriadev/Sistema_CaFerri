@@ -1,3 +1,12 @@
+"""
+    Gerencia o inventário de todos os produtos do sistema.
+
+    Esta classe atua como um repositório centralizado para o controle de
+    quantidades de produtos. Ela utiliza um dicionário (`__produtos_em_estoque`)
+    para mapear objetos `Produto` (sejam `Cafe` ou `MaquinaDeCafe`) às suas
+    respectivas quantidades disponíveis.
+    """
+
 from entidade.produto import Produto
 
 class Estoque:

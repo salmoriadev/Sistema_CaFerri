@@ -1,3 +1,9 @@
+""" Gerencia a interface com o usuário para todas as operações relacionadas a Clientes.
+
+    Esta classe é a camada de apresentação (View) do módulo de clientes,
+    responsável por toda a interação via console. Ela desacopla a lógica
+    de negócio (Controlador) da entrada e saída de dados"""
+
 import getpass
 
 class TelaCliente:

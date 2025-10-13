@@ -1,3 +1,12 @@
+""" 
+É uma especialização da classe abstrata `Produto`, esta classe herda
+    todos os atributos e métodos fundamentais de um item comercializável.
+
+    Seu diferencial é a adição do atributo `empresa_fornecedora`, que
+    estabelece uma associação direta com um objeto da classe `FornecedoraMaquina`.
+    """
+
+
 from entidade.produto import Produto
 from entidade.fornecedora_maquina import FornecedoraMaquina
 class MaquinaDeCafe(Produto):

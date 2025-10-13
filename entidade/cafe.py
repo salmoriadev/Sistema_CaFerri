@@ -1,3 +1,12 @@
+"""
+    Representa a entidade 'Café', detalhando suas características específicas.
+
+    Como uma classe filha de `Produto`, `Cafe` herda todas as propriedades
+    comerciais básicas, como ID, nome e preços. No entanto, ela expande
+    significativamente essa base com atributos que descrevem as qualidades
+    únicas do grão, incluindo `origem`, `variedade`, `altitude`, `moagem` e
+    `notas_sensoriais`.
+    """
 from entidade.fornecedora_cafe import FornecedoraCafe
 from entidade.produto import Produto
 from entidade.perfil_consumidor import PerfilConsumidor

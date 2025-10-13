@@ -1,3 +1,7 @@
+"""    Gerencia a interface com o usuário 
+para todas as operações relacionadas a Cafés."""
+
+
 from datetime import datetime
 
 class TelaCafe:

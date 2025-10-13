@@ -1,3 +1,28 @@
+"""
+    Atua como o orquestrador central e o ponto de entrada de toda a aplicação.
+
+    Esta classe é o "maestro" do sistema, responsável por instanciar e manter
+    as referências de todos os outros controladores. Ela funciona como uma
+    fachada (Facade), simplificando a interação do usuário com os diversos
+    módulos do sistema.
+
+    Suas principais responsabilidades são:
+    - **Inicialização:** Cria as instâncias de todos os controladores de
+      submódulos, injetando uma referência de si mesma (`self`) para permitir
+      a comunicação e a colaboração entre eles.
+    - **Gerenciamento de Fluxo:** Controla o loop principal da aplicação,
+      exibindo o menu principal (`TelaSistema`) e delegando as ações do
+      usuário para o controlador apropriado.
+    - **Aplicação de Regras de Negócio de Alto Nível:** Antes de invocar um
+      submódulo, ela realiza validações cruciais que dependem do estado de
+      outros módulos. Por exemplo, impede o cadastro de um café se nenhum
+      fornecedor de café existir, ou bloqueia o início de uma venda se não
+      houver clientes ou produtos em estoque.
+    - **Ponto de Acesso Único:** Serve como um hub central, permitindo que os
+      controladores "conversem" entre si de forma desacoplada, acessando
+      uns aos outros através das propriedades expostas pelo `ControladorSistema`.
+    """
+
 from controle.controladorEmpresaCafe import ControladorEmpresaCafe
 from controle.controladorEmpresaMaquina import ControladorEmpresaMaquina
 from limite.telaSistema import TelaSistema

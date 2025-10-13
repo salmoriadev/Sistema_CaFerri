@@ -1,3 +1,12 @@
+""" Gerencia a interface com o usuário para todas as operações relacionadas
+    aos Fornecedores de Máquinas.
+
+    Esta classe atua como a camada de apresentação (View) dedicada à entidade
+    `FornecedoraMaquina. Sua função é ser a ponte entre o usuário e o sistema,
+    sendo responsável por toda a interação via console para este módulo.
+"""
+
+
 class TelaEmpresaMaquina:
     def tela_opcoes(self) -> int:
         print("\n-------- Fornecedores de Máquinas ----------")

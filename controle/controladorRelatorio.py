@@ -1,3 +1,11 @@
+"""
+    Orquestra a lógica de negócio para a geração de todos os relatórios
+    de inteligência de negócio do sistema.
+    Ela centraliza toda a lógica de análise de dados, mantendo os outros
+    controladores focados em suas responsabilidades operacionais (CRUD) e
+    delegando a exibição final dos resultados para a `TelaRelatorio`.
+    """
+
 from limite.telaRelatorio import TelaRelatorio
 from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
 

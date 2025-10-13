@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from datetime import date
+
+'''Define a classe base abstrata para todos os itens
+ comercializáveis do sistema.'''
 
 class Produto(ABC):
     @abstractmethod

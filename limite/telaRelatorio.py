@@ -1,3 +1,12 @@
+"""
+    Gerencia a interface com o usuário para a geração e exibição de
+    todos os relatórios do sistema.
+
+    Atuando como a camada de apresentação (View) para o módulo de relatórios,
+    esta classe é responsável por interagir com o usuário para determinar
+    qual relatório deve ser gerado."""
+
+
 class TelaRelatorio:
     def tela_opcoes(self) -> int:
         print("\n---------- RELATÓRIOS ----------")
