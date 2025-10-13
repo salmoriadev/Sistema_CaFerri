@@ -81,7 +81,7 @@ Como o projeto não possui dependências externas, sua execução é bastante si
 
 3.  **Execute o arquivo principal:**
     ```bash
-    python3 main.py
+    python main.py
     ```
 
 Após a execução, o menu principal do sistema será exibido no console e você poderá interagir com todas as suas funcionalidades.
