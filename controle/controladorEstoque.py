@@ -115,3 +115,6 @@ class ControladorEstoque(BuscaProdutoMixin):
                     self.__tela_estoque.mostra_mensagem("Opção inválida.")
             except ProdutoNaoEncontradoException as e:
                 self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")
+
+    def remover_produto(self, produto) -> bool:
+        return self.__estoque.remover_produto(produto)

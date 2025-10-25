@@ -120,7 +120,14 @@ class ControladorCafe(BuscaProdutoMixin):
         self.lista_cafe()
         id_cafe = self.__tela_cafe.seleciona_cafe()
         cafe = self.pega_cafe_por_id(id_cafe)
-        
+        try:
+            estoque_ctrl = self._controlador_sistema.controlador_estoque
+            removido = estoque_ctrl.remover_produto(cafe)
+            if removido:
+                self.__tela_cafe.mostra_mensagem("Produto também removido do estoque.")
+        except Exception:
+            pass
+
         self.__cafes.remove(cafe)
         self.__tela_cafe.mostra_mensagem("Café excluído com sucesso!")
         self.lista_cafe()
