@@ -46,3 +46,9 @@ class Estoque:
 
     def listar_produtos(self) -> dict:
         return self.__produtos_em_estoque
+
+    def remover_produto(self, produto: Produto) -> bool:
+        if self.produto_ja_existe(produto):
+            del self.__produtos_em_estoque[produto]
+            return True
+        return False
