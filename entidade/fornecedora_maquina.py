@@ -8,7 +8,9 @@
 from entidade.empresa_fornecedora import EmpresaFornecedora
 
 class FornecedoraMaquina(EmpresaFornecedora):
-    def __init__(self, nome: str, cnpj: str, endereco: str, telefone: str, pais_de_origem: str) -> None:
+    def __init__(self, nome: str, cnpj: str,
+    endereco: str, telefone: str,
+    pais_de_origem: str) -> None:
         super().__init__(nome, cnpj, endereco, telefone)
         self.__pais_de_origem = pais_de_origem
 

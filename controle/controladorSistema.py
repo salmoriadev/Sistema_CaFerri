@@ -82,28 +82,33 @@ class ControladorSistema:
 
     def cadastra_cafes(self) -> None:
         if not self.__controlador_empresa_cafe.tem_empresas():
-            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar uma Empresa de Café primeiro!")
+            self.__tela_sistema.mostra_mensagem(
+                "ERRO: É necessário cadastrar uma Empresa de Café primeiro!")
             return
         self.__controlador_cafe.abre_tela()
 
     def cadastra_maquinas_de_cafe(self) -> None:
         if not self.__controlador_empresa_maquina.tem_empresas():
-            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar uma Empresa de Máquina primeiro!")
+            self.__tela_sistema.mostra_mensagem(
+                "ERRO: É necessário cadastrar uma Empresa de Máquina primeiro!")
             return
         self.__controlador_maquina_de_cafe.abre_tela()
 
     def gerencia_vendas(self) -> None:
         if not self.__controlador_estoque.tem_produtos_em_estoque():
-            self.__tela_sistema.mostra_mensagem("ERRO: Não há produtos no estoque para vender!")
+            self.__tela_sistema.mostra_mensagem(
+                "ERRO: Não há produtos no estoque para vender!")
             return
         if not self.__controlador_cliente.tem_clientes():
-            self.__tela_sistema.mostra_mensagem("ERRO: É necessário cadastrar pelo menos um cliente para iniciar uma venda!")
+            self.__tela_sistema.mostra_mensagem(
+                "ERRO: É necessário cadastrar pelo menos um cliente para iniciar uma venda!")
             return
         self.__controlador_venda.abre_tela()
 
     def gerencia_estoque(self) -> None:
         if not self.__controlador_cafe.existe_produto():
-              self.__tela_sistema.mostra_mensagem("ERRO: Cadastre pelo menos um tipo de Café ou Máquina antes de gerenciar o estoque!")
+              self.__tela_sistema.mostra_mensagem(
+                "ERRO: Cadastre pelo menos um tipo de Café ou Máquina antes de gerenciar o estoque!")
               return
         self.__controlador_estoque.abre_tela()
 
@@ -141,4 +146,5 @@ class ControladorSistema:
                 if opcao_escolhida == 0:
                     break
             else:
-                self.__tela_sistema.mostra_mensagem("Opção inválida, por favor escolha uma das opções listadas.")
+                self.__tela_sistema.mostra_mensagem(
+                    "Opção inválida, por favor escolha uma das opções listadas.")

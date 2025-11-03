@@ -1,4 +1,3 @@
-
 """
     Orquestra a lógica de negócio para o gerenciamento de Cafés no sistema.
 
@@ -23,6 +22,7 @@ from limite.telaCafe import TelaCafe
 from entidade.cafe import Cafe
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
+from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 
 class ControladorCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
@@ -50,7 +50,8 @@ class ControladorCafe(BuscaProdutoMixin):
         if self.id_produto_ja_existe(dados_cafe["id"]):
             self.__tela_cafe.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
-        empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(dados_cafe["empresa_fornecedora"])
+        empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(
+            dados_cafe["empresa_fornecedora"])
         novo_cafe = Cafe(
             dados_cafe["nome"], dados_cafe["preco_compra"], dados_cafe["preco_venda"],
             dados_cafe["id"], dados_cafe["data_fabricacao"], dados_cafe["origem"],
@@ -84,7 +85,8 @@ class ControladorCafe(BuscaProdutoMixin):
         cafe.moagem = novos_dados["moagem"]
         cafe.notas_sensoriais = novos_dados["notas_sensoriais"]
         cafe.perfil_recomendado = novos_dados["perfil_recomendado"]
-        cafe.empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(novos_dados["empresa_fornecedora"])
+        cafe.empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(
+            novos_dados["empresa_fornecedora"])
         
         self.__tela_cafe.mostra_mensagem("Café alterado com sucesso!")
         self.lista_cafe()
@@ -121,6 +123,10 @@ class ControladorCafe(BuscaProdutoMixin):
         id_cafe = self.__tela_cafe.seleciona_cafe()
         cafe = self.pega_cafe_por_id(id_cafe)
         
+        # Remove o café do estoque se estiver lá
+        estoque = self._controlador_sistema.controlador_estoque.estoque
+        estoque.remover_produto_do_estoque(cafe)
+        
         self.__cafes.remove(cafe)
         self.__tela_cafe.mostra_mensagem("Café excluído com sucesso!")
         self.lista_cafe()
@@ -145,7 +151,12 @@ class ControladorCafe(BuscaProdutoMixin):
                 if funcao_escolhida:
                     funcao_escolhida()
                 else:
-                    self.__tela_cafe.mostra_mensagem("Opção inválida! Por favor, digite um número do menu.")
+                    self.__tela_cafe.mostra_mensagem(
+                        "Opção inválida! Por favor, digite um número do menu.")
 
-            except (CafeNaoEncontradoException, PerfilRecomendadoNaoExisteException, TypeError, FornecedorNaoEncontradoException) as e:
+            except (CafeNaoEncontradoException,
+                    PerfilRecomendadoNaoExisteException,
+                    FornecedorNaoEncontradoException,
+                    ProdutoNaoEncontradoException,
+                    TypeError) as e:
                 self.__tela_cafe.mostra_mensagem(f"Ocorreu um erro: {e}")

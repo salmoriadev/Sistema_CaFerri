@@ -87,6 +87,21 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
         cnpj_fornecedor = self.__tela_empresa_maquina.seleciona_empresa_maquina()
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
         
+        # Verifica se existe alguma máquina usando este fornecedor
+        maquinas_usando_fornecedor = []
+        for maquina in self._controlador_sistema.controlador_maquina_de_cafe.maquinas:
+            if maquina.empresa_fornecedora == fornecedor:
+                maquinas_usando_fornecedor.append(maquina)
+        
+        if maquinas_usando_fornecedor:
+            self.__tela_empresa_maquina.mostra_mensagem(
+                f"ERRO: Não é possível excluir este fornecedor!")
+            self.__tela_empresa_maquina.mostra_mensagem(
+                f"Existem {len(maquinas_usando_fornecedor)} máquina(s) cadastrada(s) que utilizam este fornecedor.")
+            self.__tela_empresa_maquina.mostra_mensagem(
+                "Exclua as máquinas primeiro ou altere o fornecedor delas.")
+            return
+        
         self.__fornecedores_maquina.remove(fornecedor)
         self.__tela_empresa_maquina.mostra_mensagem("Fornecedor excluído com sucesso!")
         self.lista_fornecedores()

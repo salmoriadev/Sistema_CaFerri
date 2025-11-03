@@ -24,6 +24,10 @@ import datetime
 from entidade.cliente import Cliente
 from entidade.produto import Produto
 from entidade.estoque import Estoque
+from Excecoes.vendaNaoEmAndamentoException import VendaNaoEmAndamentoException
+from Excecoes.saldoInsuficienteException import SaldoInsuficienteException
+from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
+from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
 
 class Venda:
     def __init__(self, id_venda: int, cliente: Cliente) -> None:
@@ -60,23 +64,23 @@ class Venda:
             })
         return lista_formatada
     
-    def finalizar_venda(self, estoque: Estoque) -> str:
+    def finalizar_venda(self, estoque: Estoque) -> None:
         if self.__status_venda != "Em andamento":
-            return "ERRO: Esta venda não está mais em andamento."
+            raise VendaNaoEmAndamentoException()
         if self.__cliente.saldo < self.__valor_total:
-            return f"ERRO: Saldo insuficiente. Saldo: R$ {self.__cliente.saldo:.2f}, Valor da Compra: R$ {self.__valor_total:.2f}"
+            raise SaldoInsuficienteException()
         for produto, quantidade_necessaria in self.__carrinho.items():
             produtos_em_estoque = estoque.listar_produtos()
             if produto not in produtos_em_estoque:
-                return f"ERRO: O produto '{produto.nome}' não consta no estoque."
+                raise ProdutoNaoEmEstoqueException(produto.nome)
             if produtos_em_estoque[produto] < quantidade_necessaria:
-                return f"ERRO: Estoque insuficiente para '{produto.nome}'. Necessário: {quantidade_necessaria}, Disponível: {produtos_em_estoque[produto]}."
+                raise EstoqueInsuficienteException(
+                    produto.nome, quantidade_necessaria, produtos_em_estoque[produto])
         for produto, quantidade_necessaria in self.__carrinho.items():
             estoque.retirar_quantidade(produto, quantidade_necessaria)
         self.__cliente.saldo -= self.__valor_total
         self.__data_venda = datetime.datetime.now()
         self.__status_venda = "Finalizada"
-        return "Venda finalizada com sucesso!"
     
     def diminuir_quantidade_produto(self, produto: Produto, quantidade: int) -> str:
         if quantidade <= 0:

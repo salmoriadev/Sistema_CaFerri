@@ -8,6 +8,8 @@
     """
 
 from entidade.produto import Produto
+from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
+from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
 
 class Estoque:
     def __init__(self) -> None:
@@ -30,13 +32,17 @@ class Estoque:
 
     def retirar_quantidade(self, produto: Produto, quantidade_a_retirar: int) -> None:
         if not self.produto_ja_existe(produto):
-            return "ERRO: Produto não encontrado no estoque."
+            raise ProdutoNaoEmEstoqueException(produto.nome)
         
         if self.__produtos_em_estoque[produto] >= quantidade_a_retirar:
             self.__produtos_em_estoque[produto] -= quantidade_a_retirar
-            return None
         else:
-            return "ERRO: Estoque insuficiente."
+            raise EstoqueInsuficienteException(
+                produto.nome, quantidade_a_retirar, self.__produtos_em_estoque[produto])
+
+    def remover_produto_do_estoque(self, produto: Produto) -> None:
+        if self.produto_ja_existe(produto):
+            del self.__produtos_em_estoque[produto]
 
     def listar_produtos(self) -> dict:
         return self.__produtos_em_estoque

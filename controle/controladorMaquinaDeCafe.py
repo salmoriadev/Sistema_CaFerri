@@ -33,15 +33,17 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         for maquina in self.__maquinas:
             if maquina.id == id:
                 return maquina
-        raise MaquinaNaoEncontradaException
+        raise MaquinaNaoEncontradaException()
 
     def incluir_maquina(self) -> None:
         dados_maquina = self.__tela_maquina.pega_dados_maquina(is_alteracao=False)
 
         if self.id_produto_ja_existe(dados_maquina["id"]):
-            self.__tela_maquina.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
+            self.__tela_maquina.mostra_mensagem(
+                "ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
-        empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(dados_maquina["empresa_fornecedora"])
+        empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(
+            dados_maquina["empresa_fornecedora"])
         nova_maquina = MaquinaDeCafe(
             dados_maquina["nome"], dados_maquina["preco_compra"], dados_maquina["preco_venda"],
             dados_maquina["id"], dados_maquina["data_fabricacao"], empresa_fornecedora
@@ -64,7 +66,8 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         maquina.preco_compra = novos_dados["preco_compra"]
         maquina.preco_venda = novos_dados["preco_venda"]
         maquina.data_fabricacao = novos_dados["data_fabricacao"]
-        maquina.empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(novos_dados["empresa_fornecedora"])
+        maquina.empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(
+            novos_dados["empresa_fornecedora"])
 
         self.__tela_maquina.mostra_mensagem("Máquina alterada com sucesso!")
         self.lista_maquina()
@@ -93,6 +96,10 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         id_maquina = self.__tela_maquina.seleciona_maquina()
         maquina = self.pega_maquina_por_id(id_maquina)
 
+        # Remove a máquina do estoque se estiver lá
+        estoque = self._controlador_sistema.controlador_estoque.estoque
+        estoque.remover_produto_do_estoque(maquina)
+
         self.__maquinas.remove(maquina)
         self.__tela_maquina.mostra_mensagem("Máquina excluída com sucesso!")
         self.lista_maquina()
@@ -117,7 +124,10 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                 if funcao_escolhida:
                     funcao_escolhida()
                 else:
-                    self.__tela_maquina.mostra_mensagem("Opção inválida! Por favor, digite um número do menu.")
+                    self.__tela_maquina.mostra_mensagem(
+                        "Opção inválida! Por favor, digite um número do menu.")
 
-            except (MaquinaNaoEncontradaException, TypeError, ValueError, FornecedorNaoEncontradoException) as e:
+            except (MaquinaNaoEncontradaException,
+            TypeError, ValueError,
+            FornecedorNaoEncontradoException) as e:
                 self.__tela_maquina.mostra_mensagem(f"Ocorreu um erro: {e}")

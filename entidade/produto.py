@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 
 class Produto(ABC):
     @abstractmethod
-    def __init__(self, nome: str, preco_compra: float, preco_venda: float, id: int, data_fabricacao: str) -> None:
+    def __init__(self, nome: str, preco_compra: float,
+    preco_venda: float, id: int, data_fabricacao: str) -> None:
         self.__id = id
         self.__nome = nome
         self.__preco_compra = preco_compra

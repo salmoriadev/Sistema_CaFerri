@@ -14,7 +14,8 @@ from entidade.perfil_consumidor import PerfilConsumidor
 class Cafe(Produto):
     def __init__(self, nome: str, preco_compra: float, preco_venda: float,
                  id: int, data_fabricacao: str, origem: str, variedade: str, 
-                 altitude: int, moagem: str, notas_sensoriais: str, perfil_recomendado: str, empresa_fornecedora: FornecedoraCafe) -> None:
+                 altitude: int, moagem: str, notas_sensoriais: str,
+                 perfil_recomendado: str, empresa_fornecedora: FornecedoraCafe) -> None:
         super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
         self.__origem = origem
         self.__variedade = variedade

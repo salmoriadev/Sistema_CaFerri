@@ -15,14 +15,17 @@ class ControladorRelatorios:
         self.__tela_relatorios = TelaRelatorio()
 
     def relatorio_vendas_finalizadas(self):
-        vendas_finalizadas = [v for v in self.__controlador_sistema.controlador_venda.vendas if v.status_venda == "Finalizada"]
+        vendas_finalizadas = [
+            v for v in self.__controlador_sistema.controlador_venda.vendas if (
+                v.status_venda == "Finalizada")]
         
         linhas_relatorio = []
         total_arrecadado = 0.0
 
         for venda in vendas_finalizadas:
             linhas_relatorio.append(
-                f"ID: {venda.id_venda} | Cliente: {venda.cliente.nome} | Valor: R$ {venda.valor_total:.2f}"
+                f"ID: {venda.id_venda} | Cliente: {venda.cliente.nome} | "
+                f"Valor: R$ {venda.valor_total:.2f}"
             )
             total_arrecadado += venda.valor_total
         
@@ -31,7 +34,9 @@ class ControladorRelatorios:
         self.__tela_relatorios.mostra_relatorio("Vendas Finalizadas", linhas_relatorio)
 
     def relatorio_cafes_mais_vendidos(self):
-        vendas_finalizadas = [v for v in self.__controlador_sistema.controlador_venda.vendas if v.status_venda == "Finalizada"]
+        vendas_finalizadas = [
+            v for v in self.__controlador_sistema.controlador_venda.vendas if (
+                v.status_venda == "Finalizada")]
         contagem_cafes = {}
 
         for venda in vendas_finalizadas:
@@ -50,7 +55,9 @@ class ControladorRelatorios:
         self.__tela_relatorios.mostra_relatorio("Cafés Mais Vendidos", linhas_relatorio)
 
     def relatorio_maquinas_mais_vendidas(self):
-        vendas_finalizadas = [v for v in self.__controlador_sistema.controlador_venda.vendas if v.status_venda == "Finalizada"]
+        vendas_finalizadas = [
+            v for v in self.__controlador_sistema.controlador_venda.vendas if (
+                v.status_venda == "Finalizada")]
         contagem_maquinas = {}
 
         for venda in vendas_finalizadas:
@@ -62,14 +69,18 @@ class ControladorRelatorios:
 
         linhas_relatorio = []
         for maquina, total_vendido in maquinas_ordenadas:
-            linhas_relatorio.append(f"Máquina: {maquina.nome} (ID: {maquina.id}) | Total Vendido: {total_vendido} unidades")
+            linhas_relatorio.append(
+                f"Máquina: {maquina.nome} (ID: {maquina.id}) | "
+                f"Total Vendido: {total_vendido} unidades")
         
         if not linhas_relatorio:
             linhas_relatorio.append("Nenhuma máquina vendida até o momento.")
         self.__tela_relatorios.mostra_relatorio("Máquinas Mais Vendidas", linhas_relatorio)
 
     def relatorio_empresas_fornecedoras_mais_ativas(self):
-        vendas_finalizadas = [v for v in self.__controlador_sistema.controlador_venda.vendas if v.status_venda == "Finalizada"]
+        vendas_finalizadas = [
+            v for v in self.__controlador_sistema.controlador_venda.vendas if (
+                v.status_venda == "Finalizada")]
         contagem_empresas = {}
 
         for venda in vendas_finalizadas:
@@ -78,11 +89,14 @@ class ControladorRelatorios:
                     fornecedor = produto.empresa_fornecedora
                     contagem_empresas[fornecedor] = contagem_empresas.get(fornecedor, 0) + quantidade
 
-        empresas_ordenadas = sorted(contagem_empresas.items(), key=lambda item: item[1], reverse=True)
+        empresas_ordenadas = sorted(
+            contagem_empresas.items(), key=lambda item: item[1], reverse=True)
 
         linhas_relatorio = []
         for empresa, total_vendido in empresas_ordenadas:
-            linhas_relatorio.append(f"Empresa: {empresa.nome} (ID: {empresa.id}) | Total de Produtos Vendidos: {total_vendido} unidades")
+            linhas_relatorio.append(
+                f"Empresa: {empresa.nome} (CNPJ: {empresa.cnpj}) | "
+                f"Total de Produtos Vendidos: {total_vendido} unidades")
 
         if not linhas_relatorio:
             linhas_relatorio.append("Nenhuma venda de produtos de fornecedores registrada.")
@@ -91,23 +105,30 @@ class ControladorRelatorios:
 
     def relatorio_clientes_por_valor(self):
         gastos_por_cliente = {}
-        vendas_finalizadas = [v for v in self.__controlador_sistema.controlador_venda.vendas if v.status_venda == "Finalizada"]
+        vendas_finalizadas = [
+            v for v in self.__controlador_sistema.controlador_venda.vendas if (
+                v.status_venda == "Finalizada")]
 
         for venda in vendas_finalizadas:
             cliente_id = venda.cliente.id
             gastos_por_cliente[cliente_id] = gastos_por_cliente.get(cliente_id, 0) + venda.valor_total
         
-        clientes_ordenados = sorted(gastos_por_cliente.items(), key=lambda item: item[1], reverse=True)
+        clientes_ordenados = sorted(
+            gastos_por_cliente.items(), key=lambda item: item[1], reverse=True)
 
         linhas_relatorio = []
         for cliente_id, total_gasto in clientes_ordenados:
             try:
-                cliente = self.__controlador_sistema.controlador_cliente.pega_cliente_por_id(cliente_id)
-                linhas_relatorio.append(f"Cliente: {cliente.nome} (ID: {cliente_id}) | Total Gasto: R$ {total_gasto:.2f}")
+                cliente = self.__controlador_sistema.controlador_cliente.pega_cliente_por_id(
+                    cliente_id)
+                linhas_relatorio.append(
+                    f"Cliente: {cliente.nome} (ID: {cliente_id}) | Total Gasto: R$ {total_gasto:.2f}")
             except ClienteNaoEncontradoException: 
-                linhas_relatorio.append(f"Cliente ID: {cliente_id} (Excluído) | Total Gasto: R$ {total_gasto:.2f}")
+                linhas_relatorio.append(
+                    f"Cliente ID: {cliente_id} (Excluído) | Total Gasto: R$ {total_gasto:.2f}")
         
-        self.__tela_relatorios.mostra_relatorio("Clientes por Valor Gasto", linhas_relatorio)
+        self.__tela_relatorios.mostra_relatorio(
+            "Clientes por Valor Gasto", linhas_relatorio)
 
     def relatorio_estoque_baixo(self):
         LIMITE_MINIMO = 5
@@ -124,7 +145,8 @@ class ControladorRelatorios:
         if not linhas_relatorio:
             linhas_relatorio.append("Nenhum produto com estoque baixo.")
 
-        self.__tela_relatorios.mostra_relatorio(f"Produtos com Estoque Abaixo de {LIMITE_MINIMO} Unidades", linhas_relatorio)
+        self.__tela_relatorios.mostra_relatorio(
+            f"Produtos com Estoque Abaixo de {LIMITE_MINIMO} Unidades", linhas_relatorio)
 
     def abre_tela(self) -> None:
         mapa_opcoes = {

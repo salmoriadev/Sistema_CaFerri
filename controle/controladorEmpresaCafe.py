@@ -29,13 +29,14 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         for fornecedor in self.__fornecedores_cafe:
             if fornecedor.cnpj == cnpj:
                 return fornecedor
-        raise FornecedorNaoEncontradoException
+        raise FornecedorNaoEncontradoException()
 
     def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=False)
 
         if self.existe_fornecedor_com_cnpj(dados_fornecedor["cnpj"]):
-            self.__tela_empresa_cafe.mostra_mensagem("ERRO: Já existe um fornecedor com este CNPJ!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "ERRO: Já existe um fornecedor com este CNPJ!")
         else:
             novo_fornecedor = FornecedoraCafe(
                 dados_fornecedor["nome"], dados_fornecedor["cnpj"],
@@ -43,11 +44,13 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
                 dados_fornecedor["tipo_cafe"]
             )
             self.__fornecedores_cafe.append(novo_fornecedor)
-            self.__tela_empresa_cafe.mostra_mensagem("Fornecedor de café cadastrado com sucesso!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "Fornecedor de café cadastrado com sucesso!")
 
     def alterar_fornecedor(self) -> None:
         if not self.__fornecedores_cafe:
-            self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor cadastrado para alterar!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "Nenhum fornecedor cadastrado para alterar!")
             return
 
         self.lista_fornecedores()
@@ -84,6 +87,20 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         self.lista_fornecedores()
         cnpj_fornecedor = self.__tela_empresa_cafe.seleciona_empresa_cafe()
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
+        
+        # Verifica se existe algum café usando este fornecedor
+        cafes_usando_fornecedor = []
+        for cafe in self._controlador_sistema.controlador_cafe.cafes:
+            if cafe.empresa_fornecedora == fornecedor:
+                cafes_usando_fornecedor.append(cafe)
+        
+        if cafes_usando_fornecedor:
+            self.__tela_empresa_cafe.mostra_mensagem(f"ERRO: Não é possível excluir este fornecedor!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                f"Existem {len(cafes_usando_fornecedor)} café(s) cadastrado(s) que utilizam este fornecedor.")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "Exclua os cafés primeiro ou altere o fornecedor deles.")
+            return
         
         self.__fornecedores_cafe.remove(fornecedor)
         self.__tela_empresa_cafe.mostra_mensagem("Fornecedor excluído com sucesso!")

@@ -41,7 +41,8 @@ class BuscaProdutoMixin:
             return self._controlador_sistema.controlador_cafe.pega_cafe_por_id(id_produto)
         except CafeNaoEncontradoException:
             try:
-                return self._controlador_sistema.controlador_maquina_de_cafe.pega_maquina_por_id(id_produto)
+                return self._controlador_sistema.controlador_maquina_de_cafe.pega_maquina_por_id(
+                    id_produto)
             except MaquinaNaoEncontradaException:
                 raise ProdutoNaoEncontradoException()
 

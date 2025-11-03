@@ -13,7 +13,8 @@ from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExi
 
 class PerfilConsumidor:
     def __init__(self, perfil: str) -> None:
-        self.__possiveis_perfis = ["Doce e Suave", "Ácido e Frutado", "Intenso e Encorpado", "Equilibrado e Completo"]
+        self.__possiveis_perfis = ["Doce e Suave", "Ácido e Frutado",
+        "Intenso e Encorpado", "Equilibrado e Completo"]
         if perfil not in self.__possiveis_perfis:
             raise PerfilRecomendadoNaoExisteException(perfil)
         self.__perfil = perfil

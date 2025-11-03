@@ -40,7 +40,7 @@ class ControladorCliente:
         for cliente in self.__clientes:
             if cliente.id == id:
                 return cliente
-        raise ClienteNaoEncontradoException
+        raise ClienteNaoEncontradoException()
 
     def incluir_cliente(self) -> None:
         perfis_mapa = {}
@@ -114,6 +114,19 @@ class ControladorCliente:
         if senha != cliente.senha_cifrada:
             self.__tela_cliente.mostra_mensagem("Senha incorreta! Exclusão cancelada.")
             return
+        
+        # Verifica se existe alguma venda (em andamento) com este cliente
+        vendas_com_cliente = []
+        for venda in self._controlador_sistema.controlador_venda.vendas:
+            if venda.cliente == cliente and venda.status_venda == "Em andamento":
+                vendas_com_cliente.append(venda)
+        
+        if vendas_com_cliente:
+            self.__tela_cliente.mostra_mensagem(f"ERRO: Não é possível excluir este cliente!")
+            self.__tela_cliente.mostra_mensagem(
+                f"Existem {len(vendas_com_cliente)} venda(s) em andamento com este cliente.")
+            self.__tela_cliente.mostra_mensagem("Finalize ou cancele as vendas primeiro.")
+            return
             
         self.__clientes.remove(cliente)
         self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
@@ -130,13 +143,18 @@ class ControladorCliente:
         try:
             cliente = self.pega_cliente_por_id(id_cliente)
             perfil_do_cliente = cliente.perfil_do_consumidor.perfil
-            cafes_recomendados = self.__controlador_sistema.controlador_cafe.buscar_cafes_por_perfil(perfil_do_cliente)
-            self.__tela_cliente.mostra_mensagem(f"\n--- Recomendações para {cliente.nome} (Perfil: {perfil_do_cliente}) ---")
+            cafes_recomendados = self.__controlador_sistema.controlador_cafe.buscar_cafes_por_perfil(
+                perfil_do_cliente)
+            self.__tela_cliente.mostra_mensagem(
+                f"\n--- Recomendações para {cliente.nome} (Perfil: {perfil_do_cliente}) ---")
             for cafe in cafes_recomendados:
-                self.__tela_cliente.mostra_mensagem(f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
+                self.__tela_cliente.mostra_mensagem(
+                    f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
             if not cafes_recomendados:
-                self.__tela_cliente.mostra_mensagem("Nenhum café encontrado para o perfil do cliente.")
-            self.__tela_cliente.mostra_mensagem("----------------------------------------------------")
+                self.__tela_cliente.mostra_mensagem(
+                    "Nenhum café encontrado para o perfil do cliente.")
+            self.__tela_cliente.mostra_mensagem(
+                "----------------------------------------------------")
 
         except ClienteNaoEncontradoException as e:
             self.__tela_cliente.mostra_mensagem(f"ERRO: {e}")
@@ -162,7 +180,9 @@ class ControladorCliente:
                 if funcao_escolhida:
                     funcao_escolhida()
                 else:
-                    self.__tela_cliente.mostra_mensagem("Opção inválida! Por favor, digite um número do menu.")
+                    self.__tela_cliente.mostra_mensagem(
+                        "Opção inválida! Por favor, digite um número do menu.")
             
-            except (ClienteNaoEncontradoException, PerfilRecomendadoNaoExisteException, TypeError) as e:
+            except (ClienteNaoEncontradoException,
+            PerfilRecomendadoNaoExisteException, TypeError) as e:
                 self.__tela_cliente.mostra_mensagem(f"Ocorreu um erro: {e}")

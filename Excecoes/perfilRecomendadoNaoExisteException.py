@@ -1,4 +1,3 @@
 class PerfilRecomendadoNaoExisteException(Exception):
-    def __init__(self):
-        self.mensagem = "Perfil recomendado não existe."
-        super().__init__(self.mensagem)
+    def __init__(self, perfil: str):
+        super().__init__(f"Perfil recomendado '{perfil}' não existe.")

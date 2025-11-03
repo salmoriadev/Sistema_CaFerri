@@ -16,6 +16,8 @@ from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEstoque import TelaEstoque
 from entidade.estoque import Estoque
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
+from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
+from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
 
 class ControladorEstoque(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
@@ -36,60 +38,54 @@ class ControladorEstoque(BuscaProdutoMixin):
 
     def listar_estoque(self) -> None:
         self.__tela_estoque.mostra_mensagem("\n---------- INVENTÁRIO ATUAL ----------")
-        if not self.__estoque.listar_produtos():
+        produtos = self.__estoque.listar_produtos()
+        if not produtos:
             self.__tela_estoque.mostra_mensagem("O estoque está vazio.")
         else:
-            for produto, quantidade in self.__estoque.listar_produtos().items():
-                self.__tela_estoque.mostra_mensagem(f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
+            for produto, quantidade in produtos.items():
+                self.__tela_estoque.mostra_mensagem(
+                    f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
         self.__tela_estoque.mostra_mensagem("------------------------------------")
 
     def adicionar_novo_produto(self) -> None:
         dados = self.__tela_estoque.pega_dados_produto_estoque()
         if not dados:
             return
-        try:
-            produto = self.pega_produto_por_id(dados["id_produto"])
-            if self.__estoque.produto_ja_existe(produto):
-                self.__tela_estoque.mostra_mensagem(f"ERRO: '{produto.nome}' já está cadastrado no estoque.")
-                self.__tela_estoque.mostra_mensagem("Use a opção 'Repor Estoque' para adicionar mais unidades.")
-            else:
-                self.__estoque.cadastrar_novo_produto(produto, dados["quantidade"])
-                self.__tela_estoque.mostra_mensagem(f"'{produto.nome}' adicionado ao estoque com sucesso!")
-        except ProdutoNaoEncontradoException as e:
-            self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")
+        produto = self.pega_produto_por_id(dados["id_produto"])
+        if self.__estoque.produto_ja_existe(produto):
+            self.__tela_estoque.mostra_mensagem(
+                f"ERRO: '{produto.nome}' já está cadastrado no estoque.")
+            self.__tela_estoque.mostra_mensagem(
+                "Use a opção 'Repor Estoque' para adicionar mais unidades.")
+        else:
+            self.__estoque.cadastrar_novo_produto(produto, dados["quantidade"])
+            self.__tela_estoque.mostra_mensagem(
+                f"'{produto.nome}' adicionado ao estoque com sucesso!")
 
     def repor_estoque(self) -> None:
         self.listar_estoque()
         dados = self.__tela_estoque.pega_dados_produto_estoque()
         if not dados:
             return
-        try:
-            produto = self.pega_produto_por_id(dados["id_produto"])
+        produto = self.pega_produto_por_id(dados["id_produto"])
 
-            if self.__estoque.produto_ja_existe(produto):
-                self.__estoque.adicionar_quantidade(produto, dados["quantidade"])
-                self.__tela_estoque.mostra_mensagem(f"Estoque de '{produto.nome}' atualizado.")
-            else:
-                self.__tela_estoque.mostra_mensagem(f"ERRO: '{produto.nome}' não está no estoque.")
-                self.__tela_estoque.mostra_mensagem("Use a opção 'Adicionar Novo Produto' para cadastrá-lo primeiro.")
-        except ProdutoNaoEncontradoException as e:
-            self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")
+        if self.__estoque.produto_ja_existe(produto):
+            self.__estoque.adicionar_quantidade(produto, dados["quantidade"])
+            self.__tela_estoque.mostra_mensagem(f"Estoque de '{produto.nome}' atualizado.")
+        else:
+            self.__tela_estoque.mostra_mensagem(
+                f"ERRO: '{produto.nome}' não está no estoque.")
+            self.__tela_estoque.mostra_mensagem(
+                "Use a opção 'Adicionar Novo Produto' para cadastrá-lo primeiro.")
 
     def baixar_estoque(self) -> None:
         self.listar_estoque()
         dados = self.__tela_estoque.pega_dados_produto_estoque()
         if not dados:
             return
-        try:
-            produto = self.pega_produto_por_id(dados["id_produto"])
-            resultado = self.__estoque.retirar_quantidade(produto, dados["quantidade"])
-            
-            if resultado:
-                self.__tela_estoque.mostra_mensagem(resultado)
-            else:
-                self.__tela_estoque.mostra_mensagem("Baixa de estoque realizada com sucesso.")
-        except ProdutoNaoEncontradoException as e:
-            self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")
+        produto = self.pega_produto_por_id(dados["id_produto"])
+        self.__estoque.retirar_quantidade(produto, dados["quantidade"])
+        self.__tela_estoque.mostra_mensagem("Baixa de estoque realizada com sucesso.")
 
     def retornar(self) -> None:
         self._controlador_sistema.abre_tela()
@@ -113,5 +109,6 @@ class ControladorEstoque(BuscaProdutoMixin):
                     mapa_opcoes[opcao]()
                 else:
                     self.__tela_estoque.mostra_mensagem("Opção inválida.")
-            except ProdutoNaoEncontradoException as e:
+            except (ProdutoNaoEncontradoException, ProdutoNaoEmEstoqueException, 
+                    EstoqueInsuficienteException) as e:
                 self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")

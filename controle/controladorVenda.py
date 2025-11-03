@@ -28,6 +28,10 @@ from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from Excecoes.vendaNaoEncontradaException import VendaNaoEncontradaException
 from Excecoes.IDJaExistenteException import IDJaExistenteException
+from Excecoes.vendaNaoEmAndamentoException import VendaNaoEmAndamentoException
+from Excecoes.saldoInsuficienteException import SaldoInsuficienteException
+from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
+from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
 
 class ControladorVenda(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
@@ -53,7 +57,8 @@ class ControladorVenda(BuscaProdutoMixin):
             if v.id_venda == dados_iniciais["id_venda"]:
                 raise IDJaExistenteException("Venda")
         
-        cliente = self._controlador_sistema.controlador_cliente.pega_cliente_por_id(dados_iniciais["id_cliente"])
+        cliente = self._controlador_sistema.controlador_cliente.pega_cliente_por_id(
+            dados_iniciais["id_cliente"])
         nova_venda = Venda(dados_iniciais["id_venda"], cliente)
         self.__vendas.append(nova_venda)
         self.__tela_venda.mostra_mensagem("Venda iniciada com sucesso! Adicione produtos ao carrinho.")
@@ -68,15 +73,20 @@ class ControladorVenda(BuscaProdutoMixin):
             5: self.finalizar_venda
         }
         while venda.status_venda == "Em andamento":
-            self.mostrar_detalhes_venda(venda)
-            opcao = self.__tela_venda.tela_opcoes_gerenciar_venda()
-            if opcao == 0:
-                self.__tela_venda.mostra_mensagem("Venda salva para continuar depois.")
-                break
-            if opcao in mapa_opcoes:
-                mapa_opcoes[opcao](venda)
-            else:
-                self.__tela_venda.mostra_mensagem("Opção inválida.")
+            try:
+                self.mostrar_detalhes_venda(venda)
+                opcao = self.__tela_venda.tela_opcoes_gerenciar_venda()
+                if opcao == 0:
+                    self.__tela_venda.mostra_mensagem("Venda salva para continuar depois.")
+                    break
+                if opcao in mapa_opcoes:
+                    mapa_opcoes[opcao](venda)
+                else:
+                    self.__tela_venda.mostra_mensagem("Opção inválida.")
+            except (ProdutoNaoEncontradoException, 
+                    VendaNaoEmAndamentoException, SaldoInsuficienteException,
+                    ProdutoNaoEmEstoqueException, EstoqueInsuficienteException) as e:
+                self.__tela_venda.mostra_mensagem(f"ERRO: {e}")
 
     def adicionar_produto(self, venda: Venda) -> None:
         dados = self.__tela_venda.pega_dados_produto()
@@ -104,8 +114,8 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def finalizar_venda(self, venda: Venda) -> None:
         estoque = self._controlador_sistema.controlador_estoque.estoque
-        resultado = venda.finalizar_venda(estoque)
-        self.__tela_venda.mostra_mensagem(resultado)
+        venda.finalizar_venda(estoque)
+        self.__tela_venda.mostra_mensagem("Venda finalizada com sucesso!")
 
     def listar_vendas(self) -> None:
         if not self.__vendas:
@@ -142,7 +152,11 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def abre_tela(self) -> None:
         mapa_opcoes = {
-            1: self.iniciar_venda, 2: self.listar_vendas, 3: self.excluir_venda, 4: self.gerenciar_venda, 0: self.retornar
+            1: self.iniciar_venda,
+            2: self.listar_vendas,
+            3: self.excluir_venda,
+            4: self.gerenciar_venda,
+            0: self.retornar
         }
         while True:
             try:
@@ -164,5 +178,7 @@ class ControladorVenda(BuscaProdutoMixin):
                 else:
                     self.__tela_venda.mostra_mensagem("Opção inválida.")
             except (ClienteNaoEncontradoException, ProdutoNaoEncontradoException, 
-                    VendaNaoEncontradaException, IDJaExistenteException) as e:
+                    VendaNaoEncontradaException, IDJaExistenteException,
+                    VendaNaoEmAndamentoException, SaldoInsuficienteException,
+                    ProdutoNaoEmEstoqueException, EstoqueInsuficienteException) as e:
                 self.__tela_venda.mostra_mensagem(f"ERRO: {e}")

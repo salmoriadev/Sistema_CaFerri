@@ -8,7 +8,9 @@
 from abc import ABC, abstractmethod
 class EmpresaFornecedora(ABC):
     @abstractmethod
-    def __init__(self, nome: str, cnpj: str, endereco: str, telefone: str) -> None:
+    def __init__(self, nome: str,
+    cnpj: str, endereco: str,
+    telefone: str) -> None:
         self.__nome = nome
         self.__cnpj = cnpj
         self.__endereco = endereco

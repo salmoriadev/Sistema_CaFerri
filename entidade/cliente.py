@@ -19,7 +19,9 @@
 from entidade.perfil_consumidor import PerfilConsumidor
 
 class Cliente:
-    def __init__(self, id: int, nome: str, email: str, senha_cifrada: str, saldo: float, perfil: str) -> None:
+    def __init__(self, id: int, nome: str,
+    email: str, senha_cifrada: str,
+    saldo: float, perfil: str) -> None:
         self.__id = id
         self.__nome = nome
         self.__email = email
