@@ -16,40 +16,34 @@ class TelaEstoque:
     def init_opcoes(self):
         sg.ChangeLookAndFeel('BluePurple') 
         
-        opcoes_layout = [
-            [sg.Radio('Listar Inventário', "RD1", key='1', font='Any 12')],
-            [sg.Radio('Adicionar Novo Produto ao Estoque', "RD1", key='2', font='Any 12')],
-            [sg.Radio('Repor Estoque de um Produto', "RD1", key='3', font='Any 12')],
-            [sg.Radio('Dar Baixa Manual de um Produto', "RD1", key='4', font='Any 12')],
-            [sg.Radio('Retornar', "RD1", key='0', default=True, font='Any 12')]
+        botoes_opcoes = [
+            [sg.Button('Listar Inventário', key='1', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Adicionar Novo Produto ao Estoque', key='2', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Repor Estoque de um Produto', key='3', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Dar Baixa Manual de um Produto', key='4', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Retornar', key='0', font='Any 12', pad=(5, 5), expand_x=True)]
         ]
 
         layout = [
             [sg.Column([[sg.Text('-------- Estoque ---------', font=("Helvica", 25), pad=((0,0),(20,10)))]], justification='center')],
             [sg.Column([[sg.Text('Escolha sua opção', font=("Helvica", 15), pad=((0,0),(0,20)))]], justification='center')],
-            [sg.Column([[sg.Frame('Opções de Estoque', opcoes_layout, font='Any 14', title_color='black')]], justification='center')],
-            [sg.Column([[
-                sg.Button('Confirmar', font='Any 12', pad=((10,10),(25,15))), 
-                sg.Cancel('Cancelar', font='Any 12', pad=((10,10),(25,15)))
-            ]], justification='center')]
+            [sg.Column([[sg.Frame('Opções de Estoque', botoes_opcoes, font='Any 14', title_color='black')]], justification='center')]
         ]
         
-        self.__window = sg.Window('Gerenciador de Estoque', layout, element_justification='center', size=(550, 450))
+        self.__window = sg.Window('Gerenciador de Estoque', layout, element_justification='center', size=(550, 400))
 
     def tela_opcoes(self) -> int:
         self.init_opcoes() 
-        button, values = self.open()
+        button, _ = self.open()
 
-        if button in (None, 'Cancelar') or values['0']:
+        if button in (None, '0', 'Retornar'):
             self.close()
-            return 0 
+            return 0
 
-        if button == 'Confirmar':
-            for i in range(1, 5):
-                key = str(i)
-                if values.get(key) == True:
-                    self.close()
-                    return i
+        opcoes_validas = {'1', '2', '3', '4'}
+        if button in opcoes_validas:
+            self.close()
+            return int(button)
         
         self.close()
         return None 

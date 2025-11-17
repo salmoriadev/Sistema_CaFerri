@@ -33,6 +33,8 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
 
     def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=False)
+        if not dados_fornecedor:
+            return
 
         if self.existe_fornecedor_com_cnpj(dados_fornecedor["cnpj"]):
             self.__tela_empresa_cafe.mostra_mensagem(
@@ -55,8 +57,12 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
 
         self.lista_fornecedores()
         cnpj_fornecedor = self.__tela_empresa_cafe.seleciona_empresa_cafe()
+        if not cnpj_fornecedor:
+            return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
         novos_dados = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=True)
+        if not novos_dados:
+            return
         fornecedor.nome = novos_dados["nome"]
         fornecedor.endereco = novos_dados["endereco"]
         fornecedor.telefone = novos_dados["telefone"]
@@ -70,14 +76,14 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor de café cadastrado!")
             return
 
-        self.__tela_empresa_cafe.mostra_mensagem("--- LISTA DE FORNECEDORES DE CAFÉ ---")
+        dados_listagem = []
         for fornecedor in self.__fornecedores_cafe:
-            dados_fornecedor = {
+            dados_listagem.append({
                 "nome": fornecedor.nome,
                 "cnpj": fornecedor.cnpj,
                 "tipo_cafe": fornecedor.tipo_cafe
-            }
-            self.__tela_empresa_cafe.mostra_empresa_cafe(dados_fornecedor)
+            })
+        self.__tela_empresa_cafe.mostra_lista_fornecedores(dados_listagem)
 
     def excluir_fornecedor(self) -> None:
         if not self.__fornecedores_cafe:
@@ -86,6 +92,8 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
 
         self.lista_fornecedores()
         cnpj_fornecedor = self.__tela_empresa_cafe.seleciona_empresa_cafe()
+        if not cnpj_fornecedor:
+            return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
         
         # Verifica se existe algum café usando este fornecedor

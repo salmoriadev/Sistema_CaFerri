@@ -6,85 +6,137 @@
     sendo responsável por toda a interação via console para este módulo.
 """
 
+from typing import Dict, List, Optional
+
+import FreeSimpleGUI as sg
+
 
 class TelaEmpresaCafe:
+    def __init__(self):
+        self.__window = None
+
+    def init_opcoes(self):
+        sg.ChangeLookAndFeel('LightBrown1')
+
+        botoes = [
+            [sg.Button('Adicionar Fornecedor', key='1', font='Any 12', expand_x=True)],
+            [sg.Button('Alterar Fornecedor', key='2', font='Any 12', expand_x=True)],
+            [sg.Button('Listar Fornecedores', key='3', font='Any 12', expand_x=True)],
+            [sg.Button('Excluir Fornecedor', key='4', font='Any 12', expand_x=True)],
+            [sg.Button('Retornar', key='0', font='Any 12', expand_x=True)]
+        ]
+
+        layout = [
+            [sg.Column([[sg.Text('Fornecedores de Café', font=("Helvica", 24), pad=((0,0),(20,10)))]], justification='center')],
+            [sg.Column([[sg.Text('Escolha uma opção', font=("Helvica", 15), pad=((0,0),(0,20)))]], justification='center')],
+            [sg.Column([[sg.Frame('Opções', botoes, font='Any 14')]], justification='center')]
+        ]
+
+        self.__window = sg.Window('Fornecedores de Café', layout, element_justification='center', size=(520, 420))
+
     def tela_opcoes(self) -> int:
-        print("\n-------- Fornecedores de Café ----------")
-        print("1 - Adicionar Fornecedor")
-        print("2 - Alterar Fornecedor")
-        print("3 - Listar Fornecedores")
-        print("4 - Excluir Fornecedor")
-        print("0 - Retornar")
-        
-        while True:
-            try:
-                opcao = int(input("Escolha a opção: "))
-                return opcao
-            except ValueError:
-                self.mostra_mensagem("Erro: Por favor, digite um número inteiro válido.")
+        self.init_opcoes()
+        button, _ = self.open()
 
-    def pega_dados_empresa_cafe(self, is_alteracao: bool = False) -> dict:
-        print("\n-------- DADOS DO FORNECEDOR DE CAFÉ ----------")
+        if button in (None, '0', 'Retornar'):
+            self.close()
+            return 0
 
-        while True:
-            nome = input("Nome: ")
-            if nome.strip():
-                break
-            self.mostra_mensagem("Erro: O nome не pode ser vazio.")
-        
-        cnpj = None
+        if button in {'1', '2', '3', '4'}:
+            self.close()
+            return int(button)
+
+        self.close()
+        return None
+
+    def pega_dados_empresa_cafe(self, is_alteracao: bool = False) -> Optional[dict]:
+        campos = [
+            [sg.Text('Nome:'), sg.Input(key='nome')],
+            [sg.Text('Endereço:'), sg.Input(key='endereco')],
+            [sg.Text('Telefone:'), sg.Input(key='telefone')],
+            [sg.Text('Tipo de Café:'), sg.Input(key='tipo_cafe')]
+        ]
+
         if not is_alteracao:
-            while True:
-                cnpj = input("CNPJ: ")
-                if cnpj.strip():
+            campos.insert(1, [sg.Text('CNPJ:'), sg.Input(key='cnpj')])
+
+        layout = campos + [
+            [sg.Button('Salvar', bind_return_key=True), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Dados do Fornecedor', layout, modal=True)
+        dados = None
+
+        while True:
+            event, values = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Cancelar'):
+                break
+            if event == 'Salvar':
+                obrigatorios = ['nome', 'endereco', 'telefone', 'tipo_cafe']
+                if not is_alteracao:
+                    obrigatorios.append('cnpj')
+
+                if all(values.get(campo, '').strip() for campo in obrigatorios):
+                    dados = {
+                        "nome": values['nome'].strip(),
+                        "endereco": values['endereco'].strip(),
+                        "telefone": values['telefone'].strip(),
+                        "tipo_cafe": values['tipo_cafe'].strip()
+                    }
+                    if not is_alteracao:
+                        dados["cnpj"] = values['cnpj'].strip()
                     break
-                self.mostra_mensagem("Erro: O CNPJ não pode ser vazio.")
+                self.mostra_mensagem("Preencha todos os campos obrigatórios.")
 
-        while True:
-            endereco = input("Endereço: ")
-            if endereco.strip():
-                break
-            self.mostra_mensagem("Erro: O endereço não pode ser vazio.")
-
-        while True:
-            telefone = input("Telefone: ")
-            if telefone.strip():
-                break
-            self.mostra_mensagem("Erro: O telefone não pode ser vazio.")
-
-        while True:
-            tipo_cafe = input("Tipo de Café (ex: Arábica, Robusta): ")
-            if tipo_cafe.strip():
-                break
-            self.mostra_mensagem("Erro: O tipo de café não pode ser vazio.")
-        
-        print("---------------------------------------------")
-        
-        dados = {
-            "nome": nome,
-            "endereco": endereco,
-            "telefone": telefone,
-            "tipo_cafe": tipo_cafe
-        }
-        if cnpj is not None:
-            dados["cnpj"] = cnpj
-        
+        window.close()
         return dados
 
     def mostra_empresa_cafe(self, dados_empresa: dict) -> None:
-        print("---------------------------------")
-        print(f"NOME: {dados_empresa['nome']}")
-        print(f"CNPJ: {dados_empresa['cnpj']}")
-        print(f"TIPO DE CAFÉ: {dados_empresa['tipo_cafe']}")
-        print("---------------------------------")
+        texto = (
+            f"NOME: {dados_empresa['nome']}\n"
+            f"CNPJ: {dados_empresa.get('cnpj', '-')}\n"
+            f"TIPO DE CAFÉ: {dados_empresa['tipo_cafe']}"
+        )
+        sg.popup('Fornecedor', texto)
 
     def seleciona_empresa_cafe(self) -> str:
-        """Pede o CNPJ da empresa para selecioná-la."""
+        layout = [
+            [sg.Text('CNPJ do fornecedor:'), sg.Input(key='cnpj')],
+            [sg.Button('Selecionar', bind_return_key=True), sg.Button('Cancelar')]
+        ]
+        window = sg.Window('Selecionar Fornecedor', layout, modal=True)
+        cnpj_escolhido = None
+
         while True:
-            cnpj = input("CNPJ do fornecedor que deseja selecionar: ")
-            if cnpj.strip():
-                return cnpj
-            self.mostra_mensagem("Erro: O CNPJ não pode ser vazio.")
+            event, values = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Cancelar'):
+                break
+            if event == 'Selecionar':
+                if values['cnpj'].strip():
+                    cnpj_escolhido = values['cnpj'].strip()
+                    break
+                self.mostra_mensagem("O CNPJ não pode ser vazio.")
+
+        window.close()
+        return cnpj_escolhido
+
+    def mostra_lista_fornecedores(self, fornecedores: List[Dict[str, str]]) -> None:
+        texto = ["--- LISTA DE FORNECEDORES DE CAFÉ ---"]
+        for fornecedor in fornecedores:
+            texto.append(f"NOME: {fornecedor['nome']}")
+            texto.append(f"CNPJ: {fornecedor['cnpj']}")
+            texto.append(f"TIPO DE CAFÉ: {fornecedor['tipo_cafe']}")
+            texto.append("")
+        sg.popup_scrolled("Fornecedores de Café", "\n".join(texto).strip())
 
     def mostra_mensagem(self, msg: str) -> None:
-        print(msg)
+        sg.popup("", msg)
+
+    def close(self):
+        if self.__window:
+            self.__window.Close()
+            self.__window = None
+
+    def open(self):
+        button, values = self.__window.Read()
+        return button, values

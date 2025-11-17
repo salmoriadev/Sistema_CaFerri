@@ -34,6 +34,9 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
 
     def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_maquina.pega_dados_empresa_maquina(is_alteracao=False)
+        if not dados_fornecedor:
+            return
+
         if self.existe_fornecedor_com_cnpj(dados_fornecedor["cnpj"]):
             self.__tela_empresa_maquina.mostra_mensagem("ERRO: Já existe um fornecedor com este CNPJ!")
         else:
@@ -52,9 +55,13 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
 
         self.lista_fornecedores()
         cnpj_fornecedor = self.__tela_empresa_maquina.seleciona_empresa_maquina()
+        if not cnpj_fornecedor:
+            return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
 
         novos_dados = self.__tela_empresa_maquina.pega_dados_empresa_maquina(is_alteracao=True)
+        if not novos_dados:
+            return
         
         fornecedor.nome = novos_dados["nome"]
         fornecedor.endereco = novos_dados["endereco"]
@@ -69,14 +76,14 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor de máquina cadastrado!")
             return
 
-        self.__tela_empresa_maquina.mostra_mensagem("--- LISTA DE FORNECEDORES DE MÁQUINA ---")
+        dados_listados = []
         for fornecedor in self.__fornecedores_maquina:
-            dados_fornecedor = {
+            dados_listados.append({
                 "nome": fornecedor.nome,
                 "cnpj": fornecedor.cnpj,
                 "pais_de_origem": fornecedor.pais_de_origem
-            }
-            self.__tela_empresa_maquina.mostra_empresa_maquina(dados_fornecedor)
+            })
+        self.__tela_empresa_maquina.mostra_lista_fornecedores(dados_listados)
 
     def excluir_fornecedor(self) -> None:
         if not self.__fornecedores_maquina:
@@ -85,6 +92,8 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
 
         self.lista_fornecedores()
         cnpj_fornecedor = self.__tela_empresa_maquina.seleciona_empresa_maquina()
+        if not cnpj_fornecedor:
+            return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
         
         # Verifica se existe alguma máquina usando este fornecedor

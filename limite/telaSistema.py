@@ -36,56 +36,42 @@ class TelaSistema:
             [sg.Text('Escolha sua opção', font=("Helvica", 16), pad=((0,0),(0,15)))]
         ]
 
-        layout_opcoes = [
-            [sg.Radio('Fornecedores de cafés', "RD1", key='1', font='Any 12')],
-            [sg.Radio('Fornecedores de máquinas de cafés', "RD1", key='2', font='Any 12')],
-            [sg.Radio('Clientes', "RD1", key='3', font='Any 12')],
-            [sg.Radio('Cafés', "RD1", key='4', font='Any 12')],
-            [sg.Radio('Máquinas de cafés', "RD1", key='5', font='Any 12')],
-            [sg.Radio('Estoque', "RD1", key='6', font='Any 12')],
-            [sg.Radio('Vendas', "RD1", key='7', font='Any 12')],
-            [sg.Radio('Gerar Relatório', "RD1", key='8', font='Any 12')],
-            [sg.Radio('Finalizar sistema', "RD1", key='0', default=True, font='Any 12')]
+        botoes_opcoes = [
+            [sg.Button('Fornecedores de cafés', key='1', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Fornecedores de máquinas de cafés', key='2', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Clientes', key='3', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Cafés', key='4', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Máquinas de cafés', key='5', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Estoque', key='6', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Vendas', key='7', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Gerar Relatório', key='8', font='Any 12', pad=(5, 5), expand_x=True)],
+            [sg.Button('Finalizar sistema', key='0', font='Any 12', pad=(5, 5), expand_x=True)]
         ]
         
         layout_frame = [
-            [sg.Frame('Módulos do Sistema', layout_opcoes, font='Any 14')]
-        ]
-
-        layout_botoes = [
-            [
-                sg.Button('Confirmar', font='Any 12', pad=((10,10),(25,15))), 
-                sg.Cancel('Cancelar', font='Any 12', pad=((10,10),(25,15)))
-            ]
+            [sg.Frame('Módulos do Sistema', botoes_opcoes, font='Any 14')]
         ]
 
         layout = [
             [sg.Column(layout_titulo, justification='center', element_justification='center')],
             [sg.Column(layout_subtitulo, justification='center', element_justification='center')],
-            [sg.Column(layout_frame, justification='center')],
-            [sg.Column(layout_botoes, justification='center')]
+            [sg.Column(layout_frame, justification='center')]
         ]
         
         self.__window = sg.Window('Sistema Caferri', layout, element_justification='center', size=(550, 550))
     
     def tela_opcoes(self) -> int:
         self.init_components()
-        button, values = self.open()
+        button, _ = self.open()
 
-        if button in (None, 'Cancelar'):
+        if button in (None, '0', 'Finalizar sistema'):
             self.close()
             return 0  
 
-        if values['0']:
+        opcoes_validas = {'1','2','3','4','5','6','7','8'}
+        if button in opcoes_validas:
             self.close()
-            return 0  
-
-        if button == 'Confirmar':
-            for i in range(1, 9): 
-                key = str(i)
-                if values.get(key) == True: 
-                    self.close()
-                    return i  
+            return int(button)  
         
         self.close()
         return None 
