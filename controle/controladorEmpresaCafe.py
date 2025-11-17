@@ -15,21 +15,22 @@ from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEmpresaCafe import TelaEmpresaCafe
 from entidade.fornecedora_cafe import FornecedoraCafe
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
+from DAOs.fornecedora_cafe_dao import FornecedoraCafeDAO
 
 class ControladorEmpresaCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema):
         self._controlador_sistema = controlador_sistema
-        self.__fornecedores_cafe = []
+        self.__fornecedores_cafe = FornecedoraCafeDAO()
         self.__tela_empresa_cafe = TelaEmpresaCafe()
 
     def tem_empresas(self) -> bool:
-        return len(self.__fornecedores_cafe) > 0
+        return len(list(self.__fornecedores_cafe.get_all())) > 0
 
     def pega_fornecedor_por_cnpj(self, cnpj: str) -> FornecedoraCafe:
-        for fornecedor in self.__fornecedores_cafe:
-            if fornecedor.cnpj == cnpj:
-                return fornecedor
-        raise FornecedorNaoEncontradoException()
+        fornecedor = self.__fornecedores_cafe.get(cnpj)
+        if fornecedor is None:
+            raise FornecedorNaoEncontradoException()
+        return fornecedor
 
     def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=False)
@@ -45,12 +46,12 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
                 dados_fornecedor["endereco"], dados_fornecedor["telefone"],
                 dados_fornecedor["tipo_cafe"]
             )
-            self.__fornecedores_cafe.append(novo_fornecedor)
+            self.__fornecedores_cafe.add(novo_fornecedor)
             self.__tela_empresa_cafe.mostra_mensagem(
                 "Fornecedor de café cadastrado com sucesso!")
 
     def alterar_fornecedor(self) -> None:
-        if not self.__fornecedores_cafe:
+        if not list(self.__fornecedores_cafe.get_all()):
             self.__tela_empresa_cafe.mostra_mensagem(
                 "Nenhum fornecedor cadastrado para alterar!")
             return
@@ -68,16 +69,19 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         fornecedor.telefone = novos_dados["telefone"]
         fornecedor.tipo_cafe = novos_dados["tipo_cafe"]
         
+        self.__fornecedores_cafe.update(fornecedor)
+        
         self.__tela_empresa_cafe.mostra_mensagem("Fornecedor alterado com sucesso!")
         self.lista_fornecedores()
 
     def lista_fornecedores(self) -> None:
-        if not self.__fornecedores_cafe:
+        fornecedores = list(self.__fornecedores_cafe.get_all())
+        if not fornecedores:
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor de café cadastrado!")
             return
 
         dados_listagem = []
-        for fornecedor in self.__fornecedores_cafe:
+        for fornecedor in fornecedores:
             dados_listagem.append({
                 "nome": fornecedor.nome,
                 "cnpj": fornecedor.cnpj,
@@ -86,7 +90,7 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         self.__tela_empresa_cafe.mostra_lista_fornecedores(dados_listagem)
 
     def excluir_fornecedor(self) -> None:
-        if not self.__fornecedores_cafe:
+        if not list(self.__fornecedores_cafe.get_all()):
             self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor cadastrado para excluir!")
             return
 
@@ -110,7 +114,7 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
                 "Exclua os cafés primeiro ou altere o fornecedor deles.")
             return
         
-        self.__fornecedores_cafe.remove(fornecedor)
+        self.__fornecedores_cafe.remove(fornecedor.cnpj)
         self.__tela_empresa_cafe.mostra_mensagem("Fornecedor excluído com sucesso!")
         self.lista_fornecedores()
 

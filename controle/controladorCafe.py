@@ -23,24 +23,25 @@ from entidade.cafe import Cafe
 from Excecoes.cafeNaoEncontradoException import CafeNaoEncontradoException
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
+from DAOs.cafe_dao import CafeDAO
 
 class ControladorCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
-        self.__cafes = []
         self._controlador_sistema = controlador_sistema
         self.__tela_cafe = TelaCafe()
+        self.__cafe_dao = CafeDAO()
     
     @property
     def cafes(self) -> list:
-        return self.__cafes
+        return list(self.__cafe_dao.get_all())
 
     def pega_cafe_por_id(self, id: int) -> Cafe:
         if not isinstance(id, int):
             raise TypeError("O ID do café deve ser um número inteiro.")
-        for cafe in self.__cafes:
-            if cafe.id == id:
-                return cafe
-        raise CafeNaoEncontradoException()
+        cafe = self.__cafe_dao.get(id)
+        if cafe is None:
+            raise CafeNaoEncontradoException()
+        return cafe
 
     def incluir_cafe(self) -> None:
         perfis_mapa = {}
@@ -48,7 +49,8 @@ class ControladorCafe(BuscaProdutoMixin):
         dados_cafe = self.__tela_cafe.pega_dados_cafe(perfis_mapa, is_alteracao=False)
 
         if self.id_produto_ja_existe(dados_cafe["id"]):
-            self.__tela_cafe.mostra_mensagem("ERRO: Já existe um produto (café ou máquina) com este ID!")
+            self.__tela_cafe.mostra_mensagem(
+                "ERRO: Já existe um produto (café ou máquina) com este ID!")
             return
         empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(
             dados_cafe["empresa_fornecedora"])
@@ -59,11 +61,11 @@ class ControladorCafe(BuscaProdutoMixin):
             dados_cafe["notas_sensoriais"], dados_cafe["perfil_recomendado"],
             empresa_fornecedora
         )
-        self.__cafes.append(novo_cafe)
+        self.__cafe_dao.add(novo_cafe)
         self.__tela_cafe.mostra_mensagem("Café cadastrado com sucesso!")
 
     def alterar_cafe(self) -> None:
-        if not self.__cafes:
+        if not self.cafes:
             self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado para alterar!")
             return
 
@@ -87,24 +89,25 @@ class ControladorCafe(BuscaProdutoMixin):
         cafe.perfil_recomendado = novos_dados["perfil_recomendado"]
         cafe.empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(
             novos_dados["empresa_fornecedora"])
+        self.__cafe_dao.update(cafe)
         
         self.__tela_cafe.mostra_mensagem("Café alterado com sucesso!")
         self.lista_cafe()
 
     def buscar_cafes_por_perfil(self, perfil: str) -> list:
         cafes_encontrados = []
-        for cafe in self.__cafes:
+        for cafe in self.cafes:
             if cafe.perfil_recomendado.perfil == perfil:
                 cafes_encontrados.append(cafe)
         return cafes_encontrados
 
     def lista_cafe(self) -> None:
-        if not self.__cafes:
+        if not self.cafes:
             self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado!")
             return
 
         self.__tela_cafe.mostra_mensagem("--- LISTA DE CAFÉS ---")
-        for cafe in self.__cafes:
+        for cafe in self.cafes:
             dados_cafe = {
                 "id": cafe.id,
                 "nome": cafe.nome,
@@ -115,7 +118,7 @@ class ControladorCafe(BuscaProdutoMixin):
             self.__tela_cafe.mostra_cafe(dados_cafe)
 
     def excluir_cafe(self) -> None:
-        if not self.__cafes:
+        if not self.cafes:
             self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado para excluir!")
             return
 
@@ -127,7 +130,7 @@ class ControladorCafe(BuscaProdutoMixin):
         estoque = self._controlador_sistema.controlador_estoque.estoque
         estoque.remover_produto_do_estoque(cafe)
         
-        self.__cafes.remove(cafe)
+        self.__cafe_dao.remove(cafe.id)
         self.__tela_cafe.mostra_mensagem("Café excluído com sucesso!")
         self.lista_cafe()
 

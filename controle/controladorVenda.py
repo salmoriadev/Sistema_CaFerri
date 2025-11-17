@@ -32,36 +32,37 @@ from Excecoes.vendaNaoEmAndamentoException import VendaNaoEmAndamentoException
 from Excecoes.saldoInsuficienteException import SaldoInsuficienteException
 from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
 from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
+from DAOs.venda_dao import VendaDAO
 
 class ControladorVenda(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
         self._controlador_sistema = controlador_sistema
-        self.__vendas = []
+        self.__venda_dao = VendaDAO()
         self.__tela_venda = TelaVenda()
 
     @property
     def vendas(self) -> list:
-        return self.__vendas
+        return list(self.__venda_dao.get_all())
 
     def pega_venda_por_id(self, id_venda: int) -> Venda:
-        for venda in self.__vendas:
-            if venda.id_venda == id_venda:
-                return venda
-        raise VendaNaoEncontradaException()
+        venda = self.__venda_dao.get(id_venda)
+        if venda is None:
+            raise VendaNaoEncontradaException()
+        return venda
 
     def iniciar_venda(self) -> None:
         dados_iniciais = self.__tela_venda.pega_dados_iniciar_venda()
         if dados_iniciais is None: return
 
-        for v in self.__vendas:
-            if v.id_venda == dados_iniciais["id_venda"]:
-                raise IDJaExistenteException("Venda")
+        if self.__venda_dao.get(dados_iniciais["id_venda"]):
+            raise IDJaExistenteException("Venda")
         
         cliente = self._controlador_sistema.controlador_cliente.pega_cliente_por_id(
             dados_iniciais["id_cliente"])
         nova_venda = Venda(dados_iniciais["id_venda"], cliente)
-        self.__vendas.append(nova_venda)
-        self.__tela_venda.mostra_mensagem("Venda iniciada com sucesso! Adicione produtos ao carrinho.")
+        self.__venda_dao.add(nova_venda)
+        self.__tela_venda.mostra_mensagem(
+            "Venda iniciada com sucesso! Adicione produtos ao carrinho.")
         self.gerenciar_venda(nova_venda)
 
     def gerenciar_venda(self, venda: Venda) -> None:
@@ -93,6 +94,7 @@ class ControladorVenda(BuscaProdutoMixin):
         if dados:
             produto = self.pega_produto_por_id(dados["id_produto"])
             venda.adicionar_produto(produto, dados["quantidade"])
+            self.__salvar_venda(venda)
             self.__tela_venda.mostra_mensagem(f"'{produto.nome}' adicionado ao carrinho.")
 
     def diminuir_quantidade_produto(self, venda: Venda) -> None:
@@ -100,6 +102,7 @@ class ControladorVenda(BuscaProdutoMixin):
         if dados:
             produto = self.pega_produto_por_id(dados["id_produto"])
             resultado = venda.diminuir_quantidade_produto(produto, dados["quantidade"])
+            self.__salvar_venda(venda)
             self.__tela_venda.mostra_mensagem(resultado)
 
     def remover_produto(self, venda: Venda) -> None:
@@ -107,6 +110,7 @@ class ControladorVenda(BuscaProdutoMixin):
         if dados:
             produto = self.pega_produto_por_id(dados["id_produto"])
             venda.remover_produto(produto)
+            self.__salvar_venda(venda)
             self.__tela_venda.mostra_mensagem(f"'{produto.nome}' removido do carrinho.")
 
     def listar_produtos_venda(self, venda: Venda) -> None:
@@ -115,13 +119,14 @@ class ControladorVenda(BuscaProdutoMixin):
     def finalizar_venda(self, venda: Venda) -> None:
         estoque = self._controlador_sistema.controlador_estoque.estoque
         venda.finalizar_venda(estoque)
+        self.__salvar_venda(venda)
         self.__tela_venda.mostra_mensagem("Venda finalizada com sucesso!")
 
     def listar_vendas(self) -> None:
-        if not self.__vendas:
+        if not self.vendas:
             self.__tela_venda.mostra_mensagem("Nenhuma venda registrada.")
             return
-        for venda in self.__vendas:
+        for venda in self.vendas:
             self.mostrar_detalhes_venda(venda)
 
     def mostrar_detalhes_venda(self, venda: Venda) -> None:
@@ -136,7 +141,7 @@ class ControladorVenda(BuscaProdutoMixin):
 
     def excluir_venda(self) -> None:
         self.listar_vendas()
-        if not self.__vendas: return
+        if not self.vendas: return
         
         id_venda = self.__tela_venda.seleciona_venda()
         venda = self.pega_venda_por_id(id_venda)
@@ -144,7 +149,7 @@ class ControladorVenda(BuscaProdutoMixin):
             self.__tela_venda.mostra_mensagem("Não é possível excluir uma venda já finalizada.")
             return
             
-        self.__vendas.remove(venda)
+        self.__venda_dao.remove(venda.id_venda)
         self.__tela_venda.mostra_mensagem("Venda cancelada com sucesso.")
 
     def retornar(self) -> None:
@@ -166,11 +171,12 @@ class ControladorVenda(BuscaProdutoMixin):
                     break
                 if opcao == 4:
                     self.listar_vendas()
-                    if not self.__vendas: continue
+                    if not self.vendas: continue
                     id_venda = self.__tela_venda.seleciona_venda()
                     venda = self.pega_venda_por_id(id_venda)
                     if venda.status_venda == "Finalizada":
-                        self.__tela_venda.mostra_mensagem("Não é possível gerenciar uma venda já finalizada.")
+                        self.__tela_venda.mostra_mensagem(
+                            "Não é possível gerenciar uma venda já finalizada.")
                         continue
                     self.gerenciar_venda(venda)
                 elif opcao in mapa_opcoes:
@@ -182,3 +188,6 @@ class ControladorVenda(BuscaProdutoMixin):
                     VendaNaoEmAndamentoException, SaldoInsuficienteException,
                     ProdutoNaoEmEstoqueException, EstoqueInsuficienteException) as e:
                 self.__tela_venda.mostra_mensagem(f"ERRO: {e}")
+
+    def __salvar_venda(self, venda: Venda) -> None:
+        self.__venda_dao.update(venda)

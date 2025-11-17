@@ -16,21 +16,22 @@ from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaEmpresaMaquina import TelaEmpresaMaquina
 from entidade.fornecedora_maquina import FornecedoraMaquina
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
+from DAOs.fornecedora_maquina_dao import FornecedoraMaquinaDAO
 
 class ControladorEmpresaMaquina(BuscaProdutoMixin):
     def __init__(self, controlador_sistema):
         self._controlador_sistema = controlador_sistema
-        self.__fornecedores_maquina = []
+        self.__fornecedores_maquina = FornecedoraMaquinaDAO()
         self.__tela_empresa_maquina = TelaEmpresaMaquina()
 
     def tem_empresas(self) -> bool:
-        return len(self.__fornecedores_maquina) > 0
+        return len(list(self.__fornecedores_maquina.get_all())) > 0
 
     def pega_fornecedor_por_cnpj(self, cnpj: str) -> FornecedoraMaquina:
-        for fornecedor in self.__fornecedores_maquina:
-            if fornecedor.cnpj == cnpj:
-                return fornecedor
-        raise FornecedorNaoEncontradoException()
+        fornecedor = self.__fornecedores_maquina.get(cnpj)
+        if fornecedor is None:
+            raise FornecedorNaoEncontradoException()
+        return fornecedor
 
     def incluir_fornecedor(self) -> None:
         dados_fornecedor = self.__tela_empresa_maquina.pega_dados_empresa_maquina(is_alteracao=False)
@@ -45,11 +46,11 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
                 dados_fornecedor["endereco"], dados_fornecedor["telefone"],
                 dados_fornecedor["pais_de_origem"]
             )
-            self.__fornecedores_maquina.append(novo_fornecedor)
+            self.__fornecedores_maquina.add(novo_fornecedor)
             self.__tela_empresa_maquina.mostra_mensagem("Fornecedor de máquina cadastrado com sucesso!")
 
     def alterar_fornecedor(self) -> None:
-        if not self.__fornecedores_maquina:
+        if not list(self.__fornecedores_maquina.get_all()):
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor cadastrado para alterar!")
             return
 
@@ -68,16 +69,19 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
         fornecedor.telefone = novos_dados["telefone"]
         fornecedor.pais_de_origem = novos_dados["pais_de_origem"]
         
+        self.__fornecedores_maquina.update(fornecedor)
+        
         self.__tela_empresa_maquina.mostra_mensagem("Fornecedor alterado com sucesso!")
         self.lista_fornecedores()
 
     def lista_fornecedores(self) -> None:
-        if not self.__fornecedores_maquina:
+        fornecedores = list(self.__fornecedores_maquina.get_all())
+        if not fornecedores:
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor de máquina cadastrado!")
             return
 
         dados_listados = []
-        for fornecedor in self.__fornecedores_maquina:
+        for fornecedor in fornecedores:
             dados_listados.append({
                 "nome": fornecedor.nome,
                 "cnpj": fornecedor.cnpj,
@@ -86,7 +90,7 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
         self.__tela_empresa_maquina.mostra_lista_fornecedores(dados_listados)
 
     def excluir_fornecedor(self) -> None:
-        if not self.__fornecedores_maquina:
+        if not list(self.__fornecedores_maquina.get_all()):
             self.__tela_empresa_maquina.mostra_mensagem("Nenhum fornecedor cadastrado para excluir!")
             return
 
@@ -111,7 +115,7 @@ class ControladorEmpresaMaquina(BuscaProdutoMixin):
                 "Exclua as máquinas primeiro ou altere o fornecedor delas.")
             return
         
-        self.__fornecedores_maquina.remove(fornecedor)
+        self.__fornecedores_maquina.remove(fornecedor.cnpj)
         self.__tela_empresa_maquina.mostra_mensagem("Fornecedor excluído com sucesso!")
         self.lista_fornecedores()
 

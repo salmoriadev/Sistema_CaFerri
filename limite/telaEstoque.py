@@ -2,11 +2,12 @@
     Gerencia a interface com o usuário para todas as operações de Estoque.
 
     Esta classe atua como a camada de apresentação (View) para o módulo de
-    controle de estoque. Sua responsabilidade exclusiva é a interação com o
-    usuário através do console, desacoplando a lógica de negócio do
-    `ControladorEstoque` da entrada e saída de dados.
+    controle de estoque.
 """
+from typing import Dict, List, Optional, Union
+
 import FreeSimpleGUI as sg
+
 
 class TelaEstoque:
 
@@ -48,18 +49,52 @@ class TelaEstoque:
         self.close()
         return None 
     
-    def pega_dados_produto_estoque(self) -> dict:
-        print("\n---- Dados do Produto no Estoque ----")
-        try:
-            id_produto = int(input("ID do Produto: "))
-            quantidade = int(input("Quantidade: "))
-            if quantidade < 0:
-                self.mostra_mensagem("Quantidade não pode ser negativa.")
-                return None
-            return {"id_produto": id_produto, "quantidade": quantidade}
-        except ValueError:
-            self.mostra_mensagem("Entrada inválida! IDs e quantidade devem ser números.")
-            return None
+    def pega_dados_produto_estoque(self) -> Optional[Dict[str, int]]:
+        layout = [
+            [sg.Text('ID do Produto:'), sg.Input(key='id_produto')],
+            [sg.Text('Quantidade:'), sg.Input(key='quantidade')],
+            [sg.Button('Salvar', bind_return_key=True), sg.Button('Cancelar')]
+        ]
+
+        window = sg.Window('Dados do Estoque', layout, modal=True)
+        dados = None
+
+        while True:
+            event, values = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Cancelar'):
+                break
+            if event == 'Salvar':
+                try:
+                    id_produto = int(values['id_produto'])
+                    quantidade = int(values['quantidade'])
+                    if quantidade < 0:
+                        self.mostra_mensagem("Quantidade não pode ser negativa.")
+                        continue
+                    dados = {"id_produto": id_produto, "quantidade": quantidade}
+                    break
+                except (ValueError, TypeError):
+                    self.mostra_mensagem("IDs e quantidade devem ser números inteiros.")
+
+        window.close()
+        return dados
+
+    def mostra_inventario(self, itens: List[Dict[str, Union[str, int]]]) -> None:
+        linhas = ["---------- INVENTÁRIO ATUAL ----------"]
+        for item in itens:
+            linhas.append(
+                f"-> PRODUTO: {item['nome']} (ID: {item['id']}) | QUANTIDADE: {item['quantidade']}"
+            )
+        linhas.append("------------------------------------")
+        sg.popup_scrolled('Inventário', "\n".join(linhas))
 
     def mostra_mensagem(self, msg: str) -> None:
-        print(msg)
+        sg.popup("", msg)
+
+    def close(self):
+        if self.__window:
+            self.__window.Close()
+            self.__window = None
+
+    def open(self):
+        button, values = self.__window.Read()
+        return button, values

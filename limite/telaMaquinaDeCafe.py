@@ -1,109 +1,146 @@
-"""    Gerencia a interface com o usuário para todas as operações 
-        relacionadas a Máquinas de Café.
-"""
+"""Gerencia a interface com o usuário para todas as operações relacionadas a Máquinas de Café."""
 
 from datetime import datetime
+from typing import Dict, List, Optional
+
+import FreeSimpleGUI as sg
+
 
 class TelaMaquinaCafe:
-    def tela_opcoes(self) -> int:
-        print("\n-------- Máquinas de Café ----------")
-        print("1 - Adicionar Máquina")
-        print("2 - Alterar Máquina")
-        print("3 - Listar Máquinas")
-        print("4 - Excluir Máquina")
-        print("0 - Retornar")
+    def __init__(self):
+        self.__window = None
 
-        
-        while True:
-            try:
-                opcao = int(input("Escolha a opção: "))
-                return opcao
-            except ValueError:
-                self.mostra_mensagem("Erro: Por favor, digite um número inteiro válido.")
+    def init_opcoes(self):
+        sg.ChangeLookAndFeel('LightBrown1')
+        botoes = [
+            [sg.Button('Adicionar Máquina', key='1', expand_x=True)],
+            [sg.Button('Alterar Máquina', key='2', expand_x=True)],
+            [sg.Button('Listar Máquinas', key='3', expand_x=True)],
+            [sg.Button('Excluir Máquina', key='4', expand_x=True)],
+            [sg.Button('Retornar', key='0', expand_x=True)]
+        ]
 
-    def pega_dados_maquina(self, is_alteracao: bool = False) -> dict:
-        print("\n-------- DADOS DA MÁQUINA DE CAFÉ ----------")
+        layout = [
+            [sg.Text('Máquinas de Café', font=('Helvetica', 22), justification='center')],
+            [sg.Text('Escolha uma opção', font=('Helvetica', 14))],
+            [sg.Frame('Opções', botoes, font='Any 12')]
+        ]
 
-        while True:
-            nome = input("Nome: ")
-            if nome.strip():
-                break
-            self.mostra_mensagem("Erro: Nome inválido.")
+        self.__window = sg.Window('Gerenciador de Máquinas', layout, element_justification='center', size=(460, 320))
 
-        while True:
-            try:
-                preco_compra = float(input("Preço de Compra: R$ "))
-                if preco_compra >= 0:
-                    break
-                self.mostra_mensagem("Erro: O preço não pode ser negativo.")
-            except ValueError:
-                self.mostra_mensagem("Erro: Entrada inválida para preço.")
+    def tela_opcoes(self) -> Optional[int]:
+        self.init_opcoes()
+        button, _ = self.open()
 
-        while True:
-            try:
-                preco_venda = float(input("Preço de Venda: R$ "))
-                if preco_venda >= 0:
-                    break
-                self.mostra_mensagem("Erro: O preço não pode ser negativo.")
-            except ValueError:
-                self.mostra_mensagem("Erro: Entrada inválida para preço.")
+        if button in (None, '0', 'Retornar'):
+            self.close()
+            return 0
 
-        id_maquina = None
+        if button in {'1', '2', '3', '4'}:
+            self.close()
+            return int(button)
+
+        self.close()
+        return None
+
+    def pega_dados_maquina(self, is_alteracao: bool = False) -> Optional[dict]:
+        campos = [
+            [sg.Text('Nome:'), sg.Input(key='nome')],
+            [sg.Text('Preço Compra:'), sg.Input(key='preco_compra')],
+            [sg.Text('Preço Venda:'), sg.Input(key='preco_venda')]
+        ]
+
         if not is_alteracao:
-            while True:
+            campos.append([sg.Text('ID:'), sg.Input(key='id')])
+
+        campos.extend([
+            [sg.Text('Data Fabricação (DD/MM/AAAA):'), sg.Input(key='data_fabricacao')],
+            [sg.Text('CNPJ Fornecedor:'), sg.Input(key='empresa_fornecedora')]
+        ])
+
+        layout = campos + [[sg.Button('Salvar', bind_return_key=True), sg.Button('Cancelar')]]
+        window = sg.Window('Dados da Máquina', layout, modal=True)
+        dados = None
+
+        while True:
+            event, values = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Cancelar'):
+                break
+            if event == 'Salvar':
                 try:
-                    id_maquina = int(input("ID: "))
-                    if id_maquina >= 0:
-                        break
-                    self.mostra_mensagem("Erro: O ID não pode ser negativo.")
-                except ValueError:
-                    self.mostra_mensagem("Erro: Entrada inválida para ID.")
+                    nome = values['nome'].strip()
+                    preco_compra = float(values['preco_compra'])
+                    preco_venda = float(values['preco_venda'])
+                    if not is_alteracao:
+                        id_maquina = int(values['id'])
+                    data_fabricacao = values['data_fabricacao'].strip()
+                    datetime.strptime(data_fabricacao, '%d/%m/%Y')
+                    empresa = values['empresa_fornecedora'].strip()
 
-        while True:
-            data_fabricacao = input("Data de Fabricação (DD/MM/AAAA): ")
-            try:
-                datetime.strptime(data_fabricacao, '%d/%m/%Y')
-                break
-            except ValueError:
-                self.mostra_mensagem("Erro: Formato de data inválido.")
+                    if not all([nome, empresa]):
+                        raise ValueError
 
-        while True:
-            cnpj = input("Digite o CNPJ da empresa fornecedora: ")
-            if cnpj.strip():
-                cnpj_empresa_fornecedora = cnpj
-                break
+                    dados = {
+                        "nome": nome,
+                        "preco_compra": preco_compra,
+                        "preco_venda": preco_venda,
+                        "data_fabricacao": data_fabricacao,
+                        "empresa_fornecedora": empresa
+                    }
+                    if not is_alteracao:
+                        dados["id"] = id_maquina
+                    break
+                except (ValueError, TypeError):
+                    self.mostra_mensagem("Preencha todos os campos corretamente.")
 
-        print("------------------------------------------")
-
-        dados = {
-            "nome": nome,
-            "preco_compra": preco_compra,
-            "preco_venda": preco_venda,
-            "data_fabricacao": data_fabricacao,
-            "empresa_fornecedora": cnpj_empresa_fornecedora
-        }
-
-        if id_maquina is not None:
-            dados["id"] = id_maquina
-        
+        window.close()
         return dados
 
     def mostra_maquina(self, dados_maquina: dict) -> None:
-        print("---------------------------------")
-        print(f"ID: {dados_maquina['id']}")
-        print(f"NOME: {dados_maquina['nome']}")
-        print(f"PREÇO VENDA: R$ {dados_maquina['preco_venda']:.2f}")
-        print(f"FORNECEDORA: {dados_maquina['empresa_fornecedora_nome']}")
-        print("---------------------------------")
+        texto = (
+            f"ID: {dados_maquina['id']}\n"
+            f"NOME: {dados_maquina['nome']}\n"
+            f"PREÇO VENDA: R$ {dados_maquina['preco_venda']:.2f}\n"
+            f"FORNECEDORA: {dados_maquina['empresa_fornecedora_nome']}"
+        )
+        sg.popup('Máquina de Café', texto)
 
+    def seleciona_maquina(self) -> Optional[int]:
+        layout = [
+            [sg.Text('ID da máquina:'), sg.Input(key='id')],
+            [sg.Button('Selecionar', bind_return_key=True), sg.Button('Cancelar')]
+        ]
+        window = sg.Window('Selecionar Máquina', layout, modal=True)
+        id_escolhido = None
 
-    def seleciona_maquina(self) -> int:
         while True:
-            try:
-                id_maquina = int(input("ID da máquina que deseja selecionar: "))
-                return id_maquina
-            except ValueError:
-                self.mostra_mensagem("Erro: ID inválido. Por favor, insira um número inteiro.")
+            event, values = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Cancelar'):
+                break
+            if event == 'Selecionar':
+                try:
+                    id_escolhido = int(values['id'])
+                    break
+                except (ValueError, TypeError):
+                    self.mostra_mensagem("ID inválido.")
+
+        window.close()
+        return id_escolhido
+
+    def mostra_lista_maquinas(self, maquinas: List[Dict[str, str]]) -> None:
+        linhas = ["--- LISTA DE MÁQUINAS ---"]
+        for maquina in maquinas:
+            linhas.append(f"ID: {maquina['id']} - {maquina['nome']}")
+        sg.popup_scrolled('Máquinas de Café', "\n".join(linhas).strip())
 
     def mostra_mensagem(self, msg: str) -> None:
-        print(msg)
+        sg.popup("", msg)
+
+    def close(self):
+        if self.__window:
+            self.__window.Close()
+            self.__window = None
+
+    def open(self):
+        button, values = self.__window.Read()
+        return button, values

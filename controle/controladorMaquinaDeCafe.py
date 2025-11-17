@@ -16,24 +16,25 @@ from controle.buscaProdutoMixin import BuscaProdutoMixin
 from limite.telaMaquinaDeCafe import TelaMaquinaCafe
 from entidade.maquina_de_cafe import MaquinaDeCafe
 from Excecoes.maquinaNaoEncontradaException import MaquinaNaoEncontradaException
+from DAOs.maquina_de_cafe_dao import MaquinaDeCafeDAO
 
 class ControladorMaquinaDeCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
-        self.__maquinas = []
         self._controlador_sistema = controlador_sistema
         self.__tela_maquina = TelaMaquinaCafe()
+        self.__maquina_dao = MaquinaDeCafeDAO()
 
     @property
     def maquinas(self) -> list:
-        return self.__maquinas
+        return list(self.__maquina_dao.get_all())
 
     def pega_maquina_por_id(self, id: int) -> MaquinaDeCafe:
         if not isinstance(id, int):
             raise TypeError("O ID da máquina deve ser um número inteiro.")
-        for maquina in self.__maquinas:
-            if maquina.id == id:
-                return maquina
-        raise MaquinaNaoEncontradaException()
+        maquina = self.__maquina_dao.get(id)
+        if maquina is None:
+            raise MaquinaNaoEncontradaException()
+        return maquina
 
     def incluir_maquina(self) -> None:
         dados_maquina = self.__tela_maquina.pega_dados_maquina(is_alteracao=False)
@@ -48,11 +49,11 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
             dados_maquina["nome"], dados_maquina["preco_compra"], dados_maquina["preco_venda"],
             dados_maquina["id"], dados_maquina["data_fabricacao"], empresa_fornecedora
         )
-        self.__maquinas.append(nova_maquina)
+        self.__maquina_dao.add(nova_maquina)
         self.__tela_maquina.mostra_mensagem("Máquina cadastrada com sucesso!")
 
     def alterar_maquina(self) -> None:
-        if not self.__maquinas:
+        if not self.maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para alterar!")
             return
 
@@ -68,17 +69,18 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         maquina.data_fabricacao = novos_dados["data_fabricacao"]
         maquina.empresa_fornecedora = self._controlador_sistema.controlador_empresa_maquina.pega_fornecedor_por_cnpj(
             novos_dados["empresa_fornecedora"])
+        self.__maquina_dao.update(maquina)
 
         self.__tela_maquina.mostra_mensagem("Máquina alterada com sucesso!")
         self.lista_maquina()
 
     def lista_maquina(self) -> None:
-        if not self.__maquinas:
+        if not self.maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada!")
             return
 
         self.__tela_maquina.mostra_mensagem("--- LISTA DE MÁQUINAS ---")
-        for maquina in self.__maquinas:
+        for maquina in self.maquinas:
             dados_maquina = {
                 "id": maquina.id,
                 "nome": maquina.nome,
@@ -88,7 +90,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
             self.__tela_maquina.mostra_maquina(dados_maquina)
 
     def excluir_maquina(self) -> None:
-        if not self.__maquinas:
+        if not self.maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para excluir!")
             return
 
@@ -100,7 +102,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         estoque = self._controlador_sistema.controlador_estoque.estoque
         estoque.remover_produto_do_estoque(maquina)
 
-        self.__maquinas.remove(maquina)
+        self.__maquina_dao.remove(maquina.id)
         self.__tela_maquina.mostra_mensagem("Máquina excluída com sucesso!")
         self.lista_maquina()
 

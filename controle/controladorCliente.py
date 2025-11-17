@@ -24,44 +24,48 @@ from limite.telaCliente import TelaCliente
 from entidade.cliente import Cliente
 from Excecoes.clienteNaoEncontradoException import ClienteNaoEncontradoException
 from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExisteException
+from DAOs.cliente_dao import ClienteDAO
 
 class ControladorCliente:
     def __init__(self, controlador_sistema) -> None:
-        self.__clientes = []
         self.__controlador_sistema = controlador_sistema
         self.__tela_cliente = TelaCliente()
+        self.__cliente_dao = ClienteDAO()
+
+    @property
+    def clientes(self) -> list:
+        return list(self.__cliente_dao.get_all())
 
     def tem_clientes(self) -> bool:
-        return len(self.__clientes) > 0
+        return len(self.clientes) > 0
 
     def pega_cliente_por_id(self, id: int) -> Cliente:
         if not isinstance(id, int):
             raise TypeError("O ID do cliente deve ser um número inteiro.")
-        for cliente in self.__clientes:
-            if cliente.id == id:
-                return cliente
-        raise ClienteNaoEncontradoException()
+        cliente = self.__cliente_dao.get(id)
+        if cliente is None:
+            raise ClienteNaoEncontradoException()
+        return cliente
 
     def incluir_cliente(self) -> None:
         perfis_mapa = {}
         perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
         dados_cliente = self.__tela_cliente.pega_dados_cliente(perfis_mapa, is_alteracao=False)
 
-        for cliente in self.__clientes:
-            if cliente.id == dados_cliente["id"]:
-                self.__tela_cliente.mostra_mensagem("ERRO: Já existe um cliente com este ID!")
-                return
+        if self.__cliente_dao.get(dados_cliente["id"]):
+            self.__tela_cliente.mostra_mensagem("ERRO: Já existe um cliente com este ID!")
+            return
 
         novo_cliente = Cliente(
             dados_cliente["id"], dados_cliente["nome"], dados_cliente["email"],
             hashlib.sha256(dados_cliente["senha"].encode('utf-8')).hexdigest(),
             dados_cliente["saldo"], dados_cliente["perfil"]
         )
-        self.__clientes.append(novo_cliente)
+        self.__cliente_dao.add(novo_cliente)
         self.__tela_cliente.mostra_mensagem("Cliente cadastrado com sucesso!")
 
     def alterar_cliente(self) -> None:
-        if not self.__clientes:
+        if not self.clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para alterar!")
             return
 
@@ -85,16 +89,18 @@ class ControladorCliente:
         cliente.saldo = novos_dados["saldo"]
         cliente.perfil_do_consumidor = novos_dados["perfil"]
         
+        self.__cliente_dao.update(cliente)
         self.__tela_cliente.mostra_mensagem("Cliente alterado com sucesso!")
         self.lista_clientes()
 
     def lista_clientes(self) -> None:
-        if not self.__clientes:
+        clientes = self.clientes
+        if not clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
             return
 
         self.__tela_cliente.mostra_mensagem("--- LISTA DE CLIENTES ---")
-        for cliente in self.__clientes:
+        for cliente in clientes:
             dados_cliente = {
                 "id": cliente.id, "nome": cliente.nome, "email": cliente.email,
                 "saldo": cliente.saldo, "perfil": cliente.perfil_do_consumidor.perfil
@@ -102,7 +108,7 @@ class ControladorCliente:
             self.__tela_cliente.mostra_cliente(dados_cliente)
 
     def excluir_cliente(self) -> None:
-        if not self.__clientes:
+        if not self.clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para excluir!")
             return
             
@@ -128,12 +134,12 @@ class ControladorCliente:
             self.__tela_cliente.mostra_mensagem("Finalize ou cancele as vendas primeiro.")
             return
             
-        self.__clientes.remove(cliente)
+        self.__cliente_dao.remove(cliente.id)
         self.__tela_cliente.mostra_mensagem("Cliente excluído com sucesso!")
         self.lista_clientes()
 
     def ver_recomendacoes_de_cafe(self) -> None:
-        if not self.__clientes:
+        if not self.clientes:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado para ver recomendações!")
             return
             

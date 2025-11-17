@@ -18,12 +18,16 @@ from entidade.estoque import Estoque
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
 from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
+from DAOs.estoque_dao import EstoqueDAO
 
 class ControladorEstoque(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
         self._controlador_sistema = controlador_sistema
         self.__estoque = Estoque()
+        self.__estoque_dao = EstoqueDAO()
         self.__tela_estoque = TelaEstoque()
+        self.__carregar_do_dao()
+        self.__estoque.definir_callback_alteracao(self.__persistir_estado)
 
     @property
     def estoque(self) -> Estoque:
@@ -37,15 +41,20 @@ class ControladorEstoque(BuscaProdutoMixin):
         return sum(self.__estoque.produtos_em_estoque.values()) > 0
 
     def listar_estoque(self) -> None:
-        self.__tela_estoque.mostra_mensagem("\n---------- INVENTÁRIO ATUAL ----------")
         produtos = self.__estoque.listar_produtos()
         if not produtos:
             self.__tela_estoque.mostra_mensagem("O estoque está vazio.")
-        else:
-            for produto, quantidade in produtos.items():
-                self.__tela_estoque.mostra_mensagem(
-                    f"-> PRODUTO: {produto.nome} (ID: {produto.id}) | QUANTIDADE: {quantidade}")
-        self.__tela_estoque.mostra_mensagem("------------------------------------")
+            return
+
+        itens = []
+        for produto, quantidade in produtos.items():
+            itens.append({
+                "nome": produto.nome,
+                "id": produto.id,
+                "quantidade": quantidade
+            })
+
+        self.__tela_estoque.mostra_inventario(itens)
 
     def adicionar_novo_produto(self) -> None:
         dados = self.__tela_estoque.pega_dados_produto_estoque()
@@ -112,3 +121,17 @@ class ControladorEstoque(BuscaProdutoMixin):
             except (ProdutoNaoEncontradoException, ProdutoNaoEmEstoqueException, 
                     EstoqueInsuficienteException) as e:
                 self.__tela_estoque.mostra_mensagem(f"ERRO: {e}")
+
+    def __carregar_do_dao(self) -> None:
+        dados = self.__estoque_dao.carregar()
+        for id_produto, quantidade in dados.items():
+            try:
+                produto = self.pega_produto_por_id(id_produto)
+                self.__estoque.cadastrar_novo_produto(produto, quantidade)
+            except ProdutoNaoEncontradoException:
+                continue
+        self.__persistir_estado(self.__estoque.produtos_em_estoque)
+
+    def __persistir_estado(self, produtos: dict) -> None:
+        mapa = {produto.id: quantidade for produto, quantidade in produtos.items()}
+        self.__estoque_dao.salvar(mapa)
