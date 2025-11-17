@@ -126,8 +126,16 @@ class ControladorVenda(BuscaProdutoMixin):
         if not self.vendas:
             self.__tela_venda.mostra_mensagem("Nenhuma venda registrada.")
             return
+        
+        dados_vendas = []
         for venda in self.vendas:
-            self.mostrar_detalhes_venda(venda)
+            dados_vendas.append({
+                "id_venda": venda.id_venda,
+                "cliente_nome": venda.cliente.nome,
+                "status": venda.status_venda,
+                "valor_total": venda.valor_total
+            })
+        self.__tela_venda.mostra_lista_vendas(dados_vendas)
 
     def mostrar_detalhes_venda(self, venda: Venda) -> None:
         produtos_formatados = venda.listar_produtos_formatado()

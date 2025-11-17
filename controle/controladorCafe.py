@@ -106,16 +106,16 @@ class ControladorCafe(BuscaProdutoMixin):
             self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado!")
             return
 
-        self.__tela_cafe.mostra_mensagem("--- LISTA DE CAFÉS ---")
+        dados_cafes = []
         for cafe in self.cafes:
-            dados_cafe = {
+            dados_cafes.append({
                 "id": cafe.id,
                 "nome": cafe.nome,
                 "preco_venda": cafe.preco_venda,
                 "perfil_recomendado": cafe.perfil_recomendado.perfil,
                 "empresa_fornecedora_nome": cafe.empresa_fornecedora.nome
-            }
-            self.__tela_cafe.mostra_cafe(dados_cafe)
+            })
+        self.__tela_cafe.mostra_lista_cafes(dados_cafes)
 
     def excluir_cafe(self) -> None:
         if not self.cafes:

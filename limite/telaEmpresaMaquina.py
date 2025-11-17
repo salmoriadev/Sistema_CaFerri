@@ -16,23 +16,32 @@ class TelaEmpresaMaquina:
         self.__window = None
 
     def init_opcoes(self):
-        sg.ChangeLookAndFeel('LightBrown1')
+        sg.theme('DarkBlue3')
 
         botoes = [
-            [sg.Button('Adicionar Fornecedor', key='1', font='Any 12', expand_x=True)],
-            [sg.Button('Alterar Fornecedor', key='2', font='Any 12', expand_x=True)],
-            [sg.Button('Listar Fornecedores', key='3', font='Any 12', expand_x=True)],
-            [sg.Button('Excluir Fornecedor', key='4', font='Any 12', expand_x=True)],
-            [sg.Button('Retornar', key='0', font='Any 12', expand_x=True)]
+            [sg.Button('Adicionar Fornecedor', key='1', font='Any 14',
+                       expand_x=True, button_color=('#E0E8F0', '#6B7A8B'))],
+            [sg.Button('Alterar Fornecedor', key='2', font='Any 14',
+                       expand_x=True, button_color=('#E0E8F0', '#6B7A8B'))],
+            [sg.Button('Listar Fornecedores', key='3', font='Any 14',
+                       expand_x=True, button_color=('#E0E8F0', '#6B7A8B'))],
+            [sg.Button('Excluir Fornecedor', key='4', font='Any 14',
+                       expand_x=True, button_color=('#E0E8F0', '#6B7A8B'))],
+            [sg.Button('Retornar', key='0', font='Any 14',
+                       expand_x=True, button_color=('#E0E8F0', '#6B7A8B'))]
         ]
 
         layout = [
-            [sg.Column([[sg.Text('Fornecedores de Máquinas', font=("Helvica", 24), pad=((0,0),(20,10)))]], justification='center')],
-            [sg.Column([[sg.Text('Escolha uma opção', font=("Helvica", 15), pad=((0,0),(0,20)))]], justification='center')],
-            [sg.Column([[sg.Frame('Opções', botoes, font='Any 14')]], justification='center')]
+            [sg.Column([[sg.Text('Fornecedores de Máquinas', font=("Helvica", 28), pad=(
+                (0, 0), (20, 10)), text_color='#E0E8F0')]], justification='center', background_color='#4A5A6B')],
+            [sg.Column([[sg.Text('Escolha uma opção', font=("Helvica", 18), pad=(
+                (0, 0), (0, 20)), text_color='#D4DCE8')]], justification='center', background_color='#4A5A6B')],
+            [sg.Column([[sg.Frame('Opções', botoes, font='Any 16', title_color='#E0E8F0',
+                       background_color='#4A5A6B', border_width=2)]], justification='center', background_color='#4A5A6B')]
         ]
 
-        self.__window = sg.Window('Fornecedores de Máquinas', layout, element_justification='center', size=(520, 420))
+        self.__window = sg.Window('Fornecedores de Máquinas', layout, element_justification='center', size=(
+            580, 580), background_color='#4A5A6B')
 
     def tela_opcoes(self) -> int:
         self.init_opcoes()
@@ -64,7 +73,8 @@ class TelaEmpresaMaquina:
             [sg.Button('Salvar', bind_return_key=True), sg.Button('Cancelar')]
         ]
 
-        window = sg.Window('Dados do Fornecedor de Máquinas', layout, modal=True)
+        window = sg.Window(
+            'Dados do Fornecedor de Máquinas', layout, modal=True)
         dados = None
 
         while True:
@@ -72,7 +82,8 @@ class TelaEmpresaMaquina:
             if event in (sg.WINDOW_CLOSED, 'Cancelar'):
                 break
             if event == 'Salvar':
-                obrigatorios = ['nome', 'endereco', 'telefone', 'pais_de_origem']
+                obrigatorios = ['nome', 'endereco',
+                                'telefone', 'pais_de_origem']
                 if not is_alteracao:
                     obrigatorios.append('cnpj')
 
@@ -102,7 +113,8 @@ class TelaEmpresaMaquina:
     def seleciona_empresa_maquina(self) -> Optional[str]:
         layout = [
             [sg.Text('CNPJ do fornecedor:'), sg.Input(key='cnpj')],
-            [sg.Button('Selecionar', bind_return_key=True), sg.Button('Cancelar')]
+            [sg.Button('Selecionar', bind_return_key=True),
+             sg.Button('Cancelar')]
         ]
         window = sg.Window('Selecionar Fornecedor', layout, modal=True)
         cnpj_escolhido = None
@@ -121,13 +133,32 @@ class TelaEmpresaMaquina:
         return cnpj_escolhido
 
     def mostra_lista_fornecedores(self, fornecedores: List[Dict[str, str]]) -> None:
-        linhas = ["--- LISTA DE FORNECEDORES DE MÁQUINAS ---"]
-        for fornecedor in fornecedores:
-            linhas.append(f"NOME: {fornecedor['nome']}")
-            linhas.append(f"CNPJ: {fornecedor['cnpj']}")
-            linhas.append(f"PAÍS DE ORIGEM: {fornecedor['pais_de_origem']}")
-            linhas.append("")
-        sg.popup_scrolled('Fornecedores de Máquinas', "\n".join(linhas).strip())
+        sg.theme('DarkBlue3')
+        texto = "--- LISTA DE FORNECEDORES DE MÁQUINAS ---\n\n"
+        if not fornecedores:
+            texto += "Nenhum fornecedor cadastrado."
+        else:
+            for fornecedor in fornecedores:
+                texto += f"NOME: {fornecedor['nome']}\n"
+                texto += f"CNPJ: {fornecedor['cnpj']}\n"
+                texto += f"PAÍS DE ORIGEM: {fornecedor['pais_de_origem']}\n\n"
+
+        layout = [
+            [sg.Multiline(texto, size=(60, 20), disabled=True,
+                          background_color='#4A5A6B', text_color='#E0E8F0', key='-TEXTO-')],
+            [sg.Button('Fechar', button_color=(
+                '#E0E8F0', '#6B7A8B'), size=(10, 1))]
+        ]
+
+        window = sg.Window('Fornecedores de Máquinas', layout,
+                           modal=True, background_color='#4A5A6B', size=(550, 550))
+
+        while True:
+            event, _ = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Fechar'):
+                break
+
+        window.close()
 
     def mostra_mensagem(self, msg: str) -> None:
         sg.popup("", msg)

@@ -29,11 +29,12 @@ from Excecoes.saldoInsuficienteException import SaldoInsuficienteException
 from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
 from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
 
+
 class Venda:
     def __init__(self, id_venda: int, cliente: Cliente) -> None:
         self.__id_venda = id_venda
         self.__cliente = cliente
-        self.__data_venda = None    
+        self.__data_venda = None
         self.__valor_total = 0.0
         self.__carrinho = {}
         self.__status_venda = "Em andamento"
@@ -53,7 +54,7 @@ class Venda:
     def listar_produtos_formatado(self) -> list[dict]:
         if not self.__carrinho:
             return []
-        
+
         lista_formatada = []
         for produto, quantidade in self.__carrinho.items():
             lista_formatada.append({
@@ -63,7 +64,7 @@ class Venda:
                 "subtotal": f"R$ {produto.preco_venda * quantidade:.2f}"
             })
         return lista_formatada
-    
+
     def finalizar_venda(self, estoque: Estoque) -> None:
         if self.__status_venda != "Em andamento":
             raise VendaNaoEmAndamentoException()
@@ -81,14 +82,14 @@ class Venda:
         self.__cliente.saldo -= self.__valor_total
         self.__data_venda = datetime.datetime.now()
         self.__status_venda = "Finalizada"
-    
+
     def diminuir_quantidade_produto(self, produto: Produto, quantidade: int) -> str:
         if quantidade <= 0:
             return "A quantidade a ser removida deve ser positiva."
-        
+
         if produto in self.__carrinho:
             quantidade_atual = self.__carrinho[produto]
-            
+
             if quantidade >= quantidade_atual:
                 self.remover_produto(produto)
                 return f"Todas as unidades de '{produto.nome}' foram removidas do carrinho."
@@ -98,27 +99,27 @@ class Venda:
                 return f"{quantidade} unidade(s) de '{produto.nome}' foram removidas."
         else:
             return f"ERRO: O produto '{produto.nome}' não está no carrinho."
-    
+
     @property
     def id_venda(self) -> int:
         return self.__id_venda
-    
+
     @property
     def cliente(self) -> Cliente:
         return self.__cliente
-    
+
     @property
     def data_venda(self) -> datetime.datetime:
         return self.__data_venda
-    
+
     @property
     def valor_total(self) -> float:
         return self.__valor_total
-        
+
     @property
     def status_venda(self) -> str:
         return self.__status_venda
-    
+
     @property
     def carrinho(self) -> dict:
         return self.__carrinho

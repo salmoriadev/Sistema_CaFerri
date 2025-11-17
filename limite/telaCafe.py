@@ -13,23 +13,32 @@ class TelaCafe:
         self.__window = None
 
     def init_opcoes(self):
-        sg.ChangeLookAndFeel('LightBrown1')
+        sg.theme('DarkBrown3')
         botoes = [
-            [sg.Button('Adicionar Café', key='1', expand_x=True)],
-            [sg.Button('Alterar Café', key='2', expand_x=True)],
-            [sg.Button('Listar Cafés', key='3', expand_x=True)],
-            [sg.Button('Excluir Café', key='4', expand_x=True)],
-            [sg.Button('Retornar', key='0', expand_x=True)]
+            [sg.Button('Adicionar Café', key='1', font='Any 14', expand_x=True,
+                       button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Alterar Café', key='2', font='Any 14', expand_x=True,
+                       button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Listar Cafés', key='3', font='Any 14', expand_x=True,
+                       button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Excluir Café', key='4', font='Any 14', expand_x=True,
+                       button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Retornar', key='0', font='Any 14', expand_x=True,
+                       button_color=('#F0E6D2', '#8B5A3C'))]
         ]
 
         layout = [
-            [sg.Text('Cafés', font=('Helvetica', 22), justification='center')],
-            [sg.Text('Escolha uma opção', font=('Helvetica', 14))],
-            [sg.Frame('Opções', botoes, font='Any 12')]
+            [sg.Column([[sg.Text('Cafés', font=('Helvetica', 28), pad=((0, 0), (20, 10)),
+                                 text_color='#F0E6D2')]], justification='center', background_color='#6B4423')],
+            [sg.Column([[sg.Text('Escolha uma opção', font=('Helvetica', 18), pad=(
+                (0, 0), (0, 20)), text_color='#E8D5B7')]], justification='center', background_color='#6B4423')],
+            [sg.Column([[sg.Frame('Opções', botoes, font='Any 16', title_color='#F0E6D2',
+                                  background_color='#6B4423', border_width=2)]], justification='center', background_color='#6B4423')]
         ]
 
         self.__window = sg.Window(
-            'Gerenciador de Cafés', layout, element_justification='center', size=(460, 320))
+            'Gerenciador de Cafés', layout, element_justification='center',
+            size=(580, 580), background_color='#6B4423')
 
     def tela_opcoes(self) -> Optional[int]:
         self.init_opcoes()
@@ -63,7 +72,8 @@ class TelaCafe:
             campos.append([sg.Text('ID:'), sg.Input(key='id')])
 
         campos.extend([
-            [sg.Text('Data Fabricação (DD/MM/AAAA):'), sg.Input(key='data_fabricacao')],
+            [sg.Text('Data Fabricação (DD/MM/AAAA):'),
+             sg.Input(key='data_fabricacao')],
             [sg.Text('Origem:'), sg.Input(key='origem')],
             [sg.Text('Variedade:'), sg.Input(key='variedade')],
             [sg.Text('Altitude (m):'), sg.Input(key='altitude')],
@@ -73,7 +83,9 @@ class TelaCafe:
             [sg.Frame('Perfis Disponíveis', perfil_layout)]
         ])
 
-        layout = campos + [[sg.Button('Salvar', bind_return_key=True), sg.Button('Cancelar')]]
+        layout = campos + \
+            [[sg.Button('Salvar', bind_return_key=True),
+              sg.Button('Cancelar')]]
         window = sg.Window('Dados do Café', layout, modal=True)
         dados = None
 
@@ -118,7 +130,8 @@ class TelaCafe:
                         dados["id"] = id_cafe
                     break
                 except (ValueError, TypeError):
-                    self.mostra_mensagem("Preencha todos os campos corretamente.")
+                    self.mostra_mensagem(
+                        "Preencha todos os campos corretamente.")
 
         window.close()
         return dados
@@ -136,7 +149,8 @@ class TelaCafe:
     def seleciona_cafe(self) -> Optional[int]:
         layout = [
             [sg.Text('ID do café:'), sg.Input(key='id')],
-            [sg.Button('Selecionar', bind_return_key=True), sg.Button('Cancelar')]
+            [sg.Button('Selecionar', bind_return_key=True),
+             sg.Button('Cancelar')]
         ]
         window = sg.Window('Selecionar Café', layout, modal=True)
         id_escolhido = None
@@ -156,10 +170,30 @@ class TelaCafe:
         return id_escolhido
 
     def mostra_lista_cafes(self, cafes: List[Dict[str, str]]) -> None:
-        linhas = ["--- LISTA DE CAFÉS ---"]
-        for cafe in cafes:
-            linhas.append(f"ID: {cafe['id']} - {cafe['nome']} ({cafe['perfil_recomendado']})")
-        sg.popup_scrolled('Cafés', "\n".join(linhas).strip())
+        sg.theme('DarkBrown3')
+        texto = "--- LISTA DE CAFÉS ---\n\n"
+        if not cafes:
+            texto += "Nenhum café cadastrado."
+        else:
+            for cafe in cafes:
+                texto += f"ID: {cafe['id']} - {cafe['nome']} ({cafe['perfil_recomendado']})\n"
+
+        layout = [
+            [sg.Multiline(texto, size=(60, 20), disabled=True,
+                          background_color='#6B4423', text_color='#F0E6D2', key='-TEXTO-')],
+            [sg.Button('Fechar', button_color=(
+                '#F0E6D2', '#8B5A3C'), size=(10, 1))]
+        ]
+
+        window = sg.Window('Lista de Cafés', layout, modal=True,
+                           background_color='#6B4423', size=(550, 550))
+
+        while True:
+            event, _ = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Fechar'):
+                break
+
+        window.close()
 
     def mostra_mensagem(self, msg: str) -> None:
         sg.popup("", msg)

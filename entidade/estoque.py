@@ -17,8 +17,9 @@ from Excecoes.produtoNaoEmEstoqueException import ProdutoNaoEmEstoqueException
 class Estoque:
     def __init__(self) -> None:
         self.__produtos_em_estoque = {}
-        self.__callback_alteracao: Optional[Callable[[Dict[Produto, int]], None]] = None
-    
+        self.__callback_alteracao: Optional[Callable[[
+            Dict[Produto, int]], None]] = None
+
     @property
     def produtos_em_estoque(self) -> dict:
         return self.__produtos_em_estoque
@@ -47,7 +48,7 @@ class Estoque:
     def retirar_quantidade(self, produto: Produto, quantidade_a_retirar: int) -> None:
         if not self.produto_ja_existe(produto):
             raise ProdutoNaoEmEstoqueException(produto.nome)
-        
+
         if self.__produtos_em_estoque[produto] >= quantidade_a_retirar:
             self.__produtos_em_estoque[produto] -= quantidade_a_retirar
             self.__notificar_alteracao()

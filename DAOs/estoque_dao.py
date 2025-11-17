@@ -17,4 +17,3 @@ class EstoqueDAO(DAO):
         if isinstance(dados, dict):
             return {int(k): int(v) for k, v in dados.items()}
         return {}
-

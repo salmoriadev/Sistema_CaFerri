@@ -111,13 +111,13 @@ class ControladorCliente:
             self.__tela_cliente.mostra_mensagem("Nenhum cliente cadastrado!")
             return
 
-        self.__tela_cliente.mostra_mensagem("--- LISTA DE CLIENTES ---")
+        dados_clientes = []
         for cliente in clientes:
-            dados_cliente = {
+            dados_clientes.append({
                 "id": cliente.id, "nome": cliente.nome, "email": cliente.email,
                 "saldo": cliente.saldo, "perfil": cliente.perfil_do_consumidor.perfil
-            }
-            self.__tela_cliente.mostra_cliente(dados_cliente)
+            })
+        self.__tela_cliente.mostra_lista_clientes(dados_clientes)
 
     def excluir_cliente(self) -> None:
         if not self.clientes:
@@ -171,16 +171,16 @@ class ControladorCliente:
             perfil_do_cliente = cliente.perfil_do_consumidor.perfil
             cafes_recomendados = self.__controlador_sistema.controlador_cafe.buscar_cafes_por_perfil(
                 perfil_do_cliente)
-            self.__tela_cliente.mostra_mensagem(
-                f"\n--- Recomendações para {cliente.nome} (Perfil: {perfil_do_cliente}) ---")
+            
+            dados_cafes = []
             for cafe in cafes_recomendados:
-                self.__tela_cliente.mostra_mensagem(
-                    f"  - ID: {cafe.id}, Nome: {cafe.nome}, Preço: R$ {cafe.preco_venda:.2f}")
-            if not cafes_recomendados:
-                self.__tela_cliente.mostra_mensagem(
-                    "Nenhum café encontrado para o perfil do cliente.")
-            self.__tela_cliente.mostra_mensagem(
-                "----------------------------------------------------")
+                dados_cafes.append({
+                    "id": cafe.id,
+                    "nome": cafe.nome,
+                    "preco": cafe.preco_venda
+                })
+            
+            self.__tela_cliente.mostra_recomendacoes(cliente.nome, perfil_do_cliente, dados_cafes)
 
         except ClienteNaoEncontradoException as e:
             self.__tela_cliente.mostra_mensagem(f"ERRO: {e}")

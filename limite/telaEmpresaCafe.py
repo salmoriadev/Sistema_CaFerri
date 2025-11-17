@@ -16,23 +16,32 @@ class TelaEmpresaCafe:
         self.__window = None
 
     def init_opcoes(self):
-        sg.ChangeLookAndFeel('LightBrown1')
+        sg.theme('DarkBrown3')
 
         botoes = [
-            [sg.Button('Adicionar Fornecedor', key='1', font='Any 12', expand_x=True)],
-            [sg.Button('Alterar Fornecedor', key='2', font='Any 12', expand_x=True)],
-            [sg.Button('Listar Fornecedores', key='3', font='Any 12', expand_x=True)],
-            [sg.Button('Excluir Fornecedor', key='4', font='Any 12', expand_x=True)],
-            [sg.Button('Retornar', key='0', font='Any 12', expand_x=True)]
+            [sg.Button('Adicionar Fornecedor', key='1', font='Any 14',
+                       expand_x=True, button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Alterar Fornecedor', key='2', font='Any 14',
+                       expand_x=True, button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Listar Fornecedores', key='3', font='Any 14',
+                       expand_x=True, button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Excluir Fornecedor', key='4', font='Any 14',
+                       expand_x=True, button_color=('#F0E6D2', '#8B5A3C'))],
+            [sg.Button('Retornar', key='0', font='Any 14',
+                       expand_x=True, button_color=('#F0E6D2', '#8B5A3C'))]
         ]
 
         layout = [
-            [sg.Column([[sg.Text('Fornecedores de Café', font=("Helvica", 24), pad=((0,0),(20,10)))]], justification='center')],
-            [sg.Column([[sg.Text('Escolha uma opção', font=("Helvica", 15), pad=((0,0),(0,20)))]], justification='center')],
-            [sg.Column([[sg.Frame('Opções', botoes, font='Any 14')]], justification='center')]
+            [sg.Column([[sg.Text('Fornecedores de Café', font=("Helvica", 28), pad=(
+                (0, 0), (20, 10)), text_color='#F0E6D2')]], justification='center', background_color='#6B4423')],
+            [sg.Column([[sg.Text('Escolha uma opção', font=("Helvica", 18), pad=(
+                (0, 0), (0, 20)), text_color='#E8D5B7')]], justification='center', background_color='#6B4423')],
+            [sg.Column([[sg.Frame('Opções', botoes, font='Any 16', title_color='#F0E6D2',
+                       background_color='#6B4423', border_width=2)]], justification='center', background_color='#6B4423')]
         ]
 
-        self.__window = sg.Window('Fornecedores de Café', layout, element_justification='center', size=(520, 420))
+        self.__window = sg.Window('Fornecedores de Café', layout, element_justification='center', size=(
+            580, 580), background_color='#6B4423')
 
     def tela_opcoes(self) -> int:
         self.init_opcoes()
@@ -102,7 +111,8 @@ class TelaEmpresaCafe:
     def seleciona_empresa_cafe(self) -> str:
         layout = [
             [sg.Text('CNPJ do fornecedor:'), sg.Input(key='cnpj')],
-            [sg.Button('Selecionar', bind_return_key=True), sg.Button('Cancelar')]
+            [sg.Button('Selecionar', bind_return_key=True),
+             sg.Button('Cancelar')]
         ]
         window = sg.Window('Selecionar Fornecedor', layout, modal=True)
         cnpj_escolhido = None
@@ -121,13 +131,32 @@ class TelaEmpresaCafe:
         return cnpj_escolhido
 
     def mostra_lista_fornecedores(self, fornecedores: List[Dict[str, str]]) -> None:
-        texto = ["--- LISTA DE FORNECEDORES DE CAFÉ ---"]
-        for fornecedor in fornecedores:
-            texto.append(f"NOME: {fornecedor['nome']}")
-            texto.append(f"CNPJ: {fornecedor['cnpj']}")
-            texto.append(f"TIPO DE CAFÉ: {fornecedor['tipo_cafe']}")
-            texto.append("")
-        sg.popup_scrolled("Fornecedores de Café", "\n".join(texto).strip())
+        sg.theme('DarkBrown3')
+        texto = "--- LISTA DE FORNECEDORES DE CAFÉ ---\n\n"
+        if not fornecedores:
+            texto += "Nenhum fornecedor cadastrado."
+        else:
+            for fornecedor in fornecedores:
+                texto += f"NOME: {fornecedor['nome']}\n"
+                texto += f"CNPJ: {fornecedor['cnpj']}\n"
+                texto += f"TIPO DE CAFÉ: {fornecedor['tipo_cafe']}\n\n"
+
+        layout = [
+            [sg.Multiline(texto, size=(60, 20), disabled=True,
+                          background_color='#6B4423', text_color='#F0E6D2', key='-TEXTO-')],
+            [sg.Button('Fechar', button_color=(
+                '#F0E6D2', '#8B5A3C'), size=(10, 1))]
+        ]
+
+        window = sg.Window('Fornecedores de Café', layout,
+                           modal=True, background_color='#6B4423', size=(550, 550))
+
+        while True:
+            event, _ = window.read()
+            if event in (sg.WINDOW_CLOSED, 'Fechar'):
+                break
+
+        window.close()
 
     def mostra_mensagem(self, msg: str) -> None:
         sg.popup("", msg)

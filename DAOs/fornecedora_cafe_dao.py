@@ -24,4 +24,3 @@ class FornecedoraCafeDAO(DAO):
     def remove(self, key: str) -> None:
         if isinstance(key, str):
             super().remove(key)
-

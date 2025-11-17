@@ -79,15 +79,15 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada!")
             return
 
-        self.__tela_maquina.mostra_mensagem("--- LISTA DE MÁQUINAS ---")
+        dados_maquinas = []
         for maquina in self.maquinas:
-            dados_maquina = {
+            dados_maquinas.append({
                 "id": maquina.id,
                 "nome": maquina.nome,
                 "preco_venda": maquina.preco_venda,
                 "empresa_fornecedora_nome": maquina.empresa_fornecedora.nome
-            }
-            self.__tela_maquina.mostra_maquina(dados_maquina)
+            })
+        self.__tela_maquina.mostra_lista_maquinas(dados_maquinas)
 
     def excluir_maquina(self) -> None:
         if not self.maquinas:

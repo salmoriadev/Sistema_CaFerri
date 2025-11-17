@@ -11,9 +11,10 @@ from entidade.fornecedora_cafe import FornecedoraCafe
 from entidade.produto import Produto
 from entidade.perfil_consumidor import PerfilConsumidor
 
+
 class Cafe(Produto):
     def __init__(self, nome: str, preco_compra: float, preco_venda: float,
-                 id: int, data_fabricacao: str, origem: str, variedade: str, 
+                 id: int, data_fabricacao: str, origem: str, variedade: str,
                  altitude: int, moagem: str, notas_sensoriais: str,
                  perfil_recomendado: str, empresa_fornecedora: FornecedoraCafe) -> None:
         super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
@@ -48,15 +49,15 @@ class Cafe(Produto):
     @property
     def perfil_recomendado(self) -> PerfilConsumidor:
         return self.__perfil_recomendado
-    
+
     @property
     def empresa_fornecedora(self) -> FornecedoraCafe:
         return self.__empresa_fornecedora
-    
+
     @perfil_recomendado.setter
     def perfil_recomendado(self, perfil: str) -> None:
         self.__perfil_recomendado = PerfilConsumidor(perfil)
-    
+
     @moagem.setter
     def moagem(self, tipo_moagem: str) -> None:
         self.__moagem = tipo_moagem
@@ -68,7 +69,7 @@ class Cafe(Produto):
     @altitude.setter
     def altitude(self, nova_altitude: int) -> None:
         self.__altitude = nova_altitude
-    
+
     @variedade.setter
     def variedade(self, nova_variedade: str) -> None:
         self.__variedade = nova_variedade

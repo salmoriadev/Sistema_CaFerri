@@ -24,4 +24,3 @@ class ClienteDAO(DAO):
     def remove(self, key: int) -> None:
         if isinstance(key, int):
             super().remove(key)
-

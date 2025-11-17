@@ -6,11 +6,13 @@
 
 
 from abc import ABC, abstractmethod
+
+
 class EmpresaFornecedora(ABC):
     @abstractmethod
     def __init__(self, nome: str,
-    cnpj: str, endereco: str,
-    telefone: str) -> None:
+                 cnpj: str, endereco: str,
+                 telefone: str) -> None:
         self.__nome = nome
         self.__cnpj = cnpj
         self.__endereco = endereco
@@ -31,7 +33,7 @@ class EmpresaFornecedora(ABC):
     @property
     def telefone(self) -> str:
         return self.__telefone
-    
+
     @nome.setter
     def nome(self, novo_nome: str) -> None:
         self.__nome = novo_nome

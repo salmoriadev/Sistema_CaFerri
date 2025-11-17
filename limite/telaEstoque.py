@@ -15,26 +15,35 @@ class TelaEstoque:
         self.__window = None
 
     def init_opcoes(self):
-        sg.ChangeLookAndFeel('BluePurple') 
-        
+        sg.theme('DarkBrown2')
+
         botoes_opcoes = [
-            [sg.Button('Listar Inventário', key='1', font='Any 12', pad=(5, 5), expand_x=True)],
-            [sg.Button('Adicionar Novo Produto ao Estoque', key='2', font='Any 12', pad=(5, 5), expand_x=True)],
-            [sg.Button('Repor Estoque de um Produto', key='3', font='Any 12', pad=(5, 5), expand_x=True)],
-            [sg.Button('Dar Baixa Manual de um Produto', key='4', font='Any 12', pad=(5, 5), expand_x=True)],
-            [sg.Button('Retornar', key='0', font='Any 12', pad=(5, 5), expand_x=True)]
+            [sg.Button('Listar Inventário', key='1', font='Any 12', pad=(
+                5, 5), expand_x=True, button_color=('#F5E6D2', '#9B7A5A'))],
+            [sg.Button('Adicionar Novo Produto ao Estoque', key='2', font='Any 12', pad=(
+                5, 5), expand_x=True, button_color=('#F5E6D2', '#9B7A5A'))],
+            [sg.Button('Repor Estoque de um Produto', key='3', font='Any 12', pad=(
+                5, 5), expand_x=True, button_color=('#F5E6D2', '#9B7A5A'))],
+            [sg.Button('Dar Baixa Manual de um Produto', key='4', font='Any 12', pad=(
+                5, 5), expand_x=True, button_color=('#F5E6D2', '#9B7A5A'))],
+            [sg.Button('Retornar', key='0', font='Any 12', pad=(
+                5, 5), expand_x=True, button_color=('#F5E6D2', '#9B7A5A'))]
         ]
 
         layout = [
-            [sg.Column([[sg.Text('-------- Estoque ---------', font=("Helvica", 25), pad=((0,0),(20,10)))]], justification='center')],
-            [sg.Column([[sg.Text('Escolha sua opção', font=("Helvica", 15), pad=((0,0),(0,20)))]], justification='center')],
-            [sg.Column([[sg.Frame('Opções de Estoque', botoes_opcoes, font='Any 14', title_color='black')]], justification='center')]
+            [sg.Column([[sg.Text('-------- Estoque ---------', font=("Helvica", 25), pad=((0, 0),
+                       (20, 10)), text_color='#F5E6D2')]], justification='center', background_color='#7A5A3A')],
+            [sg.Column([[sg.Text('Escolha sua opção', font=("Helvica", 15), pad=(
+                (0, 0), (0, 20)), text_color='#E8D5B7')]], justification='center', background_color='#7A5A3A')],
+            [sg.Column([[sg.Frame('Opções de Estoque', botoes_opcoes, font='Any 14', title_color='#F5E6D2',
+                       background_color='#7A5A3A', border_width=2)]], justification='center', background_color='#7A5A3A')]
         ]
-        
-        self.__window = sg.Window('Gerenciador de Estoque', layout, element_justification='center', size=(550, 400))
+
+        self.__window = sg.Window('Gerenciador de Estoque', layout, element_justification='center', size=(
+            580, 580), background_color='#7A5A3A')
 
     def tela_opcoes(self) -> int:
-        self.init_opcoes() 
+        self.init_opcoes()
         button, _ = self.open()
 
         if button in (None, '0', 'Retornar'):
@@ -45,10 +54,10 @@ class TelaEstoque:
         if button in opcoes_validas:
             self.close()
             return int(button)
-        
+
         self.close()
-        return None 
-    
+        return None
+
     def pega_dados_produto_estoque(self) -> Optional[Dict[str, int]]:
         layout = [
             [sg.Text('ID do Produto:'), sg.Input(key='id_produto')],
@@ -68,12 +77,15 @@ class TelaEstoque:
                     id_produto = int(values['id_produto'])
                     quantidade = int(values['quantidade'])
                     if quantidade < 0:
-                        self.mostra_mensagem("Quantidade não pode ser negativa.")
+                        self.mostra_mensagem(
+                            "Quantidade não pode ser negativa.")
                         continue
-                    dados = {"id_produto": id_produto, "quantidade": quantidade}
+                    dados = {"id_produto": id_produto,
+                             "quantidade": quantidade}
                     break
                 except (ValueError, TypeError):
-                    self.mostra_mensagem("IDs e quantidade devem ser números inteiros.")
+                    self.mostra_mensagem(
+                        "IDs e quantidade devem ser números inteiros.")
 
         window.close()
         return dados
