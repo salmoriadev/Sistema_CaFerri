@@ -52,6 +52,9 @@ class ControladorCliente:
         perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
         dados_cliente = self.__tela_cliente.pega_dados_cliente(perfis_mapa, is_alteracao=False)
 
+        if dados_cliente is None:
+            return
+
         if self.__cliente_dao.get(dados_cliente["id"]):
             self.__tela_cliente.mostra_mensagem("ERRO: Já existe um cliente com este ID!")
             return
@@ -71,9 +74,16 @@ class ControladorCliente:
 
         self.lista_clientes()
         id_cliente = self.__tela_cliente.seleciona_cliente()
+        if id_cliente is None:
+            return
         cliente = self.pega_cliente_por_id(id_cliente)
 
-        senha = hashlib.sha256(self.__tela_cliente.pedir_senha().encode('utf-8')).hexdigest()
+        senha_digitada = self.__tela_cliente.pedir_senha()
+
+        if senha_digitada is None:
+            return
+
+        senha = hashlib.sha256(senha_digitada.encode('utf-8')).hexdigest()
         if senha != cliente.senha_cifrada:
             self.__tela_cliente.mostra_mensagem("Senha incorreta! Alteração cancelada.")
             return
@@ -81,6 +91,8 @@ class ControladorCliente:
         perfis_mapa = {}
         perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
         novos_dados = self.__tela_cliente.pega_dados_cliente(perfis_mapa, is_alteracao=True)
+        if novos_dados is None:
+            return
         
         cliente.nome = novos_dados["nome"]
         cliente.email = novos_dados["email"]
@@ -114,14 +126,19 @@ class ControladorCliente:
             
         self.lista_clientes()
         id_cliente = self.__tela_cliente.seleciona_cliente()
+        if id_cliente is None:
+            return
         cliente = self.pega_cliente_por_id(id_cliente)
 
-        senha = hashlib.sha256(self.__tela_cliente.pedir_senha().encode('utf-8')).hexdigest()
+        senha_digitada = self.__tela_cliente.pedir_senha()
+        if senha_digitada is None:
+            return
+
+        senha = hashlib.sha256(senha_digitada.encode('utf-8')).hexdigest()
         if senha != cliente.senha_cifrada:
             self.__tela_cliente.mostra_mensagem("Senha incorreta! Exclusão cancelada.")
             return
         
-        # Verifica se existe alguma venda (em andamento) com este cliente
         vendas_com_cliente = []
         for venda in self._controlador_sistema.controlador_venda.vendas:
             if venda.cliente == cliente and venda.status_venda == "Em andamento":
@@ -145,6 +162,9 @@ class ControladorCliente:
             
         self.lista_clientes()
         id_cliente = self.__tela_cliente.seleciona_cliente()
+
+        if id_cliente is None:
+            return
         
         try:
             cliente = self.pega_cliente_por_id(id_cliente)
