@@ -6,13 +6,6 @@ Um sistema de gerenciamento completo para um e-commerce de café especializado, 
 
 O "Caferri" é uma solução de software projetada para um e-commerce inovador de café. Ele permite o controle total sobre produtos, fornecedores, clientes, estoque e transações de venda, além de gerar relatórios estratégicos para auxiliar na tomada de decisões de negócio.
 
-### 📊 Estatísticas do Projeto
-
-- **Total de linhas de código:** 5.416 linhas (todos os arquivos de texto)
-- **Arquivos Python:** 55 arquivos
-- **Linhas de código Python:** 5.330 linhas
-- **Documentação:** Cobertura completa de todas as classes e métodos
-
 ---
 
 ## ✨ Funcionalidades Principais
