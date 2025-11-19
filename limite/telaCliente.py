@@ -41,9 +41,19 @@ import FreeSimpleGUI as sg
 class TelaCliente:
 
     def __init__(self):
+        """
+        Inicializa a tela de clientes, criando referência para a janela principal
+        que será configurada no método init_opcoes.
+        """
         self.__window = None
 
     def init_opcoes(self):
+        """
+        Configura e cria a janela principal do menu de clientes. Define tema,
+        layout com título, subtítulo e botões de opções (Incluir, Alterar,
+        Listar, Excluir, Ver Recomendações, Retornar). A janela é armazenada
+        em self.__window.
+        """
         sg.theme('DarkGreen7')
 
         botoes_opcoes = [
@@ -74,6 +84,11 @@ class TelaCliente:
             580, 580), background_color='#4A5D3A')
 
     def tela_opcoes(self) -> int:
+        """
+        Exibe o menu principal de clientes e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-5) ou 0 para retornar.
+        Retorna 0 se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes()
         button, _ = self.open()
 
@@ -90,6 +105,14 @@ class TelaCliente:
         return 0
 
     def pega_dados_cliente(self, perfil_mapa: dict, is_alteracao: bool = False) -> Optional[Dict]:
+        """
+        Exibe formulário modal para coleta de dados de um cliente. Adapta campos
+        conforme contexto: oculta ID em alterações (imutável) e torna senha
+        opcional em alterações. Valida todos os campos (nome, email válido,
+        saldo não negativo, perfil selecionado) antes de retornar. Mantém janela
+        aberta em caso de erro para correção. Retorna dicionário com dados
+        validados ou None se cancelado.
+        """
         sg.theme('DarkGreen7')
         perfis_disponiveis = perfil_mapa["perfis_disponiveis"]
 
@@ -176,6 +199,11 @@ class TelaCliente:
         return dados
 
     def mostra_cliente(self, dados_cliente: dict) -> None:
+        """
+        Exibe detalhes de um cliente específico usando sg.Print. Recebe
+        dicionário com dados do cliente e formata para exibição legível,
+        incluindo formatação monetária para saldo.
+        """
         linhas = [
             "--------------------------------",
             f"ID: {dados_cliente['id']}",
@@ -188,6 +216,12 @@ class TelaCliente:
         sg.Print("\n".join(linhas))
 
     def mostra_lista_clientes(self, clientes: List[Dict[str, str]]) -> None:
+        """
+        Exibe lista formatada de todos os clientes cadastrados em janela modal
+        com área de texto scrollável. Formata cada cliente com ID, nome, email,
+        saldo e perfil. Exibe mensagem apropriada se lista estiver vazia.
+        Janela permanece aberta até usuário fechar explicitamente.
+        """
         sg.theme('DarkGreen7')
         texto = "--- LISTA DE CLIENTES ---\n\n"
         if not clientes:
@@ -218,6 +252,12 @@ class TelaCliente:
         window.close()
 
     def mostra_recomendacoes(self, nome_cliente: str, perfil: str, cafes: List[Dict[str, str]]) -> None:
+        """
+        Exibe recomendações de café para um cliente específico em janela modal
+        com área de texto scrollável. Formata cada recomendação com ID, nome e
+        preço do café. Exibe mensagem apropriada se não houver cafés recomendados
+        para o perfil. Janela permanece aberta até usuário fechar explicitamente.
+        """
         sg.theme('DarkGreen7')
         texto = f"--- RECOMENDAÇÕES PARA {nome_cliente.upper()} ---\n"
         texto += f"Perfil: {perfil}\n\n"
@@ -246,6 +286,11 @@ class TelaCliente:
         window.close()
 
     def seleciona_cliente(self) -> Optional[int]:
+        """
+        Exibe janela modal para seleção de cliente por ID. Valida que o ID
+        é um número inteiro antes de retornar. Retorna None se cancelado
+        ou se ID inválido após tentativas de correção.
+        """
         sg.theme('DarkGreen7')
         layout = [
             [sg.Text('Selecionar Cliente', font=("Helvica", 18))],
@@ -271,18 +316,38 @@ class TelaCliente:
         return id_cliente
 
     def pedir_senha(self) -> Optional[str]:
+        """
+        Solicita senha do usuário através de popup com campo mascarado.
+        Usado para confirmação de segurança em operações críticas como
+        alteração e exclusão de clientes. Retorna a senha digitada ou
+        None se cancelado.
+        """
         senha = sg.popup_get_text(
             "Digite sua senha atual para confirmar:", password_char='*', title="Segurança")
         return senha
 
     def mostra_mensagem(self, msg: str) -> None:
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg, font='Any 12')
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

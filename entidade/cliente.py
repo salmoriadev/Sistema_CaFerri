@@ -23,6 +23,11 @@ class Cliente:
     def __init__(self, id: int, nome: str,
                  email: str, senha_cifrada: str,
                  saldo: float, perfil: str) -> None:
+        """
+        Inicializa um cliente com dados pessoais, credenciais e preferências.
+        Recebe senha já cifrada (SHA-256) e cria instância de PerfilConsumidor
+        que valida o perfil fornecido. Saldo inicial pode ser zero ou positivo.
+        """
         self.__id = id
         self.__nome = nome
         self.__email = email
@@ -56,6 +61,11 @@ class Cliente:
 
     @property
     def lista_cafes_recomendados(self) -> list[str]:
+        """
+        Retorna lista de tipos de café recomendados baseado no perfil do
+        consumidor. Delega para PerfilConsumidor que mantém mapeamento de
+        perfis para recomendações. Usado para personalização de sugestões.
+        """
         return self.__perfil_do_consumidor.recomendar_cafes()
 
     @id.setter

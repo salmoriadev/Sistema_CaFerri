@@ -1,6 +1,18 @@
-"""    Gerencia a interface com o usuário 
-para todas as operações relacionadas a Cafés."""
+"""
+Gerencia a interface gráfica para todas as operações relacionadas a Cafés.
 
+Esta classe atua como a camada de apresentação (View) no padrão MVC para o
+módulo de gerenciamento de cafés. Utiliza FreeSimpleGUI para criar interfaces
+gráficas modais e responsivas, isolando completamente a lógica de visualização
+do controlador.
+
+Responsabilidades:
+- Exibir menu principal com opções de CRUD para cafés
+- Coletar dados do usuário através de formulários validados
+- Exibir listas e detalhes de cafés formatados
+- Gerenciar ciclo de vida das janelas (abrir/fechar)
+- Validar entradas do usuário antes de retornar dados ao controlador
+"""
 
 from datetime import datetime
 from typing import Dict, List, Optional
@@ -10,9 +22,19 @@ import FreeSimpleGUI as sg
 
 class TelaCafe:
     def __init__(self):
+        """
+        Inicializa a tela de cafés, criando referência para a janela principal
+        que será configurada no método init_opcoes.
+        """
         self.__window = None
 
     def init_opcoes(self):
+        """
+        Configura e cria a janela principal do menu de cafés. Define tema,
+        layout com título, subtítulo e botões de opções (Adicionar, Alterar,
+        Listar, Excluir, Retornar). A janela é armazenada em self.__window
+        para uso posterior.
+        """
         sg.theme('DarkBrown3')
         botoes = [
             [sg.Button('Adicionar Café', key='1', font='Any 14', expand_x=True,
@@ -41,6 +63,11 @@ class TelaCafe:
             size=(580, 580), background_color='#6B4423')
 
     def tela_opcoes(self) -> Optional[int]:
+        """
+        Exibe o menu principal de cafés e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-4) ou 0 para retornar.
+        Retorna None se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes()
         button, _ = self.open()
 
@@ -56,6 +83,13 @@ class TelaCafe:
         return None
 
     def pega_dados_cafe(self, perfil_mapa: dict, is_alteracao: bool = False) -> Optional[dict]:
+        """
+        Exibe formulário modal para coleta de dados de um café. Adapta campos
+        conforme contexto: oculta ID em alterações (imutável). Valida todos
+        os campos (tipos numéricos, formato de data DD/MM/AAAA, campos obrigatórios)
+        antes de retornar. Mantém janela aberta em caso de erro para correção.
+        Retorna dicionário com dados validados ou None se cancelado.
+        """
         perfis_disponiveis = perfil_mapa["perfis_disponiveis"]
         perfil_layout = [
             [sg.Text('Perfil Recomendado:'), sg.Combo(
@@ -137,6 +171,11 @@ class TelaCafe:
         return dados
 
     def mostra_cafe(self, dados_cafe: dict) -> None:
+        """
+        Exibe detalhes de um café específico em popup formatado. Recebe
+        dicionário com dados do café e formata para exibição legível,
+        incluindo formatação monetária para preço.
+        """
         texto = (
             f"ID: {dados_cafe['id']}\n"
             f"NOME: {dados_cafe['nome']}\n"
@@ -147,6 +186,11 @@ class TelaCafe:
         sg.popup('Café', texto)
 
     def seleciona_cafe(self) -> Optional[int]:
+        """
+        Exibe janela modal para seleção de café por ID. Valida que o ID
+        é um número inteiro antes de retornar. Retorna None se cancelado
+        ou se ID inválido após tentativas de correção.
+        """
         layout = [
             [sg.Text('ID do café:'), sg.Input(key='id')],
             [sg.Button('Selecionar', bind_return_key=True),
@@ -170,6 +214,12 @@ class TelaCafe:
         return id_escolhido
 
     def mostra_lista_cafes(self, cafes: List[Dict[str, str]]) -> None:
+        """
+        Exibe lista formatada de todos os cafés cadastrados em janela modal
+        com área de texto scrollável. Formata cada café com ID, nome e perfil.
+        Exibe mensagem apropriada se lista estiver vazia. Janela permanece
+        aberta até usuário fechar explicitamente.
+        """
         sg.theme('DarkBrown3')
         texto = "--- LISTA DE CAFÉS ---\n\n"
         if not cafes:
@@ -196,13 +246,27 @@ class TelaCafe:
         window.close()
 
     def mostra_mensagem(self, msg: str) -> None:
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg)
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

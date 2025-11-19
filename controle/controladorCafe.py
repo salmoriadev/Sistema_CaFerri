@@ -25,17 +25,32 @@ from Excecoes.perfilRecomendadoNaoExisteException import PerfilRecomendadoNaoExi
 from Excecoes.produtoNaoEncontradoException import ProdutoNaoEncontradoException
 from DAOs.cafe_dao import CafeDAO
 
+
 class ControladorCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
+        """
+        Inicializa o controlador de cafés, recebendo referência ao controlador
+        sistema para acesso a outros módulos. Cria instâncias da tela e do DAO
+        necessários para operações de interface e persistência.
+        """
         self._controlador_sistema = controlador_sistema
         self.__tela_cafe = TelaCafe()
         self.__cafe_dao = CafeDAO()
-    
+
     @property
     def cafes(self) -> list:
+        """
+        Retorna lista de todos os cafés cadastrados no sistema. Usado por
+        outros controladores para acessar o catálogo completo de cafés.
+        """
         return list(self.__cafe_dao.get_all())
 
     def pega_cafe_por_id(self, id: int) -> Cafe:
+        """
+        Recupera um café específico pelo ID. Valida que o ID é um inteiro e
+        lança exceção apropriada se o café não for encontrado. Usado internamente
+        e por outros controladores que precisam acessar cafés específicos.
+        """
         if not isinstance(id, int):
             raise TypeError("O ID do café deve ser um número inteiro.")
         cafe = self.__cafe_dao.get(id)
@@ -44,9 +59,17 @@ class ControladorCafe(BuscaProdutoMixin):
         return cafe
 
     def incluir_cafe(self) -> None:
+        """
+        Processa o cadastro de um novo café. Coleta dados do usuário através
+        da tela, valida que não existe produto com o mesmo ID (usando mixin),
+        verifica existência do fornecedor e persiste o novo café. Exibe
+        mensagens de sucesso ou erro conforme o resultado da operação.
+        """
         perfis_mapa = {}
-        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
-        dados_cafe = self.__tela_cafe.pega_dados_cafe(perfis_mapa, is_alteracao=False)
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor(
+            "Doce e Suave").possiveis_perfis
+        dados_cafe = self.__tela_cafe.pega_dados_cafe(
+            perfis_mapa, is_alteracao=False)
 
         if self.id_produto_ja_existe(dados_cafe["id"]):
             self.__tela_cafe.mostra_mensagem(
@@ -65,8 +88,15 @@ class ControladorCafe(BuscaProdutoMixin):
         self.__tela_cafe.mostra_mensagem("Café cadastrado com sucesso!")
 
     def alterar_cafe(self) -> None:
+        """
+        Processa a alteração de um café existente. Lista cafés disponíveis,
+        permite seleção, coleta novos dados do usuário e atualiza todas as
+        propriedades do café. Valida fornecedor antes de atualizar e exibe
+        lista atualizada após sucesso.
+        """
         if not self.cafes:
-            self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado para alterar!")
+            self.__tela_cafe.mostra_mensagem(
+                "Nenhum café cadastrado para alterar!")
             return
 
         self.lista_cafe()
@@ -74,8 +104,10 @@ class ControladorCafe(BuscaProdutoMixin):
         cafe = self.pega_cafe_por_id(id_cafe)
 
         perfis_mapa = {}
-        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor("Doce e Suave").possiveis_perfis
-        novos_dados = self.__tela_cafe.pega_dados_cafe(perfis_mapa, is_alteracao=True)
+        perfis_mapa["perfis_disponiveis"] = PerfilConsumidor(
+            "Doce e Suave").possiveis_perfis
+        novos_dados = self.__tela_cafe.pega_dados_cafe(
+            perfis_mapa, is_alteracao=True)
 
         cafe.nome = novos_dados["nome"]
         cafe.preco_compra = novos_dados["preco_compra"]
@@ -90,11 +122,17 @@ class ControladorCafe(BuscaProdutoMixin):
         cafe.empresa_fornecedora = self._controlador_sistema.controlador_empresa_cafe.pega_fornecedor_por_cnpj(
             novos_dados["empresa_fornecedora"])
         self.__cafe_dao.update(cafe)
-        
+
         self.__tela_cafe.mostra_mensagem("Café alterado com sucesso!")
         self.lista_cafe()
 
     def buscar_cafes_por_perfil(self, perfil: str) -> list:
+        """
+        Busca todos os cafés que correspondem ao perfil de consumidor fornecido.
+        Usado pelo ControladorCliente para gerar recomendações personalizadas
+        baseadas no perfil do cliente. Retorna lista vazia se nenhum café
+        corresponder ao perfil.
+        """
         cafes_encontrados = []
         for cafe in self.cafes:
             if cafe.perfil_recomendado.perfil == perfil:
@@ -102,6 +140,12 @@ class ControladorCafe(BuscaProdutoMixin):
         return cafes_encontrados
 
     def lista_cafe(self) -> None:
+        """
+        Exibe lista formatada de todos os cafés cadastrados. Extrai informações
+        relevantes (ID, nome, preço, perfil, fornecedor) e delega a exibição
+        para a tela. Usado tanto para visualização quanto como passo intermediário
+        em operações de alteração e exclusão.
+        """
         if not self.cafes:
             self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado!")
             return
@@ -118,27 +162,43 @@ class ControladorCafe(BuscaProdutoMixin):
         self.__tela_cafe.mostra_lista_cafes(dados_cafes)
 
     def excluir_cafe(self) -> None:
+        """
+        Processa a exclusão de um café. Lista cafés disponíveis, permite
+        seleção, remove o café do estoque se estiver cadastrado (mantendo
+        integridade referencial) e remove do repositório. Exibe lista
+        atualizada após exclusão bem-sucedida.
+        """
         if not self.cafes:
-            self.__tela_cafe.mostra_mensagem("Nenhum café cadastrado para excluir!")
+            self.__tela_cafe.mostra_mensagem(
+                "Nenhum café cadastrado para excluir!")
             return
 
         self.lista_cafe()
         id_cafe = self.__tela_cafe.seleciona_cafe()
         cafe = self.pega_cafe_por_id(id_cafe)
-        
-        # Remove o café do estoque se estiver lá
+
         estoque = self._controlador_sistema.controlador_estoque.estoque
         estoque.remover_produto_do_estoque(cafe)
-        
+
         self.__cafe_dao.remove(cafe.id)
         self.__tela_cafe.mostra_mensagem("Café excluído com sucesso!")
         self.lista_cafe()
 
     def retornar(self) -> None:
+        """
+        Retorna ao menu principal do sistema, delegando navegação para o
+        controlador sistema.
+        """
         self._controlador_sistema.abre_tela()
 
     def abre_tela(self) -> None:
-        lista_opcoes = {
+        """
+        Controla o loop principal do menu de cafés. Exibe opções, captura
+        escolha do usuário e delega execução para método correspondente.
+        Trata exceções de negócio e exibe mensagens de erro apropriadas.
+        Continua em loop até usuário escolher retornar (opção 0).
+        """
+        mapa_opcoes = {
             1: self.incluir_cafe, 2: self.alterar_cafe,
             3: self.lista_cafe, 4: self.excluir_cafe,
             0: self.retornar
@@ -149,8 +209,8 @@ class ControladorCafe(BuscaProdutoMixin):
                 if opcao == 0:
                     self.retornar()
                     break
-                
-                funcao_escolhida = lista_opcoes.get(opcao)
+
+                funcao_escolhida = mapa_opcoes.get(opcao)
                 if funcao_escolhida:
                     funcao_escolhida()
                 else:

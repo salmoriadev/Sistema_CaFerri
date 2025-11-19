@@ -22,10 +22,19 @@ import FreeSimpleGUI as sg
 class TelaSistema:
 
     def __init__(self):
+        """
+        Inicializa a tela principal do sistema, criando referência para a janela
+        e configurando os componentes iniciais.
+        """
         self.__window = None
         self.init_components()
 
     def init_components(self):
+        """
+        Configura e cria a janela principal do sistema. Define tema, layout com
+        título, subtítulo e botões de opções para todos os módulos disponíveis.
+        A janela é armazenada em self.__window.
+        """
 
         sg.theme('DarkBrown4')
 
@@ -78,6 +87,11 @@ class TelaSistema:
             580, 580), background_color='#3D2817')
 
     def tela_opcoes(self) -> int:
+        """
+        Exibe o menu principal do sistema e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-8) ou 0 para finalizar.
+        Retorna None se a janela for fechada sem seleção válida.
+        """
         self.init_components()
         button, _ = self.open()
 
@@ -94,13 +108,27 @@ class TelaSistema:
         return None
 
     def mostra_mensagem(self, msg: str) -> None:
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg)
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

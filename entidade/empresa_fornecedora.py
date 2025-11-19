@@ -1,8 +1,16 @@
-"""Como uma Classe Base Abstrata (ABC), `EmpresaFornecedora` não é projetada
-    para ser instanciada diretamente. Seu principal propósito é garantir que
-    qualquer classe de fornecedor mais específica que a herde (como
-    `FornecedoraCafe` ou `FornecedoraMaquina`) implemente um conjunto
-    consistente de atributos e comportamentos."""
+"""
+Classe base abstrata para empresas fornecedoras do sistema.
+
+Este módulo define a interface comum que todos os fornecedores (de café e
+máquinas) devem implementar. Estabelece atributos fundamentais de empresa
+como nome, CNPJ (usado como chave única), endereço e telefone. Garante
+consistência estrutural entre diferentes tipos de fornecedores.
+
+A abstração permite que o sistema trate fornecedores de forma uniforme em
+operações de validação e relatórios, enquanto mantém flexibilidade para
+características específicas de cada tipo (tipo_cafe para fornecedores de
+café, pais_de_origem para fornecedores de máquinas).
+"""
 
 
 from abc import ABC, abstractmethod
@@ -13,6 +21,11 @@ class EmpresaFornecedora(ABC):
     def __init__(self, nome: str,
                  cnpj: str, endereco: str,
                  telefone: str) -> None:
+        """
+        Inicializa empresa fornecedora com dados básicos. Método abstrato que
+        deve ser implementado por classes filhas (FornecedoraCafe, FornecedoraMaquina).
+        CNPJ é usado como identificador único em todo o sistema.
+        """
         self.__nome = nome
         self.__cnpj = cnpj
         self.__endereco = endereco

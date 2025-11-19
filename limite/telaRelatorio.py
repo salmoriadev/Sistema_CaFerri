@@ -1,6 +1,15 @@
 """
-    Gerencia a interface com o usuário para a geração e exibição de
-    todos os relatórios do sistema.
+Gerencia a interface gráfica para a geração e exibição de todos os relatórios do sistema.
+
+Esta classe atua como a camada de apresentação (View) no padrão MVC para o
+módulo de relatórios. Utiliza FreeSimpleGUI para criar interfaces gráficas modais,
+isolando a lógica de visualização do controlador.
+
+Responsabilidades:
+- Exibir menu principal com opções de relatórios disponíveis
+- Exibir relatórios formatados em janelas scrolláveis
+- Gerenciar ciclo de vida das janelas (abrir/fechar)
+- Formatar dados de relatórios para exibição legível
 """
 
 from typing import List, Optional
@@ -10,9 +19,18 @@ import FreeSimpleGUI as sg
 
 class TelaRelatorio:
     def __init__(self):
+        """
+        Inicializa a tela de relatórios, criando referência para a janela principal
+        que será configurada no método init_opcoes.
+        """
         self.__window = None
 
     def init_opcoes(self):
+        """
+        Configura e cria a janela principal do menu de relatórios. Define tema,
+        layout com título, subtítulo e botões de opções para cada tipo de
+        relatório disponível. A janela é armazenada em self.__window.
+        """
         sg.theme('DarkBrown4')
 
         botoes = [
@@ -34,7 +52,7 @@ class TelaRelatorio:
 
         layout = [
             [sg.Column([[sg.Text('Relatórios', font=('Helvetica', 28), pad=((0, 0), (20, 10)),
-                     text_color='#E8D5B7')]], justification='center', background_color='#3D2817')],
+                                 text_color='#E8D5B7')]], justification='center', background_color='#3D2817')],
             [sg.Column([[sg.Text('Escolha um relatório', font=('Helvetica', 18), pad=(
                 (0, 0), (0, 20)), text_color='#D4C4A8')]], justification='center', background_color='#3D2817')],
             [sg.Column([[sg.Frame('Opções', botoes, font='Any 16', title_color='#E8D5B7',
@@ -45,6 +63,11 @@ class TelaRelatorio:
             580, 580), background_color='#3D2817')
 
     def tela_opcoes(self) -> Optional[int]:
+        """
+        Exibe o menu principal de relatórios e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-6) ou 0 para retornar.
+        Retorna None se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes()
         button, _ = self.open()
 
@@ -60,6 +83,13 @@ class TelaRelatorio:
         return None
 
     def mostra_relatorio(self, titulo: str, linhas_relatorio: List[str]):
+        """
+        Exibe relatório formatado em janela modal com área de texto scrollável.
+        Recebe título do relatório e lista de linhas formatadas. Adiciona
+        cabeçalho e rodapé para melhor legibilidade. Janela permanece aberta
+        até usuário fechar explicitamente. Exibe mensagem apropriada se não
+        houver dados para exibir.
+        """
         sg.theme('DarkBrown4')
         texto = f"---------- {titulo.upper()} ----------\n\n"
         if not linhas_relatorio:
@@ -86,13 +116,27 @@ class TelaRelatorio:
         window.close()
 
     def mostra_mensagem(self, msg: str):
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg)
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

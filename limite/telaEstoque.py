@@ -1,8 +1,16 @@
 """
-    Gerencia a interface com o usuário para todas as operações de Estoque.
+Gerencia a interface gráfica para todas as operações de Estoque.
 
-    Esta classe atua como a camada de apresentação (View) para o módulo de
-    controle de estoque.
+Esta classe atua como a camada de apresentação (View) no padrão MVC para o
+módulo de controle de estoque. Utiliza FreeSimpleGUI para criar interfaces
+gráficas modais, isolando a lógica de visualização do controlador.
+
+Responsabilidades:
+- Exibir menu principal com opções de gerenciamento de estoque
+- Coletar dados de produtos e quantidades através de formulários validados
+- Exibir inventário completo formatado
+- Gerenciar ciclo de vida das janelas (abrir/fechar)
+- Validar entradas do usuário (IDs e quantidades) antes de retornar dados
 """
 from typing import Dict, List, Optional, Union
 
@@ -12,9 +20,18 @@ import FreeSimpleGUI as sg
 class TelaEstoque:
 
     def __init__(self):
+        """
+        Inicializa a tela de estoque, criando referência para a janela principal
+        que será configurada no método init_opcoes.
+        """
         self.__window = None
 
     def init_opcoes(self):
+        """
+        Configura e cria a janela principal do menu de estoque. Define tema,
+        layout com título, subtítulo e botões de opções (Listar, Adicionar,
+        Repor, Baixa Manual, Retornar). A janela é armazenada em self.__window.
+        """
         sg.theme('DarkBrown2')
 
         botoes_opcoes = [
@@ -43,6 +60,11 @@ class TelaEstoque:
             580, 580), background_color='#7A5A3A')
 
     def tela_opcoes(self) -> int:
+        """
+        Exibe o menu principal de estoque e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-4) ou 0 para retornar.
+        Retorna None se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes()
         button, _ = self.open()
 
@@ -59,6 +81,12 @@ class TelaEstoque:
         return None
 
     def pega_dados_produto_estoque(self) -> Optional[Dict[str, int]]:
+        """
+        Exibe formulário modal para coleta de ID do produto e quantidade.
+        Valida que ambos são números inteiros e que quantidade não é negativa.
+        Mantém janela aberta em caso de erro para correção. Retorna dicionário
+        com dados validados ou None se cancelado.
+        """
         layout = [
             [sg.Text('ID do Produto:'), sg.Input(key='id_produto')],
             [sg.Text('Quantidade:'), sg.Input(key='quantidade')],
@@ -91,6 +119,12 @@ class TelaEstoque:
         return dados
 
     def mostra_inventario(self, itens: List[Dict[str, Union[str, int]]]) -> None:
+        """
+        Exibe inventário completo em popup scrollável. Formata cada item com
+        nome do produto, ID e quantidade disponível. Usa popup_scrolled para
+        permitir visualização de listas longas. Exibe cabeçalho e rodapé
+        formatados para melhor legibilidade.
+        """
         linhas = ["---------- INVENTÁRIO ATUAL ----------"]
         for item in itens:
             linhas.append(
@@ -100,13 +134,27 @@ class TelaEstoque:
         sg.popup_scrolled('Inventário', "\n".join(linhas))
 
     def mostra_mensagem(self, msg: str) -> None:
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg)
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

@@ -17,6 +17,12 @@ class Cafe(Produto):
                  id: int, data_fabricacao: str, origem: str, variedade: str,
                  altitude: int, moagem: str, notas_sensoriais: str,
                  perfil_recomendado: str, empresa_fornecedora: FornecedoraCafe) -> None:
+        """
+        Inicializa um café com dados comerciais básicos (herdados de Produto)
+        e características específicas de café (origem, variedade, altitude,
+        moagem, notas sensoriais). Cria instância de PerfilConsumidor para
+        perfil recomendado e associa fornecedor de café.
+        """
         super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
         self.__origem = origem
         self.__variedade = variedade

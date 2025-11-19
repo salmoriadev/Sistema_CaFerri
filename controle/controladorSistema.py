@@ -33,6 +33,7 @@ from controle.controladorVenda import ControladorVenda
 from controle.controladorEstoque import ControladorEstoque
 from controle.controladorRelatorio import ControladorRelatorios
 
+
 class ControladorSistema:
 
     def __init__(self) -> None:
@@ -57,15 +58,15 @@ class ControladorSistema:
     @property
     def controlador_cafe(self) -> ControladorCafe:
         return self.__controlador_cafe
-        
+
     @property
     def controlador_venda(self) -> ControladorVenda:
         return self.__controlador_venda
-    
+
     @property
     def controlador_estoque(self) -> ControladorEstoque:
         return self.__controlador_estoque
-    
+
     @property
     def controlador_empresa_cafe(self) -> ControladorEmpresaCafe:
         return self.__controlador_empresa_cafe
@@ -75,12 +76,26 @@ class ControladorSistema:
         return self.__controlador_empresa_maquina
 
     def inicializa_sistema(self) -> None:
+        """
+        Inicia o sistema exibindo o menu principal e iniciando o loop de
+        navegação. Este método é chamado pelo main.py para dar início à
+        aplicação.
+        """
         self.abre_tela()
 
     def cadastra_clientes(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de clientes, permitindo
+        cadastro, alteração, listagem e exclusão de clientes do sistema.
+        """
         self.__controlador_cliente.abre_tela()
 
     def cadastra_cafes(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de cafés. Valida que existe
+        pelo menos um fornecedor de café cadastrado antes de permitir o acesso,
+        garantindo integridade referencial dos dados.
+        """
         if not self.__controlador_empresa_cafe.tem_empresas():
             self.__tela_sistema.mostra_mensagem(
                 "ERRO: É necessário cadastrar uma Empresa de Café primeiro!")
@@ -88,6 +103,11 @@ class ControladorSistema:
         self.__controlador_cafe.abre_tela()
 
     def cadastra_maquinas_de_cafe(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de máquinas de café. Valida
+        que existe pelo menos um fornecedor de máquinas cadastrado antes de
+        permitir o acesso, garantindo integridade referencial dos dados.
+        """
         if not self.__controlador_empresa_maquina.tem_empresas():
             self.__tela_sistema.mostra_mensagem(
                 "ERRO: É necessário cadastrar uma Empresa de Máquina primeiro!")
@@ -95,6 +115,12 @@ class ControladorSistema:
         self.__controlador_maquina_de_cafe.abre_tela()
 
     def gerencia_vendas(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de vendas. Valida que existem
+        produtos em estoque e pelo menos um cliente cadastrado antes de permitir
+        o acesso, garantindo que o sistema esteja em estado válido para realizar
+        transações comerciais.
+        """
         if not self.__controlador_estoque.tem_produtos_em_estoque():
             self.__tela_sistema.mostra_mensagem(
                 "ERRO: Não há produtos no estoque para vender!")
@@ -106,26 +132,54 @@ class ControladorSistema:
         self.__controlador_venda.abre_tela()
 
     def gerencia_estoque(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de estoque. Valida que existe
+        pelo menos um produto (café ou máquina) cadastrado antes de permitir o
+        acesso, garantindo que haja produtos para serem gerenciados no estoque.
+        """
         if not self.__controlador_cafe.existe_produto():
-              self.__tela_sistema.mostra_mensagem(
+            self.__tela_sistema.mostra_mensagem(
                 "ERRO: Cadastre pelo menos um tipo de Café ou Máquina antes de gerenciar o estoque!")
-              return
+            return
         self.__controlador_estoque.abre_tela()
 
     def gerencia_fornecedores_cafe(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de fornecedores de café,
+        permitindo cadastro, alteração, listagem e exclusão de empresas
+        fornecedoras de café.
+        """
         self.__controlador_empresa_cafe.abre_tela()
 
     def gerencia_fornecedores_maquina(self) -> None:
+        """
+        Redireciona para o módulo de gerenciamento de fornecedores de máquinas,
+        permitindo cadastro, alteração, listagem e exclusão de empresas
+        fornecedoras de máquinas de café.
+        """
         self.__controlador_empresa_maquina.abre_tela()
 
     def gera_relatorios(self) -> None:
+        """
+        Redireciona para o módulo de relatórios, que oferece análises de vendas,
+        clientes, estoque e fornecedores para suporte à tomada de decisão.
+        """
         self.__controlador_relatorios.abre_tela()
- 
+
     def encerra_sistema(self) -> None:
+        """
+        Encerra a execução do sistema, finalizando o programa.
+        """
         exit(0)
 
     def abre_tela(self) -> None:
-        lista_opcoes = {
+        """
+        Controla o loop principal do menu do sistema. Exibe o menu principal,
+        captura a opção escolhida pelo usuário e delega a execução para o
+        método correspondente. Continua em loop até que o usuário escolha
+        encerrar o sistema (opção 0).
+        """
+        mapa_opcoes = {
             1: self.gerencia_fornecedores_cafe,
             2: self.gerencia_fornecedores_maquina,
             3: self.cadastra_clientes,
@@ -138,12 +192,12 @@ class ControladorSistema:
         }
 
         while True:
-            opcao_escolhida = self.__tela_sistema.tela_opcoes()
-            
-            funcao_escolhida = lista_opcoes.get(opcao_escolhida)
+            opcao = self.__tela_sistema.tela_opcoes()
+
+            funcao_escolhida = mapa_opcoes.get(opcao)
             if funcao_escolhida:
                 funcao_escolhida()
-                if opcao_escolhida == 0:
+                if opcao == 0:
                     break
             else:
                 self.__tela_sistema.mostra_mensagem(

@@ -45,9 +45,19 @@ import FreeSimpleGUI as sg
 class TelaVenda:
 
     def __init__(self):
+        """
+        Inicializa a tela de vendas, criando referência para a janela principal
+        que será configurada no método init_opcoes.
+        """
         self.__window = None
 
     def init_opcoes(self):
+        """
+        Configura e cria a janela principal do menu de vendas. Define tema,
+        layout com título, subtítulo e botões de opções (Iniciar Nova Venda,
+        Listar, Excluir, Gerenciar Venda, Retornar). A janela é armazenada
+        em self.__window.
+        """
         sg.theme('DarkBrown2')
 
         botoes_opcoes = [
@@ -76,6 +86,11 @@ class TelaVenda:
             580, 580), background_color='#7A5A3A')
 
     def tela_opcoes(self) -> int:
+        """
+        Exibe o menu principal de vendas e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-4) ou 0 para retornar.
+        Retorna 0 se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes()
         button, _ = self.open()
 
@@ -92,6 +107,12 @@ class TelaVenda:
         return 0
 
     def init_opcoes_gerenciar_venda(self):
+        """
+        Configura e cria a janela do submenu de gerenciamento de venda em andamento.
+        Define tema, layout com título, subtítulo e botões de opções para
+        operações no carrinho (Adicionar, Diminuir, Remover, Listar, Finalizar).
+        A janela é armazenada em self.__window.
+        """
         sg.theme('DarkBrown2')
 
         botoes_opcoes = [
@@ -122,6 +143,11 @@ class TelaVenda:
             580, 580), background_color='#7A5A3A')
 
     def tela_opcoes_gerenciar_venda(self) -> int:
+        """
+        Exibe o submenu de gerenciamento de venda e captura a escolha do usuário.
+        Retorna o código numérico da opção selecionada (1-5) ou 0 para salvar e sair.
+        Retorna 0 se a janela for fechada sem seleção válida.
+        """
         self.init_opcoes_gerenciar_venda()
         button, _ = self.open()
 
@@ -138,6 +164,12 @@ class TelaVenda:
         return 0
 
     def pega_dados_iniciar_venda(self) -> Optional[Dict[str, int]]:
+        """
+        Exibe formulário modal para iniciar uma nova venda. Solicita ID da venda
+        e ID do cliente. Valida que ambos são números inteiros antes de retornar.
+        Mantém janela aberta em caso de erro para correção. Retorna dicionário
+        com dados validados ou None se cancelado.
+        """
         sg.theme('DarkBrown2')
         layout = [
             [sg.Text('Iniciar Nova Venda', font=(
@@ -171,6 +203,12 @@ class TelaVenda:
         return dados
 
     def pega_dados_produto(self) -> Optional[Dict[str, int]]:
+        """
+        Exibe formulário modal para coleta de dados de produto (ID e quantidade).
+        Valida que ambos são números inteiros antes de retornar. Mantém janela
+        aberta em caso de erro para correção. Retorna dicionário com dados
+        validados ou None se cancelado.
+        """
         sg.theme('DarkBrown2')
         layout = [
             [sg.Text('Dados do Produto', font=(
@@ -206,6 +244,11 @@ class TelaVenda:
         return dados
 
     def seleciona_venda(self) -> Optional[int]:
+        """
+        Exibe janela modal para seleção de venda por ID. Valida que o ID
+        é um número inteiro antes de retornar. Retorna None se cancelado
+        ou se ID inválido após tentativas de correção.
+        """
         sg.theme('DarkBrown2')
         layout = [
             [sg.Text('Selecionar Venda', font=(
@@ -235,6 +278,13 @@ class TelaVenda:
         return id_venda
 
     def mostra_venda(self, dados_venda: dict) -> None:
+        """
+        Exibe detalhes completos de uma venda em janela modal com área de texto
+        scrollável. Formata informações da venda incluindo ID, cliente, status,
+        lista de produtos no carrinho com quantidades e subtotais, e valor total.
+        Exibe mensagem apropriada se carrinho estiver vazio. Janela permanece
+        aberta até usuário fechar explicitamente.
+        """
         sg.theme('DarkBrown2')
         texto = "------------------------------\n"
         texto += f"ID da Venda: {dados_venda['id_venda']}\n"
@@ -269,6 +319,12 @@ class TelaVenda:
         window.close()
 
     def mostra_lista_vendas(self, vendas: List[Dict[str, str]]) -> None:
+        """
+        Exibe lista formatada de todas as vendas registradas em janela modal
+        com área de texto scrollável. Formata cada venda com ID, nome do cliente,
+        status e valor total. Exibe mensagem apropriada se lista estiver vazia.
+        Janela permanece aberta até usuário fechar explicitamente.
+        """
         sg.theme('DarkBrown2')
         texto = "--- LISTA DE VENDAS ---\n\n"
         if not vendas:
@@ -296,13 +352,27 @@ class TelaVenda:
         window.close()
 
     def mostra_mensagem(self, msg: str) -> None:
+        """
+        Exibe mensagem de feedback (sucesso, erro, aviso) em popup simples.
+        Usado pelo controlador para comunicar resultados de operações ao usuário.
+        """
         sg.popup("", msg, font='Any 12')
 
     def close(self):
+        """
+        Fecha a janela principal se estiver aberta e limpa a referência.
+        Previne vazamentos de memória e garante que janelas não permaneçam
+        abertas após uso.
+        """
         if self.__window:
             self.__window.Close()
             self.__window = None
 
     def open(self):
+        """
+        Lê eventos da janela principal (cliques de botão, fechamento).
+        Retorna tupla com o botão pressionado e valores dos campos de entrada.
+        Método de baixo nível usado internamente por outros métodos da classe.
+        """
         button, values = self.__window.Read()
         return button, values

@@ -18,6 +18,7 @@ from entidade.maquina_de_cafe import MaquinaDeCafe
 from Excecoes.maquinaNaoEncontradaException import MaquinaNaoEncontradaException
 from DAOs.maquina_de_cafe_dao import MaquinaDeCafeDAO
 
+
 class ControladorMaquinaDeCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema) -> None:
         self._controlador_sistema = controlador_sistema
@@ -29,6 +30,12 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         return list(self.__maquina_dao.get_all())
 
     def pega_maquina_por_id(self, id: int) -> MaquinaDeCafe:
+        """
+        Recupera uma máquina específica pelo ID. Valida que o ID é um inteiro
+        e lança exceção apropriada se a máquina não for encontrada. Usado
+        internamente e por outros controladores que precisam acessar máquinas
+        específicas.
+        """
         if not isinstance(id, int):
             raise TypeError("O ID da máquina deve ser um número inteiro.")
         maquina = self.__maquina_dao.get(id)
@@ -37,7 +44,14 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         return maquina
 
     def incluir_maquina(self) -> None:
-        dados_maquina = self.__tela_maquina.pega_dados_maquina(is_alteracao=False)
+        """
+        Processa o cadastro de uma nova máquina. Coleta dados do usuário através
+        da tela, valida que não existe produto com o mesmo ID (usando mixin),
+        verifica existência do fornecedor e persiste a nova máquina. Exibe
+        mensagens de sucesso ou erro conforme o resultado da operação.
+        """
+        dados_maquina = self.__tela_maquina.pega_dados_maquina(
+            is_alteracao=False)
 
         if self.id_produto_ja_existe(dados_maquina["id"]):
             self.__tela_maquina.mostra_mensagem(
@@ -53,8 +67,15 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         self.__tela_maquina.mostra_mensagem("Máquina cadastrada com sucesso!")
 
     def alterar_maquina(self) -> None:
+        """
+        Processa a alteração de uma máquina existente. Lista máquinas disponíveis,
+        permite seleção, coleta novos dados do usuário e atualiza todas as
+        propriedades da máquina. Valida fornecedor antes de atualizar e exibe
+        lista atualizada após sucesso.
+        """
         if not self.maquinas:
-            self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para alterar!")
+            self.__tela_maquina.mostra_mensagem(
+                "Nenhuma máquina cadastrada para alterar!")
             return
 
         self.lista_maquina()
@@ -75,6 +96,12 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         self.lista_maquina()
 
     def lista_maquina(self) -> None:
+        """
+        Exibe lista formatada de todas as máquinas cadastradas. Extrai informações
+        relevantes (ID, nome, preço, fornecedor) e delega a exibição para a tela.
+        Usado tanto para visualização quanto como passo intermediário em operações
+        de alteração e exclusão.
+        """
         if not self.maquinas:
             self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada!")
             return
@@ -90,15 +117,21 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         self.__tela_maquina.mostra_lista_maquinas(dados_maquinas)
 
     def excluir_maquina(self) -> None:
+        """
+        Processa a exclusão de uma máquina. Lista máquinas disponíveis, permite
+        seleção, remove a máquina do estoque se estiver cadastrada (mantendo
+        integridade referencial) e remove do repositório. Exibe lista atualizada
+        após exclusão bem-sucedida.
+        """
         if not self.maquinas:
-            self.__tela_maquina.mostra_mensagem("Nenhuma máquina cadastrada para excluir!")
+            self.__tela_maquina.mostra_mensagem(
+                "Nenhuma máquina cadastrada para excluir!")
             return
 
         self.lista_maquina()
         id_maquina = self.__tela_maquina.seleciona_maquina()
         maquina = self.pega_maquina_por_id(id_maquina)
 
-        # Remove a máquina do estoque se estiver lá
         estoque = self._controlador_sistema.controlador_estoque.estoque
         estoque.remover_produto_do_estoque(maquina)
 
@@ -110,7 +143,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         self._controlador_sistema.abre_tela()
 
     def abre_tela(self) -> None:
-        lista_opcoes = {
+        mapa_opcoes = {
             1: self.incluir_maquina, 2: self.alterar_maquina,
             3: self.lista_maquina, 4: self.excluir_maquina,
             0: self.retornar
@@ -121,8 +154,8 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                 if opcao == 0:
                     self.retornar()
                     break
-                
-                funcao_escolhida = lista_opcoes.get(opcao)
+
+                funcao_escolhida = mapa_opcoes.get(opcao)
                 if funcao_escolhida:
                     funcao_escolhida()
                 else:
@@ -130,6 +163,6 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                         "Opção inválida! Por favor, digite um número do menu.")
 
             except (MaquinaNaoEncontradaException,
-            TypeError, ValueError,
-            FornecedorNaoEncontradoException) as e:
+                    TypeError, ValueError,
+                    FornecedorNaoEncontradoException) as e:
                 self.__tela_maquina.mostra_mensagem(f"Ocorreu um erro: {e}")

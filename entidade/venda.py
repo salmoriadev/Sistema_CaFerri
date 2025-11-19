@@ -32,6 +32,11 @@ from Excecoes.estoqueInsuficienteException import EstoqueInsuficienteException
 
 class Venda:
     def __init__(self, id_venda: int, cliente: Cliente) -> None:
+        """
+        Inicializa uma nova venda associada a um cliente. Cria carrinho vazio,
+        define valor total como zero e status como "Em andamento". Data de
+        venda permanece None até finalização, quando é registrada automaticamente.
+        """
         self.__id_venda = id_venda
         self.__cliente = cliente
         self.__data_venda = None
@@ -40,6 +45,11 @@ class Venda:
         self.__status_venda = "Em andamento"
 
     def adicionar_produto(self, produto: Produto, quantidade: int) -> None:
+        """
+        Adiciona produto ao carrinho da venda. Se produto já existe, incrementa
+        quantidade. Recalcula valor total automaticamente multiplicando preço
+        de venda pela quantidade adicionada. Ignora quantidades negativas ou zero.
+        """
         if quantidade <= 0:
             return
 
@@ -47,11 +57,22 @@ class Venda:
         self.__valor_total += produto.preco_venda * quantidade
 
     def remover_produto(self, produto: Produto) -> None:
+        """
+        Remove completamente um produto do carrinho, independente da quantidade.
+        Recalcula valor total subtraindo o valor do produto removido. Não faz
+        nada se produto não estiver no carrinho.
+        """
         if produto in self.__carrinho:
             quantidade_removida = self.__carrinho.pop(produto)
             self.__valor_total -= produto.preco_venda * quantidade_removida
 
     def listar_produtos_formatado(self) -> list[dict]:
+        """
+        Retorna lista formatada de produtos no carrinho com informações
+        prontas para exibição (nome, quantidade, preço unitário formatado,
+        subtotal formatado). Usado pela tela para exibir detalhes da venda.
+        Retorna lista vazia se carrinho estiver vazio.
+        """
         if not self.__carrinho:
             return []
 
@@ -66,6 +87,13 @@ class Venda:
         return lista_formatada
 
     def finalizar_venda(self, estoque: Estoque) -> None:
+        """
+        Finaliza uma venda executando todas as validações e operações
+        transacionais necessárias. Verifica que venda está em andamento,
+        valida saldo do cliente, verifica disponibilidade de cada produto
+        no estoque, debita valores do cliente, atualiza estoque e registra
+        data de conclusão. Lança exceções específicas se alguma validação falhar.
+        """
         if self.__status_venda != "Em andamento":
             raise VendaNaoEmAndamentoException()
         if self.__cliente.saldo < self.__valor_total:
@@ -84,6 +112,12 @@ class Venda:
         self.__status_venda = "Finalizada"
 
     def diminuir_quantidade_produto(self, produto: Produto, quantidade: int) -> str:
+        """
+        Reduz quantidade de um produto no carrinho. Se quantidade a remover
+        for maior ou igual à quantidade atual, remove produto completamente.
+        Recalcula valor total e retorna mensagem descritiva da operação
+        realizada. Retorna mensagem de erro se produto não estiver no carrinho.
+        """
         if quantidade <= 0:
             return "A quantidade a ser removida deve ser positiva."
 

@@ -17,6 +17,7 @@ from entidade.fornecedora_cafe import FornecedoraCafe
 from Excecoes.fornecedorNaoEncontradoException import FornecedorNaoEncontradoException
 from DAOs.fornecedora_cafe_dao import FornecedoraCafeDAO
 
+
 class ControladorEmpresaCafe(BuscaProdutoMixin):
     def __init__(self, controlador_sistema):
         self._controlador_sistema = controlador_sistema
@@ -27,13 +28,25 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         return len(list(self.__fornecedores_cafe.get_all())) > 0
 
     def pega_fornecedor_por_cnpj(self, cnpj: str) -> FornecedoraCafe:
+        """
+        Recupera um fornecedor de café específico pelo CNPJ. Lança exceção
+        se não encontrado. Usado internamente e por outros controladores
+        (ex: ControladorCafe para validar fornecedor antes de criar café).
+        """
         fornecedor = self.__fornecedores_cafe.get(cnpj)
         if fornecedor is None:
             raise FornecedorNaoEncontradoException()
         return fornecedor
 
     def incluir_fornecedor(self) -> None:
-        dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=False)
+        """
+        Processa o cadastro de um novo fornecedor de café. Coleta dados do
+        usuário através da tela, valida que não existe fornecedor (de café
+        ou máquina) com o mesmo CNPJ usando mixin e persiste o novo fornecedor.
+        Exibe mensagens de sucesso ou erro conforme o resultado.
+        """
+        dados_fornecedor = self.__tela_empresa_cafe.pega_dados_empresa_cafe(
+            is_alteracao=False)
         if not dados_fornecedor:
             return
 
@@ -51,6 +64,12 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
                 "Fornecedor de café cadastrado com sucesso!")
 
     def alterar_fornecedor(self) -> None:
+        """
+        Processa a alteração de um fornecedor existente. Lista fornecedores
+        disponíveis, permite seleção por CNPJ, coleta novos dados e atualiza
+        propriedades (exceto CNPJ que é imutável). Exibe lista atualizada
+        após sucesso.
+        """
         if not list(self.__fornecedores_cafe.get_all()):
             self.__tela_empresa_cafe.mostra_mensagem(
                 "Nenhum fornecedor cadastrado para alterar!")
@@ -61,37 +80,53 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         if not cnpj_fornecedor:
             return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
-        novos_dados = self.__tela_empresa_cafe.pega_dados_empresa_cafe(is_alteracao=True)
+        novos_dados = self.__tela_empresa_cafe.pega_dados_empresa_cafe(
+            is_alteracao=True)
         if not novos_dados:
             return
         fornecedor.nome = novos_dados["nome"]
         fornecedor.endereco = novos_dados["endereco"]
         fornecedor.telefone = novos_dados["telefone"]
         fornecedor.tipo_cafe = novos_dados["tipo_cafe"]
-        
+
         self.__fornecedores_cafe.update(fornecedor)
-        
-        self.__tela_empresa_cafe.mostra_mensagem("Fornecedor alterado com sucesso!")
+
+        self.__tela_empresa_cafe.mostra_mensagem(
+            "Fornecedor alterado com sucesso!")
         self.lista_fornecedores()
 
     def lista_fornecedores(self) -> None:
+        """
+        Exibe lista formatada de todos os fornecedores de café cadastrados.
+        Extrai informações relevantes (nome, CNPJ, tipo de café) e delega a
+        exibição para a tela. Usado tanto para visualização quanto como passo
+        intermediário em operações de alteração e exclusão.
+        """
         fornecedores = list(self.__fornecedores_cafe.get_all())
         if not fornecedores:
-            self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor de café cadastrado!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "Nenhum fornecedor de café cadastrado!")
             return
 
-        dados_listagem = []
+        dados_fornecedores = []
         for fornecedor in fornecedores:
-            dados_listagem.append({
+            dados_fornecedores.append({
                 "nome": fornecedor.nome,
                 "cnpj": fornecedor.cnpj,
                 "tipo_cafe": fornecedor.tipo_cafe
             })
-        self.__tela_empresa_cafe.mostra_lista_fornecedores(dados_listagem)
+        self.__tela_empresa_cafe.mostra_lista_fornecedores(dados_fornecedores)
 
     def excluir_fornecedor(self) -> None:
+        """
+        Processa a exclusão de um fornecedor. Lista fornecedores, permite
+        seleção por CNPJ, valida que não existem cafés usando este fornecedor
+        (mantendo integridade referencial) e remove do repositório. Exibe
+        lista atualizada após exclusão bem-sucedida.
+        """
         if not list(self.__fornecedores_cafe.get_all()):
-            self.__tela_empresa_cafe.mostra_mensagem("Nenhum fornecedor cadastrado para excluir!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                "Nenhum fornecedor cadastrado para excluir!")
             return
 
         self.lista_fornecedores()
@@ -99,30 +134,32 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         if not cnpj_fornecedor:
             return
         fornecedor = self.pega_fornecedor_por_cnpj(cnpj_fornecedor)
-        
+
         # Verifica se existe algum café usando este fornecedor
         cafes_usando_fornecedor = []
         for cafe in self._controlador_sistema.controlador_cafe.cafes:
             if cafe.empresa_fornecedora == fornecedor:
                 cafes_usando_fornecedor.append(cafe)
-        
+
         if cafes_usando_fornecedor:
-            self.__tela_empresa_cafe.mostra_mensagem(f"ERRO: Não é possível excluir este fornecedor!")
+            self.__tela_empresa_cafe.mostra_mensagem(
+                f"ERRO: Não é possível excluir este fornecedor!")
             self.__tela_empresa_cafe.mostra_mensagem(
                 f"Existem {len(cafes_usando_fornecedor)} café(s) cadastrado(s) que utilizam este fornecedor.")
             self.__tela_empresa_cafe.mostra_mensagem(
                 "Exclua os cafés primeiro ou altere o fornecedor deles.")
             return
-        
+
         self.__fornecedores_cafe.remove(fornecedor.cnpj)
-        self.__tela_empresa_cafe.mostra_mensagem("Fornecedor excluído com sucesso!")
+        self.__tela_empresa_cafe.mostra_mensagem(
+            "Fornecedor excluído com sucesso!")
         self.lista_fornecedores()
 
     def retornar(self) -> None:
         self._controlador_sistema.abre_tela()
 
     def abre_tela(self) -> None:
-        lista_opcoes = {
+        mapa_opcoes = {
             1: self.incluir_fornecedor, 2: self.alterar_fornecedor,
             3: self.lista_fornecedores, 4: self.excluir_fornecedor,
             0: self.retornar
@@ -130,13 +167,16 @@ class ControladorEmpresaCafe(BuscaProdutoMixin):
         while True:
             try:
                 opcao = self.__tela_empresa_cafe.tela_opcoes()
-                funcao_escolhida = lista_opcoes.get(opcao)
+                if opcao == 0:
+                    self.retornar()
+                    break
+
+                funcao_escolhida = mapa_opcoes.get(opcao)
                 if funcao_escolhida:
                     funcao_escolhida()
-                    if opcao == 0:
-                        break
                 else:
-                    self.__tela_empresa_cafe.mostra_mensagem("Opção inválida!")
+                    self.__tela_empresa_cafe.mostra_mensagem(
+                        "Opção inválida! Por favor, digite um número do menu.")
             except FornecedorNaoEncontradoException as e:
                 self.__tela_empresa_cafe.mostra_mensagem(f"ERRO: {e}")
             except TypeError as e:
