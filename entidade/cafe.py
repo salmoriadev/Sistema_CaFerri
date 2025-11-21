@@ -23,6 +23,8 @@ class Cafe(Produto):
         moagem, notas sensoriais). Cria instância de PerfilConsumidor para
         perfil recomendado e associa fornecedor de café.
         """
+        if altitude < 0:
+            raise ValueError("A altitude não pode ser negativa.")
         super().__init__(nome, preco_compra, preco_venda, id, data_fabricacao)
         self.__origem = origem
         self.__variedade = variedade
@@ -74,6 +76,8 @@ class Cafe(Produto):
 
     @altitude.setter
     def altitude(self, nova_altitude: int) -> None:
+        if nova_altitude < 0:
+            raise ValueError("A altitude não pode ser negativa.")
         self.__altitude = nova_altitude
 
     @variedade.setter

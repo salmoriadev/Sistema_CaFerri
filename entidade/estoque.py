@@ -62,6 +62,8 @@ class Estoque:
         cadastra se produto não existir previamente. Notifica callback
         após cadastro para persistência automática.
         """
+        if quantidade < 0:
+            raise ValueError("A quantidade não pode ser negativa.")
         if not self.produto_ja_existe(produto):
             self.__produtos_em_estoque[produto] = quantidade
             self.__notificar_alteracao()
@@ -72,6 +74,8 @@ class Estoque:
         Só adiciona se produto estiver cadastrado. Notifica callback
         após incremento para persistência automática.
         """
+        if quantidade_a_adicionar < 0:
+            raise ValueError("A quantidade a adicionar não pode ser negativa.")
         if self.produto_ja_existe(produto):
             self.__produtos_em_estoque[produto] += quantidade_a_adicionar
             self.__notificar_alteracao()
@@ -83,6 +87,8 @@ class Estoque:
         específicas se validações falharem. Notifica callback após retirada
         bem-sucedida para persistência automática.
         """
+        if quantidade_a_retirar <= 0:
+            raise ValueError("A quantidade a retirar deve ser positiva.")
         if not self.produto_ja_existe(produto):
             raise ProdutoNaoEmEstoqueException(produto.nome)
 

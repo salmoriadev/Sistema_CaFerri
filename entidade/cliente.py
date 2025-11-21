@@ -28,6 +28,10 @@ class Cliente:
         Recebe senha já cifrada (SHA-256) e cria instância de PerfilConsumidor
         que valida o perfil fornecido. Saldo inicial pode ser zero ou positivo.
         """
+        if id < 0:
+            raise ValueError("O ID não pode ser negativo.")
+        if saldo < 0:
+            raise ValueError("O saldo inicial não pode ser negativo.")
         self.__id = id
         self.__nome = nome
         self.__email = email
@@ -70,6 +74,8 @@ class Cliente:
 
     @id.setter
     def id(self, novo_id: int) -> None:
+        if novo_id < 0:
+            raise ValueError("O ID não pode ser negativo.")
         self.__id = novo_id
 
     @nome.setter
@@ -86,6 +92,8 @@ class Cliente:
 
     @saldo.setter
     def saldo(self, valor: float) -> None:
+        if valor < 0:
+            raise ValueError("O saldo não pode ser negativo.")
         self.__saldo = valor
 
     @perfil_do_consumidor.setter

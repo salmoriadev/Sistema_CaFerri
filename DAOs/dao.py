@@ -32,7 +32,8 @@ class DAO(ABC):
         self.__cache = {}  # Cache em memória sincronizado com o arquivo
         try:
             self.__load()
-        except FileNotFoundError:
+        except (FileNotFoundError, pickle.UnpicklingError, EOFError):
+            self.__cache = {}
             self.__dump()
 
     def __dump(self):
@@ -40,14 +41,16 @@ class DAO(ABC):
         Serializa o cache em memória para o arquivo usando pickle. Chamado
         automaticamente após cada operação de modificação (add, update, remove).
         """
-        pickle.dump(self.__cache, open(self.__datasource, 'wb'))
+        with open(self.__datasource, 'wb') as arquivo:
+            pickle.dump(self.__cache, arquivo)
 
     def __load(self):
         """
         Carrega os dados do arquivo para o cache em memória usando pickle.
         Chamado automaticamente durante a inicialização do DAO.
         """
-        self.__cache = pickle.load(open(self.__datasource, 'rb'))
+        with open(self.__datasource, 'rb') as arquivo:
+            self.__cache = pickle.load(arquivo)
 
     def add(self, key, obj):
         """

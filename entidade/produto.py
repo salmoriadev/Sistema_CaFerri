@@ -65,6 +65,8 @@ class Produto(ABC):
         Atualiza o preço de venda do produto. Usado para ajustes de preço
         sem necessidade de recriar o objeto.
         """
+        if novo_preco < 0:
+            raise ValueError("O preço não pode ser negativo.")
         self.__preco_venda = novo_preco
 
     @data_fabricacao.setter
@@ -77,12 +79,18 @@ class Produto(ABC):
 
     @preco_compra.setter
     def preco_compra(self, novo_preco_compra: float) -> None:
+        if novo_preco_compra < 0:
+            raise ValueError("O preço de compra não pode ser negativo.")
         self.__preco_compra = novo_preco_compra
 
     @preco_venda.setter
     def preco_venda(self, novo_preco_venda: float) -> None:
+        if novo_preco_venda < 0:
+            raise ValueError("O preço de venda não pode ser negativo.")
         self.__preco_venda = novo_preco_venda
 
     @id.setter
     def id(self, novo_id: int) -> None:
+        if novo_id < 0:
+            raise ValueError("O ID não pode ser negativo.")
         self.__id = novo_id

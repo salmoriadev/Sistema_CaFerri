@@ -37,6 +37,8 @@ class Venda:
         define valor total como zero e status como "Em andamento". Data de
         venda permanece None até finalização, quando é registrada automaticamente.
         """
+        if id_venda < 0:
+            raise ValueError("O ID da venda não pode ser negativo.")
         self.__id_venda = id_venda
         self.__cliente = cliente
         self.__data_venda = None
@@ -64,7 +66,7 @@ class Venda:
         """
         if produto in self.__carrinho:
             quantidade_removida = self.__carrinho.pop(produto)
-            self.__valor_total -= produto.preco_venda * quantidade_removida
+            self.__valor_total = max(0.0, self.__valor_total - produto.preco_venda * quantidade_removida)
 
     def listar_produtos_formatado(self) -> list[dict]:
         """
@@ -96,6 +98,8 @@ class Venda:
         """
         if self.__status_venda != "Em andamento":
             raise VendaNaoEmAndamentoException()
+        if not self.__carrinho:
+            raise ValueError("Não é possível finalizar uma venda com carrinho vazio.")
         if self.__cliente.saldo < self.__valor_total:
             raise SaldoInsuficienteException()
         for produto, quantidade_necessaria in self.__carrinho.items():
@@ -129,7 +133,7 @@ class Venda:
                 return f"Todas as unidades de '{produto.nome}' foram removidas do carrinho."
             else:
                 self.__carrinho[produto] -= quantidade
-                self.__valor_total -= produto.preco_venda * quantidade
+                self.__valor_total = max(0.0, self.__valor_total - produto.preco_venda * quantidade)
                 return f"{quantidade} unidade(s) de '{produto.nome}' foram removidas."
         else:
             return f"ERRO: O produto '{produto.nome}' não está no carrinho."
