@@ -60,7 +60,7 @@ class TelaEmpresaMaquina:
         self.__window = sg.Window('Fornecedores de Máquinas', layout, element_justification='center', size=(
             580, 580), background_color='#4A5A6B')
 
-    def tela_opcoes(self) -> int:
+    def tela_opcoes(self) -> Optional[int]:
         """
         Exibe o menu principal de fornecedores de máquinas e captura a escolha do usuário.
         Retorna o código numérico da opção selecionada (1-4) ou 0 para retornar.

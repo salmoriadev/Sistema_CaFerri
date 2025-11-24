@@ -41,6 +41,7 @@ O sistema é dividido em módulos coesos, cada um com responsabilidades bem defi
   - Clientes que mais gastam.
   - Fornecedores mais ativos.
   - Produtos com estoque baixo (abaixo de 5 unidades).
+- **Exportação Automática:** Todos os relatórios são automaticamente salvos em arquivos `.txt` na pasta `relatorios/`, com timestamp único para cada geração, permitindo histórico completo de análises.
 
 ---
 
@@ -102,6 +103,9 @@ Sistema_CaFerri/
 │   ├── clienteNaoEncontradoException.py
 │   ├── vendaNaoEncontradaException.py
 │   └── ... (outras exceções)
+│
+├── 📁 relatorios/        # Relatórios Exportados (gerado automaticamente)
+│   └── *.txt             # Arquivos de relatórios com timestamp
 │
 ├── main.py               # Ponto de entrada da aplicação
 └── teste_completo.py     # Script de teste completo do sistema
@@ -184,6 +188,10 @@ O sistema utiliza arquivos `.pkl` (pickle) para persistência de dados. Os arqui
 - `fornecedores_cafe.pkl` - Dados dos fornecedores de café
 - `fornecedores_maquina.pkl` - Dados dos fornecedores de máquinas
 - `estoque.pkl` - Estado atual do estoque
+
+### Exportação de Relatórios
+
+Todos os relatórios gerados são automaticamente salvos em arquivos `.txt` na pasta `relatorios/`. Cada relatório recebe um nome único com timestamp (formato: `Nome_Relatorio_YYYYMMDD_HHMMSS.txt`), permitindo manter um histórico completo de todas as análises realizadas. A pasta é criada automaticamente na primeira geração de relatório.
 
 
 ---

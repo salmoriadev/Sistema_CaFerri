@@ -59,7 +59,7 @@ class TelaEstoque:
         self.__window = sg.Window('Gerenciador de Estoque', layout, element_justification='center', size=(
             580, 580), background_color='#7A5A3A')
 
-    def tela_opcoes(self) -> int:
+    def tela_opcoes(self) -> Optional[int]:
         """
         Exibe o menu principal de estoque e captura a escolha do usuário.
         Retorna o código numérico da opção selecionada (1-4) ou 0 para retornar.

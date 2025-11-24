@@ -161,6 +161,8 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         while True:
             try:
                 opcao = self.__tela_maquina.tela_opcoes()
+                if opcao is None:
+                    break
                 if opcao == 0:
                     self.retornar()
                     break

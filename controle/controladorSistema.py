@@ -193,6 +193,8 @@ class ControladorSistema:
 
         while True:
             opcao = self.__tela_sistema.tela_opcoes()
+            if opcao is None:
+                break
 
             funcao_escolhida = mapa_opcoes.get(opcao)
             if funcao_escolhida:

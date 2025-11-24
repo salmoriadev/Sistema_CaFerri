@@ -21,6 +21,7 @@
     """
 
 import datetime
+from typing import Optional
 from entidade.cliente import Cliente
 from entidade.produto import Produto
 from entidade.estoque import Estoque
@@ -147,7 +148,7 @@ class Venda:
         return self.__cliente
 
     @property
-    def data_venda(self) -> datetime.datetime:
+    def data_venda(self) -> Optional[datetime.datetime]:
         return self.__data_venda
 
     @property

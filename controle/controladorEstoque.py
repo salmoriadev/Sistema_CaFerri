@@ -149,6 +149,8 @@ class ControladorEstoque(BuscaProdutoMixin):
         while True:
             try:
                 opcao = self.__tela_estoque.tela_opcoes()
+                if opcao is None:
+                    break
                 if opcao == 0:
                     mapa_opcoes[0]()
                     break

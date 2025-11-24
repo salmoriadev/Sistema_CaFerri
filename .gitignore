@@ -16,3 +16,4 @@ env/
 .env
 .venv
 *.log
+relatorios/*.txt
