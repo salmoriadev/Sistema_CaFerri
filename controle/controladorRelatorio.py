@@ -121,17 +121,19 @@ class ControladorRelatorios:
             for produto, quantidade in venda.carrinho.items():
                 if hasattr(produto, 'empresa_fornecedora'):
                     fornecedor = produto.empresa_fornecedora
-                    contagem_empresas[fornecedor] = contagem_empresas.get(
-                        fornecedor, 0) + quantidade
+                    if fornecedor is not None:
+                        contagem_empresas[fornecedor] = contagem_empresas.get(
+                            fornecedor, 0) + quantidade
 
         empresas_ordenadas = sorted(
             contagem_empresas.items(), key=lambda item: item[1], reverse=True)
 
         linhas_relatorio = []
         for empresa, total_vendido in empresas_ordenadas:
-            linhas_relatorio.append(
-                f"Empresa: {empresa.nome} (CNPJ: {empresa.cnpj}) | "
-                f"Total de Produtos Vendidos: {total_vendido} unidades")
+            if empresa is not None:
+                linhas_relatorio.append(
+                    f"Empresa: {empresa.nome} (CNPJ: {empresa.cnpj}) | "
+                    f"Total de Produtos Vendidos: {total_vendido} unidades")
 
         if not linhas_relatorio:
             linhas_relatorio.append(

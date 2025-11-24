@@ -222,6 +222,8 @@ class ControladorVenda(BuscaProdutoMixin):
             return
 
         id_venda = self.__tela_venda.seleciona_venda()
+        if id_venda is None:
+            return
         venda = self.pega_venda_por_id(id_venda)
         if venda.status_venda == "Finalizada":
             self.__tela_venda.mostra_mensagem(
@@ -264,6 +266,8 @@ class ControladorVenda(BuscaProdutoMixin):
                     if not self.vendas:
                         continue
                     id_venda = self.__tela_venda.seleciona_venda()
+                    if id_venda is None:
+                        continue
                     venda = self.pega_venda_por_id(id_venda)
                     if venda.status_venda == "Finalizada":
                         self.__tela_venda.mostra_mensagem(

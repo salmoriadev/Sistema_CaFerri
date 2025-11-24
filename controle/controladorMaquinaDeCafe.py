@@ -53,6 +53,9 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
         dados_maquina = self.__tela_maquina.pega_dados_maquina(
             is_alteracao=False)
 
+        if dados_maquina is None:
+            return
+
         if self.id_produto_ja_existe(dados_maquina["id"]):
             self.__tela_maquina.mostra_mensagem(
                 "ERRO: Já existe um produto (café ou máquina) com este ID!")
@@ -80,9 +83,14 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
 
         self.lista_maquina()
         id_maquina = self.__tela_maquina.seleciona_maquina()
+        if id_maquina is None:
+            return
         maquina = self.pega_maquina_por_id(id_maquina)
 
         novos_dados = self.__tela_maquina.pega_dados_maquina(is_alteracao=True)
+
+        if novos_dados is None:
+            return
 
         maquina.nome = novos_dados["nome"]
         maquina.preco_compra = novos_dados["preco_compra"]
@@ -112,7 +120,7 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
                 "id": maquina.id,
                 "nome": maquina.nome,
                 "preco_venda": maquina.preco_venda,
-                "empresa_fornecedora_nome": maquina.empresa_fornecedora.nome
+                "empresa_fornecedora_nome": maquina.empresa_fornecedora.nome if maquina.empresa_fornecedora else "N/A"
             })
         self.__tela_maquina.mostra_lista_maquinas(dados_maquinas)
 
@@ -130,6 +138,8 @@ class ControladorMaquinaDeCafe(BuscaProdutoMixin):
 
         self.lista_maquina()
         id_maquina = self.__tela_maquina.seleciona_maquina()
+        if id_maquina is None:
+            return
         maquina = self.pega_maquina_por_id(id_maquina)
 
         estoque = self._controlador_sistema.controlador_estoque.estoque

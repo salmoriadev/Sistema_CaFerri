@@ -16,6 +16,7 @@
       avisos ou erros, de forma consistente.
     """
 
+from typing import Optional
 import FreeSimpleGUI as sg
 
 
@@ -86,7 +87,7 @@ class TelaSistema:
         self.__window = sg.Window('Sistema Caferri', layout, element_justification='center', size=(
             580, 580), background_color='#3D2817')
 
-    def tela_opcoes(self) -> int:
+    def tela_opcoes(self) -> Optional[int]:
         """
         Exibe o menu principal do sistema e captura a escolha do usuário.
         Retorna o código numérico da opção selecionada (1-8) ou 0 para finalizar.

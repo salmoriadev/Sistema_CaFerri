@@ -141,7 +141,7 @@ class TelaEmpresaCafe:
         )
         sg.popup('Fornecedor', texto)
 
-    def seleciona_empresa_cafe(self) -> str:
+    def seleciona_empresa_cafe(self) -> Optional[str]:
         """
         Exibe janela modal para seleção de fornecedor por CNPJ. Valida que o
         CNPJ não está vazio antes de retornar. Retorna None se cancelado ou

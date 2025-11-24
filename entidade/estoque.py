@@ -59,11 +59,15 @@ class Estoque:
     def cadastrar_novo_produto(self, produto: Produto, quantidade: int) -> None:
         """
         Registra um novo produto no estoque com quantidade inicial. Só
-        cadastra se produto não existir previamente. Notifica callback
-        após cadastro para persistência automática.
+        cadastra se produto não existir previamente. Se quantidade for zero,
+        produto não é cadastrado (não faz sentido ter produto com 0 unidades).
+        Notifica callback após cadastro para persistência automática.
         """
         if quantidade < 0:
             raise ValueError("A quantidade não pode ser negativa.")
+        if quantidade == 0:
+            # Não cadastra produto com quantidade zero
+            return
         if not self.produto_ja_existe(produto):
             self.__produtos_em_estoque[produto] = quantidade
             self.__notificar_alteracao()
@@ -84,7 +88,8 @@ class Estoque:
         """
         Decrementa quantidade de um produto do estoque. Valida que produto
         existe e que quantidade disponível é suficiente. Lança exceções
-        específicas se validações falharem. Notifica callback após retirada
+        específicas se validações falharem. Remove produto automaticamente
+        se quantidade chegar a zero. Notifica callback após retirada
         bem-sucedida para persistência automática.
         """
         if quantidade_a_retirar <= 0:
@@ -94,6 +99,9 @@ class Estoque:
 
         if self.__produtos_em_estoque[produto] >= quantidade_a_retirar:
             self.__produtos_em_estoque[produto] -= quantidade_a_retirar
+            # Remove produto automaticamente se quantidade chegar a zero
+            if self.__produtos_em_estoque[produto] == 0:
+                del self.__produtos_em_estoque[produto]
             self.__notificar_alteracao()
         else:
             raise EstoqueInsuficienteException(

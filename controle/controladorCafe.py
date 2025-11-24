@@ -71,6 +71,9 @@ class ControladorCafe(BuscaProdutoMixin):
         dados_cafe = self.__tela_cafe.pega_dados_cafe(
             perfis_mapa, is_alteracao=False)
 
+        if dados_cafe is None:
+            return
+
         if self.id_produto_ja_existe(dados_cafe["id"]):
             self.__tela_cafe.mostra_mensagem(
                 "ERRO: Já existe um produto (café ou máquina) com este ID!")
@@ -101,6 +104,8 @@ class ControladorCafe(BuscaProdutoMixin):
 
         self.lista_cafe()
         id_cafe = self.__tela_cafe.seleciona_cafe()
+        if id_cafe is None:
+            return
         cafe = self.pega_cafe_por_id(id_cafe)
 
         perfis_mapa = {}
@@ -108,6 +113,9 @@ class ControladorCafe(BuscaProdutoMixin):
             "Doce e Suave").possiveis_perfis
         novos_dados = self.__tela_cafe.pega_dados_cafe(
             perfis_mapa, is_alteracao=True)
+
+        if novos_dados is None:
+            return
 
         cafe.nome = novos_dados["nome"]
         cafe.preco_compra = novos_dados["preco_compra"]
@@ -157,7 +165,7 @@ class ControladorCafe(BuscaProdutoMixin):
                 "nome": cafe.nome,
                 "preco_venda": cafe.preco_venda,
                 "perfil_recomendado": cafe.perfil_recomendado.perfil,
-                "empresa_fornecedora_nome": cafe.empresa_fornecedora.nome
+                "empresa_fornecedora_nome": cafe.empresa_fornecedora.nome if cafe.empresa_fornecedora else "N/A"
             })
         self.__tela_cafe.mostra_lista_cafes(dados_cafes)
 
@@ -175,6 +183,8 @@ class ControladorCafe(BuscaProdutoMixin):
 
         self.lista_cafe()
         id_cafe = self.__tela_cafe.seleciona_cafe()
+        if id_cafe is None:
+            return
         cafe = self.pega_cafe_por_id(id_cafe)
 
         estoque = self._controlador_sistema.controlador_estoque.estoque
